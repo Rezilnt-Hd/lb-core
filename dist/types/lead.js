@@ -27,7 +27,7 @@ export var LeadStatus;
 })(LeadStatus || (LeadStatus = {}));
 // Valid state transitions -- anything not listed here is rejected
 export const VALID_TRANSITIONS = {
-    [LeadStatus.PROSPECT]: [LeadStatus.ENRICHED, LeadStatus.SKIPPED],
+    [LeadStatus.PROSPECT]: [LeadStatus.ENRICHED, LeadStatus.SKIPPED, LeadStatus.NO_CONTACT],
     [LeadStatus.ENRICHED]: [LeadStatus.VERIFIED, LeadStatus.NO_CONTACT],
     [LeadStatus.VERIFIED]: [LeadStatus.SITE_BUILT, LeadStatus.BOUNCED],
     [LeadStatus.SITE_BUILT]: [LeadStatus.PITCHED, LeadStatus.BUILD_FAILED],
