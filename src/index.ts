@@ -1,6 +1,6 @@
 // Types
-export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition } from './types/lead.js';
-export { Site, BlogPost, KeywordData } from './types/site.js';
+export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, TIER_CONFIG } from './types/lead.js';
+export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
 export { Template } from './types/template.js';
 export {
   EVENT_SOURCE, EventType,

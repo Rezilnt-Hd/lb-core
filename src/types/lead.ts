@@ -1,3 +1,15 @@
+export enum Tier {
+  BASIC = 'BASIC',
+  PREMIUM = 'PREMIUM',
+  ULTRA = 'ULTRA',
+}
+
+export const TIER_CONFIG: Record<Tier, { price: number; blogsPerWeek: number; label: string }> = {
+  [Tier.BASIC]:   { price: 49,  blogsPerWeek: 1, label: 'Basic' },
+  [Tier.PREMIUM]: { price: 99,  blogsPerWeek: 3, label: 'Premium' },
+  [Tier.ULTRA]:   { price: 149, blogsPerWeek: 7, label: 'Ultra' },
+};
+
 export enum LeadStatus {
   PROSPECT = 'PROSPECT',
   ENRICHED = 'ENRICHED',
@@ -36,7 +48,9 @@ export interface Lead {
   ownerName?: string;
   slug: string;
   stagingUrl?: string;
+  tier?: Tier;
   stripePaymentLink?: string;
+  stripePriceId?: string;
   customDomain?: string;
   createdAt: string;
   updatedAt: string;
