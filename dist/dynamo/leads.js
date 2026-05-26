@@ -77,3 +77,22 @@ export async function getLeadsByStatus(status) {
     }));
     return (result.Items || []);
 }
+export async function countActiveLeads() {
+    const active = [
+        LeadStatus.PROSPECT, LeadStatus.ENRICHED, LeadStatus.VERIFIED,
+        LeadStatus.SITE_BUILT, LeadStatus.PITCHED,
+    ];
+    let total = 0;
+    for (const status of active) {
+        const result = await docClient.send(new QueryCommand({
+            TableName: TABLE_NAMES.leads,
+            IndexName: 'status-index',
+            KeyConditionExpression: '#status = :status',
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: { ':status': status },
+            Select: 'COUNT',
+        }));
+        total += result.Count || 0;
+    }
+    return total;
+}

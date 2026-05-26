@@ -7,4 +7,5 @@ export var EventType;
     EventType["PAYMENT_COMPLETED"] = "payment.completed";
     EventType["SUBSCRIPTION_CANCELLED"] = "subscription.cancelled";
     EventType["DOMAIN_PROVISIONED"] = "domain.provisioned";
+    EventType["RETENTION_SAVE_OFFER"] = "retention.save.offer";
 })(EventType || (EventType = {}));

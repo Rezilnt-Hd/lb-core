@@ -48,6 +48,12 @@ export interface Lead {
     stripePaymentLink?: string;
     stripePriceId?: string;
     customDomain?: string;
+    brandColors?: {
+        primary: string;
+        secondary: string;
+        accent: string;
+    };
+    logoUrl?: string;
     createdAt: string;
     updatedAt: string;
     statusHistory: StatusTransition[];

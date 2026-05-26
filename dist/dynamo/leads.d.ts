@@ -14,4 +14,5 @@ export declare function createLead(input: CreateLeadInput): Promise<Lead>;
 export declare function getLead(slug: string): Promise<Lead | null>;
 export declare function transitionLead(slug: string, fromStatus: LeadStatus, toStatus: LeadStatus, reason?: string, extraUpdates?: Record<string, unknown>): Promise<Lead>;
 export declare function getLeadsByStatus(status: LeadStatus): Promise<Lead[]>;
+export declare function countActiveLeads(): Promise<number>;
 export {};

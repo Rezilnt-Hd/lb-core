@@ -108,3 +108,23 @@ export async function getLeadsByStatus(status: LeadStatus): Promise<Lead[]> {
   }));
   return (result.Items || []) as Lead[];
 }
+
+export async function countActiveLeads(): Promise<number> {
+  const active: LeadStatus[] = [
+    LeadStatus.PROSPECT, LeadStatus.ENRICHED, LeadStatus.VERIFIED,
+    LeadStatus.SITE_BUILT, LeadStatus.PITCHED,
+  ];
+  let total = 0;
+  for (const status of active) {
+    const result = await docClient.send(new QueryCommand({
+      TableName: TABLE_NAMES.leads,
+      IndexName: 'status-index',
+      KeyConditionExpression: '#status = :status',
+      ExpressionAttributeNames: { '#status': 'status' },
+      ExpressionAttributeValues: { ':status': status },
+      Select: 'COUNT',
+    }));
+    total += result.Count || 0;
+  }
+  return total;
+}

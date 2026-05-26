@@ -10,7 +10,7 @@ export {
 } from './types/events.js';
 
 // DynamoDB clients
-export { createLead, getLead, transitionLead, getLeadsByStatus } from './dynamo/leads.js';
+export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads } from './dynamo/leads.js';
 export { docClient, TABLE_NAMES } from './dynamo/client.js';
 
 // Events
