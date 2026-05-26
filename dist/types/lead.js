@@ -4,11 +4,6 @@ export var Tier;
     Tier["PREMIUM"] = "PREMIUM";
     Tier["ULTRA"] = "ULTRA";
 })(Tier || (Tier = {}));
-export const TIER_CONFIG = {
-    [Tier.BASIC]: { price: 49, blogsPerWeek: 1, label: 'Basic' },
-    [Tier.PREMIUM]: { price: 99, blogsPerWeek: 3, label: 'Premium' },
-    [Tier.ULTRA]: { price: 149, blogsPerWeek: 7, label: 'Ultra' },
-};
 export var LeadStatus;
 (function (LeadStatus) {
     LeadStatus["PROSPECT"] = "PROSPECT";

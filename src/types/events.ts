@@ -10,6 +10,8 @@ export enum EventType {
   SUBSCRIPTION_CANCELLED = 'subscription.cancelled',
   DOMAIN_PROVISIONED = 'domain.provisioned',
   RETENTION_SAVE_OFFER = 'retention.save.offer',
+  ANOMALY_DETECTED = 'anomaly.detected',
+  MONTHLY_REPORT_READY = 'monthly.report.ready',
 }
 
 export interface LeadStatusChangedPayload {
@@ -44,5 +46,24 @@ export interface RetentionSaveOfferPayload {
   ownerEmail: string;
   businessName: string;
   reason: string;
+  timestamp: string;
+}
+
+export interface AnomalyDetectedPayload {
+  slug: string;
+  ownerEmail: string;
+  ownerName?: string;      // for "Hi {firstName}" in the alert email (b-alerts consumer reads this)
+  businessName: string;
+  metric: string;          // e.g. 'keywordRank' | 'traffic'
+  severity: 'info' | 'warning' | 'critical';
+  summary: string;         // plain-language, outcome-first
+  timestamp: string;
+}
+
+export interface MonthlyReportReadyPayload {
+  slug: string;
+  ownerEmail: string;
+  businessName: string;
+  periodMonth: string;     // 'YYYY-MM'
   timestamp: string;
 }

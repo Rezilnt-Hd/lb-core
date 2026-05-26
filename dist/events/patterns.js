@@ -24,4 +24,14 @@ export const PATTERNS = {
         source: [EVENT_SOURCE],
         'detail-type': [EventType.PAYMENT_COMPLETED],
     },
+    // lb-analytics: anomaly alert emails (Premium+)
+    anomalyAlerts: {
+        source: [EVENT_SOURCE],
+        'detail-type': [EventType.ANOMALY_DETECTED],
+    },
+    // lb-analytics: monthly performance report emails (Premium+)
+    monthlyReport: {
+        source: [EVENT_SOURCE],
+        'detail-type': [EventType.MONTHLY_REPORT_READY],
+    },
 };
