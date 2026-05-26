@@ -23,4 +23,12 @@ export declare const PATTERNS: {
         source: string[];
         'detail-type': EventType[];
     };
+    anomalyAlerts: {
+        source: string[];
+        'detail-type': EventType[];
+    };
+    monthlyReport: {
+        source: string[];
+        'detail-type': EventType[];
+    };
 };

@@ -8,4 +8,6 @@ export var EventType;
     EventType["SUBSCRIPTION_CANCELLED"] = "subscription.cancelled";
     EventType["DOMAIN_PROVISIONED"] = "domain.provisioned";
     EventType["RETENTION_SAVE_OFFER"] = "retention.save.offer";
+    EventType["ANOMALY_DETECTED"] = "anomaly.detected";
+    EventType["MONTHLY_REPORT_READY"] = "monthly.report.ready";
 })(EventType || (EventType = {}));

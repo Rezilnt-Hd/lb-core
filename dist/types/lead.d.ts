@@ -3,11 +3,7 @@ export declare enum Tier {
     PREMIUM = "PREMIUM",
     ULTRA = "ULTRA"
 }
-export declare const TIER_CONFIG: Record<Tier, {
-    price: number;
-    blogsPerWeek: number;
-    label: string;
-}>;
+export type BillingInterval = 'month' | 'year';
 export declare enum LeadStatus {
     PROSPECT = "PROSPECT",
     ENRICHED = "ENRICHED",
@@ -47,6 +43,9 @@ export interface Lead {
     tier?: Tier;
     stripePaymentLink?: string;
     stripePriceId?: string;
+    stripeCustomerId?: string;
+    billingInterval?: BillingInterval;
+    currentPeriodEnd?: string;
     customDomain?: string;
     brandColors?: {
         primary: string;

@@ -96,3 +96,34 @@ export async function countActiveLeads() {
     }
     return total;
 }
+/**
+ * Status-neutral field writer. Unlike transitionLead, this does NOT change
+ * status or enforce VALID_TRANSITIONS — use it for post-checkout edits like
+ * customer-supplied customDomain / brandColors. Always refreshes updatedAt.
+ */
+export async function updateLeadFields(slug, fields) {
+    const entries = Object.entries(fields).filter(([k]) => k !== 'pk' && k !== 'sk' && k !== 'slug');
+    if (entries.length === 0)
+        throw new Error('updateLeadFields: no fields to update');
+    const names = {};
+    const values = {};
+    const sets = [];
+    entries.forEach(([k, v], i) => {
+        names[`#f${i}`] = k;
+        values[`:v${i}`] = v;
+        sets.push(`#f${i} = :v${i}`);
+    });
+    names['#updatedAt'] = 'updatedAt';
+    values[':updatedAt'] = new Date().toISOString();
+    sets.push('#updatedAt = :updatedAt');
+    const result = await docClient.send(new UpdateCommand({
+        TableName: TABLE_NAMES.leads,
+        Key: { pk: `LEAD#${slug}`, sk: 'META' },
+        UpdateExpression: `SET ${sets.join(', ')}`,
+        ExpressionAttributeNames: names,
+        ExpressionAttributeValues: values,
+        ConditionExpression: 'attribute_exists(pk)',
+        ReturnValues: 'ALL_NEW',
+    }));
+    return result.Attributes;
+}
