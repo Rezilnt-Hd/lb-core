@@ -26,6 +26,8 @@ export interface PaymentCompletedPayload {
   slug: string;
   stripeSessionId: string;
   ownerEmail: string;
+  tier: string;
+  interval: 'month' | 'year';
 }
 
 export interface DomainProvisionedPayload {
