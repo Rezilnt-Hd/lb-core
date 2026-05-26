@@ -6,6 +6,7 @@ export {
   EVENT_SOURCE, EventType,
   LeadStatusChangedPayload, SiteBuiltPayload,
   PaymentCompletedPayload, DomainProvisionedPayload,
+  RetentionSaveOfferPayload,
 } from './types/events.js';
 
 // DynamoDB clients

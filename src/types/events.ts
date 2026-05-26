@@ -7,6 +7,7 @@ export enum EventType {
   PAYMENT_COMPLETED = 'payment.completed',
   SUBSCRIPTION_CANCELLED = 'subscription.cancelled',
   DOMAIN_PROVISIONED = 'domain.provisioned',
+  RETENTION_SAVE_OFFER = 'retention.save.offer',
 }
 
 export interface LeadStatusChangedPayload {
@@ -32,4 +33,12 @@ export interface DomainProvisionedPayload {
   slug: string;
   customDomain: string;
   certificateArn: string;
+}
+
+export interface RetentionSaveOfferPayload {
+  slug: string;
+  ownerEmail: string;
+  businessName: string;
+  reason: string;
+  timestamp: string;
 }
