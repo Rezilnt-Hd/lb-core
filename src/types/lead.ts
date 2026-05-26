@@ -51,6 +51,8 @@ export interface Lead {
   billingInterval?: BillingInterval;
   currentPeriodEnd?: string; // ISO timestamp of the next renewal (from Stripe subscription)
   customDomain?: string;
+  brandColors?: { primary: string; secondary: string; accent: string };
+  logoUrl?: string;
   createdAt: string;
   updatedAt: string;
   statusHistory: StatusTransition[];
