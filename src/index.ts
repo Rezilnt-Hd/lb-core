@@ -17,7 +17,9 @@ export {
   EVENT_SOURCE, EventType,
   LeadStatusChangedPayload, SiteBuiltPayload,
   PaymentCompletedPayload, DomainProvisionedPayload,
-  RetentionSaveOfferPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload,
+  RetentionSaveOfferPayload,
+  PaymentFailedPayload, PaymentRecoveredPayload,
+  AnomalyDetectedPayload, MonthlyReportReadyPayload,
 } from './types/events.js';
 
 // DynamoDB clients

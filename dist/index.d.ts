@@ -3,7 +3,7 @@ export { TierEntitlements, TIER_ENTITLEMENTS, getEntitlements, TierPricing, TIER
 export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, } from './entitlements/access.js';
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
 export { Template } from './types/template.js';
-export { EVENT_SOURCE, EventType, LeadStatusChangedPayload, SiteBuiltPayload, PaymentCompletedPayload, DomainProvisionedPayload, RetentionSaveOfferPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload, } from './types/events.js';
+export { EVENT_SOURCE, EventType, LeadStatusChangedPayload, SiteBuiltPayload, PaymentCompletedPayload, DomainProvisionedPayload, RetentionSaveOfferPayload, PaymentFailedPayload, PaymentRecoveredPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload, } from './types/events.js';
 export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, updateLeadFields } from './dynamo/leads.js';
 export { docClient, TABLE_NAMES } from './dynamo/client.js';
 export { publishEvent } from './events/publisher.js';

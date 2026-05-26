@@ -10,6 +10,8 @@ export enum EventType {
   SUBSCRIPTION_CANCELLED = 'subscription.cancelled',
   DOMAIN_PROVISIONED = 'domain.provisioned',
   RETENTION_SAVE_OFFER = 'retention.save.offer',
+  PAYMENT_FAILED = 'payment.failed',
+  PAYMENT_RECOVERED = 'payment.recovered',
   ANOMALY_DETECTED = 'anomaly.detected',
   MONTHLY_REPORT_READY = 'monthly.report.ready',
 }
@@ -46,6 +48,18 @@ export interface RetentionSaveOfferPayload {
   ownerEmail: string;
   businessName: string;
   reason: string;
+  timestamp: string;
+}
+
+export interface PaymentFailedPayload {
+  slug: string;
+  attempts: number;
+  isFinal: boolean;
+  timestamp: string;
+}
+
+export interface PaymentRecoveredPayload {
+  slug: string;
   timestamp: string;
 }
 
