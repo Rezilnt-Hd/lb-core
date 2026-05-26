@@ -86,9 +86,9 @@ export function getEntitlements(tier: Tier): TierEntitlements {
 }
 
 export interface TierPricing {
-  monthlyTotal: number;
-  annualPerMonth: number;
-  annualTotal: number;
+  monthlyTotal: number;   // USD/mo on the monthly plan
+  annualPerMonth: number; // USD/mo displayed when billed annually
+  annualTotal: number;    // USD billed once per year
 }
 
 export const TIER_PRICING: Record<Tier, TierPricing> = {
