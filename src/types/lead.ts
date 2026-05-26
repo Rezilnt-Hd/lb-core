@@ -4,11 +4,7 @@ export enum Tier {
   ULTRA = 'ULTRA',
 }
 
-export const TIER_CONFIG: Record<Tier, { price: number; blogsPerWeek: number; label: string }> = {
-  [Tier.BASIC]:   { price: 49,  blogsPerWeek: 1, label: 'Basic' },
-  [Tier.PREMIUM]: { price: 99,  blogsPerWeek: 3, label: 'Premium' },
-  [Tier.ULTRA]:   { price: 149, blogsPerWeek: 7, label: 'Ultra' },
-};
+export type BillingInterval = 'month' | 'year';
 
 export enum LeadStatus {
   PROSPECT = 'PROSPECT',
@@ -51,7 +47,12 @@ export interface Lead {
   tier?: Tier;
   stripePaymentLink?: string;
   stripePriceId?: string;
+  stripeCustomerId?: string;
+  billingInterval?: BillingInterval;
+  currentPeriodEnd?: string; // ISO timestamp of the next renewal (from Stripe subscription)
   customDomain?: string;
+  brandColors?: { primary: string; secondary: string; accent: string };
+  logoUrl?: string;
   createdAt: string;
   updatedAt: string;
   statusHistory: StatusTransition[];

@@ -1,3 +1,5 @@
+import type { BillingInterval } from './lead.js';
+
 export const EVENT_SOURCE = 'localbuilder';
 
 export enum EventType {
@@ -10,6 +12,8 @@ export enum EventType {
   RETENTION_SAVE_OFFER = 'retention.save.offer',
   PAYMENT_FAILED = 'payment.failed',
   PAYMENT_RECOVERED = 'payment.recovered',
+  ANOMALY_DETECTED = 'anomaly.detected',
+  MONTHLY_REPORT_READY = 'monthly.report.ready',
 }
 
 export interface LeadStatusChangedPayload {
@@ -29,6 +33,8 @@ export interface PaymentCompletedPayload {
   slug: string;
   stripeSessionId: string;
   ownerEmail: string;
+  tier: string;
+  interval: BillingInterval;
 }
 
 export interface DomainProvisionedPayload {
@@ -54,5 +60,24 @@ export interface PaymentFailedPayload {
 
 export interface PaymentRecoveredPayload {
   slug: string;
+  timestamp: string;
+}
+
+export interface AnomalyDetectedPayload {
+  slug: string;
+  ownerEmail: string;
+  ownerName?: string;      // for "Hi {firstName}" in the alert email (b-alerts consumer reads this)
+  businessName: string;
+  metric: string;          // e.g. 'keywordRank' | 'traffic'
+  severity: 'info' | 'warning' | 'critical';
+  summary: string;         // plain-language, outcome-first
+  timestamp: string;
+}
+
+export interface MonthlyReportReadyPayload {
+  slug: string;
+  ownerEmail: string;
+  businessName: string;
+  periodMonth: string;     // 'YYYY-MM'
   timestamp: string;
 }

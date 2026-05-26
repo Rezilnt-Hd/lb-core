@@ -1,8 +1,11 @@
 // Types
-export { LeadStatus, VALID_TRANSITIONS, Tier, TIER_CONFIG } from './types/lead.js';
+export { LeadStatus, VALID_TRANSITIONS, Tier } from './types/lead.js';
+export { TIER_ENTITLEMENTS, getEntitlements, TIER_PRICING, TIER_CONFIG, } from './types/entitlements.js';
+// Entitlement ACCESSORS (P-GATE spine) — P1 owns the data/getEntitlements above; do not duplicate those here.
+export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, } from './entitlements/access.js';
 export { EVENT_SOURCE, EventType, } from './types/events.js';
 // DynamoDB clients
-export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads } from './dynamo/leads.js';
+export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, updateLeadFields } from './dynamo/leads.js';
 export { docClient, TABLE_NAMES } from './dynamo/client.js';
 // Events
 export { publishEvent } from './events/publisher.js';

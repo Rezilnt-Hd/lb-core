@@ -1,3 +1,4 @@
+import type { BillingInterval } from './lead.js';
 export declare const EVENT_SOURCE = "localbuilder";
 export declare enum EventType {
     LEAD_STATUS_CHANGED = "lead.status.changed",
@@ -6,7 +7,11 @@ export declare enum EventType {
     PAYMENT_COMPLETED = "payment.completed",
     SUBSCRIPTION_CANCELLED = "subscription.cancelled",
     DOMAIN_PROVISIONED = "domain.provisioned",
-    RETENTION_SAVE_OFFER = "retention.save.offer"
+    RETENTION_SAVE_OFFER = "retention.save.offer",
+    PAYMENT_FAILED = "payment.failed",
+    PAYMENT_RECOVERED = "payment.recovered",
+    ANOMALY_DETECTED = "anomaly.detected",
+    MONTHLY_REPORT_READY = "monthly.report.ready"
 }
 export interface LeadStatusChangedPayload {
     slug: string;
@@ -23,6 +28,8 @@ export interface PaymentCompletedPayload {
     slug: string;
     stripeSessionId: string;
     ownerEmail: string;
+    tier: string;
+    interval: BillingInterval;
 }
 export interface DomainProvisionedPayload {
     slug: string;
@@ -34,5 +41,32 @@ export interface RetentionSaveOfferPayload {
     ownerEmail: string;
     businessName: string;
     reason: string;
+    timestamp: string;
+}
+export interface PaymentFailedPayload {
+    slug: string;
+    attempts: number;
+    isFinal: boolean;
+    timestamp: string;
+}
+export interface PaymentRecoveredPayload {
+    slug: string;
+    timestamp: string;
+}
+export interface AnomalyDetectedPayload {
+    slug: string;
+    ownerEmail: string;
+    ownerName?: string;
+    businessName: string;
+    metric: string;
+    severity: 'info' | 'warning' | 'critical';
+    summary: string;
+    timestamp: string;
+}
+export interface MonthlyReportReadyPayload {
+    slug: string;
+    ownerEmail: string;
+    businessName: string;
+    periodMonth: string;
     timestamp: string;
 }
