@@ -7,6 +7,7 @@ export {
   LeadStatusChangedPayload, SiteBuiltPayload,
   PaymentCompletedPayload, DomainProvisionedPayload,
   RetentionSaveOfferPayload,
+  PaymentFailedPayload, PaymentRecoveredPayload,
 } from './types/events.js';
 
 // DynamoDB clients
