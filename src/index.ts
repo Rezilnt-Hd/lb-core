@@ -1,5 +1,9 @@
 // Types
-export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, TIER_CONFIG } from './types/lead.js';
+export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval } from './types/lead.js';
+export {
+  TierEntitlements, TIER_ENTITLEMENTS, getEntitlements,
+  TierPricing, TIER_PRICING, TIER_CONFIG,
+} from './types/entitlements.js';
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
 export { Template } from './types/template.js';
 export {

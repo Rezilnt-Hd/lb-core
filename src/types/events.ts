@@ -1,3 +1,5 @@
+import type { BillingInterval } from './lead.js';
+
 export const EVENT_SOURCE = 'localbuilder';
 
 export enum EventType {
@@ -27,6 +29,8 @@ export interface PaymentCompletedPayload {
   slug: string;
   stripeSessionId: string;
   ownerEmail: string;
+  tier: string;
+  interval: BillingInterval;
 }
 
 export interface DomainProvisionedPayload {
