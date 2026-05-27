@@ -81,6 +81,14 @@ describe('transitionLead', () => {
     expect(result.status).toBe(LeadStatus.ENRICHED);
   });
 
+  it('guards a lead missing statusHistory with if_not_exists (no ValidationException)', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: { pk: 'LEAD#test', sk: 'META', status: LeadStatus.ENRICHED } });
+    await transitionLead('test', LeadStatus.PROSPECT, LeadStatus.ENRICHED);
+    const cmd = mockSend.mock.calls[0][0] as { input: { UpdateExpression: string; ExpressionAttributeValues: Record<string, unknown> } };
+    expect(cmd.input.UpdateExpression).toContain('list_append(if_not_exists(statusHistory, :empty), :transition)');
+    expect(cmd.input.ExpressionAttributeValues[':empty']).toEqual([]);
+  });
+
   it('rejects invalid transitions', async () => {
     await expect(
       transitionLead('test', LeadStatus.PROSPECT, LeadStatus.PAID)
