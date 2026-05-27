@@ -19,7 +19,9 @@ export interface TierEntitlements {
   keywordResearch: boolean;
   competitorAnalysis: boolean;
   localCitationBuilding: boolean;
-  dedicatedAccountManager: boolean;
+  // Ultra-only. Not a headcount promise — it means the personalized monthly report
+  // IS the proactive review + the fastest support lane (no separate code path).
+  proactiveAccountReview: boolean;
   googleAdsLandingPages: boolean;
   prioritySupport: boolean;
 }
@@ -39,7 +41,7 @@ export const TIER_ENTITLEMENTS: Record<Tier, TierEntitlements> = {
     keywordResearch: false,
     competitorAnalysis: false,
     localCitationBuilding: false,
-    dedicatedAccountManager: false,
+    proactiveAccountReview: false,
     googleAdsLandingPages: false,
     prioritySupport: false,
   },
@@ -57,7 +59,7 @@ export const TIER_ENTITLEMENTS: Record<Tier, TierEntitlements> = {
     keywordResearch: true,
     competitorAnalysis: false,
     localCitationBuilding: false,
-    dedicatedAccountManager: false,
+    proactiveAccountReview: false,
     googleAdsLandingPages: false,
     prioritySupport: true,
   },
@@ -75,7 +77,7 @@ export const TIER_ENTITLEMENTS: Record<Tier, TierEntitlements> = {
     keywordResearch: true,
     competitorAnalysis: true,
     localCitationBuilding: true,
-    dedicatedAccountManager: true,
+    proactiveAccountReview: true,
     googleAdsLandingPages: true,
     prioritySupport: true,
   },

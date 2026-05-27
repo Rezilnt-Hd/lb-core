@@ -40,13 +40,17 @@ export async function transitionLead(slug, fromStatus, toStatus, reason, extraUp
     }
     const now = new Date().toISOString();
     const transition = { from: fromStatus, to: toStatus, timestamp: now, reason };
-    let updateExpr = 'SET #status = :toStatus, updatedAt = :now, statusHistory = list_append(statusHistory, :transition)';
+    // if_not_exists guards a lead that somehow lacks statusHistory (e.g. a manually
+    // seeded or migrated item) — a bare list_append on a missing attribute throws
+    // DynamoDB ValidationException ("attribute that does not exist in the item").
+    let updateExpr = 'SET #status = :toStatus, updatedAt = :now, statusHistory = list_append(if_not_exists(statusHistory, :empty), :transition)';
     const exprNames = { '#status': 'status' };
     const exprValues = {
         ':fromStatus': fromStatus,
         ':toStatus': toStatus,
         ':now': now,
         ':transition': [transition],
+        ':empty': [],
     };
     if (extraUpdates) {
         for (const [key, value] of Object.entries(extraUpdates)) {
