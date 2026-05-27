@@ -102,4 +102,11 @@ describe('transitionLead', () => {
     expect(VALID_TRANSITIONS[LeadStatus.PITCHED]).toContain(LeadStatus.BOUNCED);
     expect(VALID_TRANSITIONS[LeadStatus.NO_REPLY]).toContain(LeadStatus.BOUNCED);
   });
+
+  it('allows opt-out from PITCHED and NO_REPLY, and OPT_OUT is terminal', async () => {
+    mockSend.mockResolvedValue({ Attributes: { pk: 'LEAD#test', sk: 'META', status: LeadStatus.OPT_OUT } });
+    await expect(transitionLead('test', LeadStatus.PITCHED, LeadStatus.OPT_OUT)).resolves.toBeDefined();
+    await expect(transitionLead('test', LeadStatus.NO_REPLY, LeadStatus.OPT_OUT)).resolves.toBeDefined();
+    expect(VALID_TRANSITIONS[LeadStatus.OPT_OUT]).toEqual([]);
+  });
 });
