@@ -20,6 +20,7 @@ export enum LeadStatus {
   BUILD_FAILED = 'BUILD_FAILED',
   NO_REPLY = 'NO_REPLY',
   CHURNED = 'CHURNED',
+  OPT_OUT = 'OPT_OUT',
 }
 
 export interface StatusTransition {
@@ -64,13 +65,14 @@ export const VALID_TRANSITIONS: Record<LeadStatus, LeadStatus[]> = {
   [LeadStatus.ENRICHED]:     [LeadStatus.VERIFIED, LeadStatus.NO_CONTACT],
   [LeadStatus.VERIFIED]:     [LeadStatus.SITE_BUILT, LeadStatus.BOUNCED],
   [LeadStatus.SITE_BUILT]:   [LeadStatus.PITCHED, LeadStatus.BUILD_FAILED],
-  [LeadStatus.PITCHED]:      [LeadStatus.PAID, LeadStatus.NO_REPLY, LeadStatus.BOUNCED],
+  [LeadStatus.PITCHED]:      [LeadStatus.PAID, LeadStatus.NO_REPLY, LeadStatus.BOUNCED, LeadStatus.OPT_OUT],
   [LeadStatus.PAID]:         [LeadStatus.LIVE],
   [LeadStatus.LIVE]:         [LeadStatus.CHURNED],
   [LeadStatus.SKIPPED]:      [],
   [LeadStatus.NO_CONTACT]:   [],
   [LeadStatus.BOUNCED]:      [],
   [LeadStatus.BUILD_FAILED]: [LeadStatus.SITE_BUILT],  // retry
-  [LeadStatus.NO_REPLY]:     [LeadStatus.PITCHED, LeadStatus.BOUNCED],  // re-pitch, or bounced on a later step
+  [LeadStatus.NO_REPLY]:     [LeadStatus.PITCHED, LeadStatus.BOUNCED, LeadStatus.OPT_OUT],  // re-pitch, bounce, or unsubscribe on a later step
   [LeadStatus.CHURNED]:      [],
+  [LeadStatus.OPT_OUT]:      [],
 };
