@@ -10,6 +10,7 @@ export {
   blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain,
   canUseWebp, canUseFullTextSearch, canUseInfoGain,
   canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages,
+  canUseKeywordResearch, canUseCompetitorAnalysis,
 } from './entitlements/access.js';
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
 export { Template } from './types/template.js';

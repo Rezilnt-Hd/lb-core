@@ -20,3 +20,5 @@ export const canUseInfoGain = (t) => isEntitled(t, 'informationGainContent');
 export const canUseAnomalyAlerts = (t) => isEntitled(t, 'aiAnomalyAlerts');
 export const canUseMonthlyReport = (t) => isEntitled(t, 'monthlyPerformanceReport');
 export const canUseGoogleAdsPages = (t) => isEntitled(t, 'googleAdsLandingPages');
+export const canUseKeywordResearch = (t) => isEntitled(t, 'keywordResearch');
+export const canUseCompetitorAnalysis = (t) => isEntitled(t, 'competitorAnalysis');

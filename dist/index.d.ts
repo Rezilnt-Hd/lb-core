@@ -1,6 +1,6 @@
 export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval } from './types/lead.js';
 export { TierEntitlements, TIER_ENTITLEMENTS, getEntitlements, TierPricing, TIER_PRICING, TIER_CONFIG, } from './types/entitlements.js';
-export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, } from './entitlements/access.js';
+export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, canUseKeywordResearch, canUseCompetitorAnalysis, } from './entitlements/access.js';
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
 export { Template } from './types/template.js';
 export { EVENT_SOURCE, EventType, LeadStatusChangedPayload, SiteBuiltPayload, PaymentCompletedPayload, DomainProvisionedPayload, RetentionSaveOfferPayload, PaymentFailedPayload, PaymentRecoveredPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload, } from './types/events.js';

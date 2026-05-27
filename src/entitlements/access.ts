@@ -27,3 +27,5 @@ export const canUseInfoGain       = (t?: Tier): boolean => isEntitled(t, 'inform
 export const canUseAnomalyAlerts  = (t?: Tier): boolean => isEntitled(t, 'aiAnomalyAlerts');
 export const canUseMonthlyReport  = (t?: Tier): boolean => isEntitled(t, 'monthlyPerformanceReport');
 export const canUseGoogleAdsPages = (t?: Tier): boolean => isEntitled(t, 'googleAdsLandingPages');
+export const canUseKeywordResearch    = (t?: Tier): boolean => isEntitled(t, 'keywordResearch');
+export const canUseCompetitorAnalysis = (t?: Tier): boolean => isEntitled(t, 'competitorAnalysis');

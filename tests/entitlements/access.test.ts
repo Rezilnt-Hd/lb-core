@@ -6,6 +6,7 @@ import {
   blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain,
   canUseWebp, canUseFullTextSearch, canUseInfoGain,
   canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages,
+  canUseKeywordResearch, canUseCompetitorAnalysis,
 } from '../../src/entitlements/access.js';
 
 describe('getEntitlements (P1-owned) + accessor undefined-guarding', () => {
@@ -43,6 +44,16 @@ describe('isEntitled + named accessors (Basic denied, Premium/Ultra allowed)', (
     expect(canUseGoogleAdsPages(Tier.BASIC)).toBe(false);
     expect(canUseGoogleAdsPages(Tier.PREMIUM)).toBe(false);
     expect(canUseGoogleAdsPages(Tier.ULTRA)).toBe(true);
+  });
+  it('keyword research = Premium+', () => {
+    expect(canUseKeywordResearch(Tier.BASIC)).toBe(false);
+    expect(canUseKeywordResearch(Tier.PREMIUM)).toBe(true);
+    expect(canUseKeywordResearch(Tier.ULTRA)).toBe(true);
+  });
+  it('competitor analysis = ULTRA only', () => {
+    expect(canUseCompetitorAnalysis(Tier.BASIC)).toBe(false);
+    expect(canUseCompetitorAnalysis(Tier.PREMIUM)).toBe(false);
+    expect(canUseCompetitorAnalysis(Tier.ULTRA)).toBe(true);
   });
   it('blogPostsPerWeek numeric accessor', () => {
     expect(blogPostsPerWeek(Tier.BASIC)).toBe(1);
