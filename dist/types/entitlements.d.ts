@@ -18,7 +18,7 @@ export interface TierEntitlements {
     keywordResearch: boolean;
     competitorAnalysis: boolean;
     localCitationBuilding: boolean;
-    dedicatedAccountManager: boolean;
+    proactiveAccountReview: boolean;
     googleAdsLandingPages: boolean;
     prioritySupport: boolean;
 }

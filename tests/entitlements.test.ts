@@ -39,7 +39,7 @@ describe('TIER_ENTITLEMENTS', () => {
     const u = getEntitlements(Tier.ULTRA);
     expect(u.blogPostsPerWeek).toBe(7);
     expect(u.competitorAnalysis).toBe(true);
-    expect(u.dedicatedAccountManager).toBe(true);
+    expect(u.proactiveAccountReview).toBe(true);
     expect(u.googleAdsLandingPages).toBe(true);
   });
 });
