@@ -64,13 +64,13 @@ export const VALID_TRANSITIONS: Record<LeadStatus, LeadStatus[]> = {
   [LeadStatus.ENRICHED]:     [LeadStatus.VERIFIED, LeadStatus.NO_CONTACT],
   [LeadStatus.VERIFIED]:     [LeadStatus.SITE_BUILT, LeadStatus.BOUNCED],
   [LeadStatus.SITE_BUILT]:   [LeadStatus.PITCHED, LeadStatus.BUILD_FAILED],
-  [LeadStatus.PITCHED]:      [LeadStatus.PAID, LeadStatus.NO_REPLY],
+  [LeadStatus.PITCHED]:      [LeadStatus.PAID, LeadStatus.NO_REPLY, LeadStatus.BOUNCED],
   [LeadStatus.PAID]:         [LeadStatus.LIVE],
   [LeadStatus.LIVE]:         [LeadStatus.CHURNED],
   [LeadStatus.SKIPPED]:      [],
   [LeadStatus.NO_CONTACT]:   [],
   [LeadStatus.BOUNCED]:      [],
   [LeadStatus.BUILD_FAILED]: [LeadStatus.SITE_BUILT],  // retry
-  [LeadStatus.NO_REPLY]:     [LeadStatus.PITCHED],     // re-pitch
+  [LeadStatus.NO_REPLY]:     [LeadStatus.PITCHED, LeadStatus.BOUNCED],  // re-pitch, or bounced on a later step
   [LeadStatus.CHURNED]:      [],
 };

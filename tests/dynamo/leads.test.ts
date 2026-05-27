@@ -94,4 +94,12 @@ describe('transitionLead', () => {
       transitionLead('test', LeadStatus.PROSPECT, LeadStatus.PAID)
     ).rejects.toThrow('Invalid transition: PROSPECT -> PAID');
   });
+
+  it('allows bounce from PITCHED and NO_REPLY (outreach hard bounces)', async () => {
+    mockSend.mockResolvedValue({ Attributes: { pk: 'LEAD#test', sk: 'META', status: LeadStatus.BOUNCED } });
+    await expect(transitionLead('test', LeadStatus.PITCHED, LeadStatus.BOUNCED)).resolves.toBeDefined();
+    await expect(transitionLead('test', LeadStatus.NO_REPLY, LeadStatus.BOUNCED)).resolves.toBeDefined();
+    expect(VALID_TRANSITIONS[LeadStatus.PITCHED]).toContain(LeadStatus.BOUNCED);
+    expect(VALID_TRANSITIONS[LeadStatus.NO_REPLY]).toContain(LeadStatus.BOUNCED);
+  });
 });
