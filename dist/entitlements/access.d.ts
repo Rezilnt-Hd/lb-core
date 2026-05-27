@@ -15,4 +15,6 @@ export declare const canUseInfoGain: (t?: Tier) => boolean;
 export declare const canUseAnomalyAlerts: (t?: Tier) => boolean;
 export declare const canUseMonthlyReport: (t?: Tier) => boolean;
 export declare const canUseGoogleAdsPages: (t?: Tier) => boolean;
+export declare const canUseKeywordResearch: (t?: Tier) => boolean;
+export declare const canUseCompetitorAnalysis: (t?: Tier) => boolean;
 export {};
