@@ -34,3 +34,4 @@ export { PATTERNS } from './events/patterns.js';
 // Utilities
 export { generateSlug } from './utils/slug.js';
 export { createLogger } from './utils/logger.js';
+export { getSecret, invalidateSecret } from './utils/secrets.js';
