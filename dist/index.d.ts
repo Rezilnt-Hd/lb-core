@@ -10,3 +10,7 @@ export { publishEvent } from './events/publisher.js';
 export { PATTERNS } from './events/patterns.js';
 export { generateSlug } from './utils/slug.js';
 export { createLogger } from './utils/logger.js';
+export { getSecret, invalidateSecret } from './utils/secrets.js';
+export * from './types/campaign.js';
+export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from './dynamo/campaigns.js';
+export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from './services/approval-token.js';

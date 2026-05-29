@@ -5,4 +5,5 @@ export declare const TABLE_NAMES: {
     sites: string;
     templates: string;
     targets: string;
+    campaigns: string;
 };
