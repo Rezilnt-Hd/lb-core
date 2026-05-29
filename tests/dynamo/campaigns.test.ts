@@ -17,12 +17,12 @@ import {
   getCampaignRow,
 } from '../../src/dynamo/campaigns.js';
 
-describe('getCampaignForNiche', () => {
-  beforeEach(() => {
-    mockSend.mockReset();
-    _resetCampaignCacheForTests();
-  });
+beforeEach(() => {
+  mockSend.mockReset();
+  _resetCampaignCacheForTests();
+});
 
+describe('getCampaignForNiche', () => {
   it('returns campaignUuid when row exists and status=approved', async () => {
     mockSend.mockResolvedValueOnce({
       Item: { pk: 'CAMPAIGN', sk: 'NICHE#hvac', niche: 'hvac', status: 'approved', campaignUuid: 'uuid-1' },
@@ -63,8 +63,6 @@ describe('getCampaignForNiche', () => {
 });
 
 describe('listKnownCampaignNiches', () => {
-  beforeEach(() => mockSend.mockReset());
-
   it('combines pending and approved into a single set, dedupes', async () => {
     mockSend
       .mockResolvedValueOnce({ Items: [{ niche: 'hvac' }, { niche: 'roofing' }] })
@@ -83,8 +81,6 @@ describe('listKnownCampaignNiches', () => {
 });
 
 describe('writePendingCampaign', () => {
-  beforeEach(() => mockSend.mockReset());
-
   it('writes a normalized row with status=pending_review and conditional put', async () => {
     mockSend.mockResolvedValueOnce({});
     const row = await writePendingCampaign({
@@ -102,8 +98,6 @@ describe('writePendingCampaign', () => {
 });
 
 describe('updateCampaignApproved', () => {
-  beforeEach(() => mockSend.mockReset());
-
   it('updates status=approved with campaignUuid and conditional on pending_review', async () => {
     mockSend.mockResolvedValueOnce({});
     await updateCampaignApproved('hvac', 'new-uuid');
@@ -114,8 +108,6 @@ describe('updateCampaignApproved', () => {
 });
 
 describe('updateCampaignStatus', () => {
-  beforeEach(() => mockSend.mockReset());
-
   it('sets status without condition', async () => {
     mockSend.mockResolvedValueOnce({});
     await updateCampaignStatus('hvac', 'rejected');
@@ -126,8 +118,6 @@ describe('updateCampaignStatus', () => {
 });
 
 describe('getCampaignRow', () => {
-  beforeEach(() => mockSend.mockReset());
-
   it('returns the raw row regardless of status', async () => {
     mockSend.mockResolvedValueOnce({ Item: { status: 'pending_review', niche: 'hvac' } });
     const row = await getCampaignRow('hvac');
