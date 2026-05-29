@@ -11,4 +11,5 @@ export const TABLE_NAMES = {
   sites: process.env.SITES_TABLE || 'lb-sites-prod',
   templates: process.env.TEMPLATES_TABLE || 'lb-templates-prod',
   targets: process.env.TARGETS_TABLE || 'lb-targets-prod',
+  campaigns: process.env.CAMPAIGNS_TABLE || 'lb-campaigns-prod',
 };
