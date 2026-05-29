@@ -17,7 +17,8 @@ export declare enum LeadStatus {
     BOUNCED = "BOUNCED",
     BUILD_FAILED = "BUILD_FAILED",
     NO_REPLY = "NO_REPLY",
-    CHURNED = "CHURNED"
+    CHURNED = "CHURNED",
+    OPT_OUT = "OPT_OUT"
 }
 export interface StatusTransition {
     from: LeadStatus;
