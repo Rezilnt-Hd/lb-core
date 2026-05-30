@@ -80,12 +80,24 @@ export async function transitionLead(
     ':empty': [] as StatusTransition[],
   };
 
+  const removes: string[] = [];
   if (extraUpdates) {
     for (const [key, value] of Object.entries(extraUpdates)) {
-      updateExpr += `, #${key} = :${key}`;
-      exprNames[`#${key}`] = key;
-      exprValues[`:${key}`] = value;
+      if (value === null || value === undefined) {
+        // null/undefined → REMOVE the attribute. Used by callers that want to
+        // clear a transient flag (e.g. lastOutreachSkipReason) atomically with
+        // the status transition.
+        removes.push(`#${key}`);
+        exprNames[`#${key}`] = key;
+      } else {
+        updateExpr += `, #${key} = :${key}`;
+        exprNames[`#${key}`] = key;
+        exprValues[`:${key}`] = value;
+      }
     }
+  }
+  if (removes.length > 0) {
+    updateExpr += ` REMOVE ${removes.join(', ')}`;
   }
 
   const result = await docClient.send(new UpdateCommand({
