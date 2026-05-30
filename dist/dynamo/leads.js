@@ -55,12 +55,19 @@ export async function transitionLead(slug, fromStatus, toStatus, reason, extraUp
     const removes = [];
     if (extraUpdates) {
         for (const [key, value] of Object.entries(extraUpdates)) {
-            if (value === null || value === undefined) {
-                // null/undefined → REMOVE the attribute. Used by callers that want to
+            if (value === null) {
+                // Explicit null → REMOVE the attribute. Used by callers that want to
                 // clear a transient flag (e.g. lastOutreachSkipReason) atomically with
-                // the status transition.
+                // the status transition. `undefined` is left alone (historical no-op)
+                // so shared-library callers with `Foo | undefined` field types don't
+                // silently destroy data.
                 removes.push(`#${key}`);
                 exprNames[`#${key}`] = key;
+            }
+            else if (value === undefined) {
+                // Skip — preserves backward compat with callers that pass `undefined`
+                // for optional fields they don't want to update.
+                continue;
             }
             else {
                 updateExpr += `, #${key} = :${key}`;

@@ -48,13 +48,13 @@ export type OutreachSkipReason =
   | 'missing-required-fields'    // terminal: lead missing phone/email/etc.
   | 'dispatch-error';            // RETRY: network/timeout/unknown SDK error
 
-export const RETRY_WORTHY_REASONS: OutreachSkipReason[] = [
+export const RETRY_WORTHY_REASONS = [
   'niche-unmapped', 'instantly-5xx', 'instantly-429', 'dispatch-error',
-];
+] as const satisfies readonly OutreachSkipReason[];
 
-export const TERMINAL_REASONS: OutreachSkipReason[] = [
+export const TERMINAL_REASONS = [
   'franchise-filtered', 'instantly-4xx-perma', 'missing-required-fields',
-];
+] as const satisfies readonly OutreachSkipReason[];
 
 export interface Lead {
   pk: string;            // LEAD#{slug}
