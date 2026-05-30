@@ -52,12 +52,32 @@ export async function transitionLead(slug, fromStatus, toStatus, reason, extraUp
         ':transition': [transition],
         ':empty': [],
     };
+    const removes = [];
     if (extraUpdates) {
         for (const [key, value] of Object.entries(extraUpdates)) {
-            updateExpr += `, #${key} = :${key}`;
-            exprNames[`#${key}`] = key;
-            exprValues[`:${key}`] = value;
+            if (value === null) {
+                // Explicit null → REMOVE the attribute. Used by callers that want to
+                // clear a transient flag (e.g. lastOutreachSkipReason) atomically with
+                // the status transition. `undefined` is left alone (historical no-op)
+                // so shared-library callers with `Foo | undefined` field types don't
+                // silently destroy data.
+                removes.push(`#${key}`);
+                exprNames[`#${key}`] = key;
+            }
+            else if (value === undefined) {
+                // Skip — preserves backward compat with callers that pass `undefined`
+                // for optional fields they don't want to update.
+                continue;
+            }
+            else {
+                updateExpr += `, #${key} = :${key}`;
+                exprNames[`#${key}`] = key;
+                exprValues[`:${key}`] = value;
+            }
         }
+    }
+    if (removes.length > 0) {
+        updateExpr += ` REMOVE ${removes.join(', ')}`;
     }
     const result = await docClient.send(new UpdateCommand({
         TableName: TABLE_NAMES.leads,

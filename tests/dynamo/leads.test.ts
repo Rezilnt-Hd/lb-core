@@ -110,3 +110,42 @@ describe('transitionLead', () => {
     expect(VALID_TRANSITIONS[LeadStatus.OPT_OUT]).toEqual([]);
   });
 });
+
+describe('transitionLead extraUpdates null -> REMOVE', () => {
+  it('emits a REMOVE clause when an extraUpdates value is null', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: {} });
+    await transitionLead('slug-1', LeadStatus.SITE_BUILT, LeadStatus.PITCHED, 'sent', {
+      pricingUrl: 'https://x',
+      lastOutreachSkipReason: null,
+    });
+    const cmd = mockSend.mock.calls[0][0] as { input: { UpdateExpression: string; ExpressionAttributeNames: Record<string, string>; ExpressionAttributeValues: Record<string, unknown> } };
+    expect(cmd.input.UpdateExpression).toContain('REMOVE #lastOutreachSkipReason');
+    expect(cmd.input.UpdateExpression).toContain('#pricingUrl = :pricingUrl');
+    expect(cmd.input.ExpressionAttributeNames).toMatchObject({ '#lastOutreachSkipReason': 'lastOutreachSkipReason' });
+    expect(cmd.input.ExpressionAttributeValues[':pricingUrl']).toBe('https://x');
+    // Critically: there must be NO :lastOutreachSkipReason value (it would conflict with REMOVE)
+    expect(cmd.input.ExpressionAttributeValues[':lastOutreachSkipReason']).toBeUndefined();
+  });
+
+  it('still emits SET clauses for non-null values (no regression)', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: {} });
+    await transitionLead('slug-2', LeadStatus.SITE_BUILT, LeadStatus.PITCHED, 'sent', {
+      pricingUrl: 'https://y',
+    });
+    const cmd = mockSend.mock.calls[0][0] as { input: { UpdateExpression: string } };
+    expect(cmd.input.UpdateExpression).toContain('#pricingUrl = :pricingUrl');
+    expect(cmd.input.UpdateExpression).not.toContain('REMOVE');
+  });
+
+  it('treats undefined as no-op (preserves historical shared-library contract)', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: {} });
+    await transitionLead('slug-3', LeadStatus.SITE_BUILT, LeadStatus.PITCHED, 'sent', {
+      lastOutreachSkipReason: undefined,
+    });
+    const cmd = mockSend.mock.calls[0][0] as { input: { UpdateExpression: string; ExpressionAttributeValues: Record<string, unknown> } };
+    // undefined should NEITHER trigger REMOVE NOR SET — just no-op for that key.
+    expect(cmd.input.UpdateExpression).not.toContain('REMOVE');
+    expect(cmd.input.UpdateExpression).not.toContain('lastOutreachSkipReason');
+    expect(cmd.input.ExpressionAttributeValues[':lastOutreachSkipReason']).toBeUndefined();
+  });
+});

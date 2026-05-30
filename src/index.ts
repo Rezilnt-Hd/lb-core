@@ -1,5 +1,8 @@
 // Types
-export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval } from './types/lead.js';
+export {
+  Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval,
+  OutreachSkipReason, RETRY_WORTHY_REASONS, TERMINAL_REASONS,
+} from './types/lead.js';
 export {
   TierEntitlements, TIER_ENTITLEMENTS, getEntitlements,
   TierPricing, TIER_PRICING, TIER_CONFIG,

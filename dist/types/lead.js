@@ -21,6 +21,12 @@ export var LeadStatus;
     LeadStatus["CHURNED"] = "CHURNED";
     LeadStatus["OPT_OUT"] = "OPT_OUT";
 })(LeadStatus || (LeadStatus = {}));
+export const RETRY_WORTHY_REASONS = [
+    'niche-unmapped', 'instantly-5xx', 'instantly-429', 'dispatch-error',
+];
+export const TERMINAL_REASONS = [
+    'franchise-filtered', 'instantly-4xx-perma', 'missing-required-fields',
+];
 // Valid state transitions -- anything not listed here is rejected
 export const VALID_TRANSITIONS = {
     [LeadStatus.PROSPECT]: [LeadStatus.ENRICHED, LeadStatus.SKIPPED, LeadStatus.NO_CONTACT],

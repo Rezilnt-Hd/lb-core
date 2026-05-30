@@ -26,6 +26,18 @@ export interface StatusTransition {
     timestamp: string;
     reason?: string;
 }
+/**
+ * Reason an outreach attempt did NOT result in a PITCHED transition. Written
+ * by outreach-orchestrator on every bail path; read by the stale-lead retry
+ * sweeper to decide whether a parked SITE_BUILT lead should be retried or
+ * left alone.
+ *
+ * The split between RETRY_WORTHY_REASONS and TERMINAL_REASONS is the
+ * sweeper's filter source-of-truth.
+ */
+export type OutreachSkipReason = 'franchise-filtered' | 'niche-unmapped' | 'instantly-5xx' | 'instantly-429' | 'instantly-4xx-perma' | 'missing-required-fields' | 'dispatch-error';
+export declare const RETRY_WORTHY_REASONS: readonly ["niche-unmapped", "instantly-5xx", "instantly-429", "dispatch-error"];
+export declare const TERMINAL_REASONS: readonly ["franchise-filtered", "instantly-4xx-perma", "missing-required-fields"];
 export interface Lead {
     pk: string;
     sk: string;
@@ -57,5 +69,7 @@ export interface Lead {
     createdAt: string;
     updatedAt: string;
     statusHistory: StatusTransition[];
+    /** Reason the most recent outreach attempt bailed without enrolling. Cleared on successful PITCHED transition. */
+    lastOutreachSkipReason?: OutreachSkipReason;
 }
 export declare const VALID_TRANSITIONS: Record<LeadStatus, LeadStatus[]>;
