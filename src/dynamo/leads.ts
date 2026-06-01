@@ -152,6 +152,23 @@ export async function countActiveLeads(): Promise<number> {
 }
 
 /**
+ * Count leads in a single status. Uses the status-index GSI with Select: COUNT
+ * so no items are hydrated — much cheaper than getLeadsByStatus(...).length
+ * when you only need the count (e.g., prospector's cap gates).
+ */
+export async function countLeadsByStatus(status: LeadStatus): Promise<number> {
+  const result = await docClient.send(new QueryCommand({
+    TableName: TABLE_NAMES.leads,
+    IndexName: 'status-index',
+    KeyConditionExpression: '#status = :status',
+    ExpressionAttributeNames: { '#status': 'status' },
+    ExpressionAttributeValues: { ':status': status },
+    Select: 'COUNT',
+  }));
+  return result.Count ?? 0;
+}
+
+/**
  * Status-neutral field writer. Unlike transitionLead, this does NOT change
  * status or enforce VALID_TRANSITIONS — use it for post-checkout edits like
  * customer-supplied customDomain / brandColors. Always refreshes updatedAt.
