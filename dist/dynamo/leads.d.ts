@@ -16,6 +16,12 @@ export declare function transitionLead(slug: string, fromStatus: LeadStatus, toS
 export declare function getLeadsByStatus(status: LeadStatus): Promise<Lead[]>;
 export declare function countActiveLeads(): Promise<number>;
 /**
+ * Count leads in a single status. Uses the status-index GSI with Select: COUNT
+ * so no items are hydrated — much cheaper than getLeadsByStatus(...).length
+ * when you only need the count (e.g., prospector's cap gates).
+ */
+export declare function countLeadsByStatus(status: LeadStatus): Promise<number>;
+/**
  * Status-neutral field writer. Unlike transitionLead, this does NOT change
  * status or enforce VALID_TRANSITIONS — use it for post-checkout edits like
  * customer-supplied customDomain / brandColors. Always refreshes updatedAt.

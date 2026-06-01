@@ -11,7 +11,7 @@ vi.mock('../../src/dynamo/client.js', () => ({
 }));
 
 import { docClient } from '../../src/dynamo/client.js';
-import { createLead, getLead, transitionLead } from '../../src/dynamo/leads.js';
+import { createLead, getLead, transitionLead, countLeadsByStatus } from '../../src/dynamo/leads.js';
 
 const mockSend = vi.mocked(docClient.send);
 
@@ -147,5 +147,37 @@ describe('transitionLead extraUpdates null -> REMOVE', () => {
     expect(cmd.input.UpdateExpression).not.toContain('REMOVE');
     expect(cmd.input.UpdateExpression).not.toContain('lastOutreachSkipReason');
     expect(cmd.input.ExpressionAttributeValues[':lastOutreachSkipReason']).toBeUndefined();
+  });
+});
+
+describe('countLeadsByStatus', () => {
+  it('returns Count from DDB Query result', async () => {
+    mockSend.mockResolvedValueOnce({ Count: 7 });
+    expect(await countLeadsByStatus(LeadStatus.PITCHED)).toBe(7);
+  });
+
+  it('returns 0 when Count is missing', async () => {
+    mockSend.mockResolvedValueOnce({});
+    expect(await countLeadsByStatus(LeadStatus.PITCHED)).toBe(0);
+  });
+
+  it('uses status-index GSI with Select COUNT', async () => {
+    mockSend.mockResolvedValueOnce({ Count: 3 });
+    await countLeadsByStatus(LeadStatus.PROSPECT);
+    const cmd = mockSend.mock.calls[0][0] as { input: { IndexName: string; Select: string; ExpressionAttributeValues: Record<string, unknown> } };
+    expect(cmd.input.IndexName).toBe('status-index');
+    expect(cmd.input.Select).toBe('COUNT');
+    expect(cmd.input.ExpressionAttributeValues[':status']).toBe('PROSPECT');
+  });
+});
+
+describe('VALID_TRANSITIONS — ENRICHED → BOUNCED is now valid', () => {
+  it('allows ENRICHED → BOUNCED via transitionLead (was throwing pre-fix)', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: { pk: 'LEAD#slug', sk: 'META', status: LeadStatus.BOUNCED } });
+    // Just calling without throwing is the assertion — if BOUNCED isn't in
+    // the valid targets for ENRICHED, transitionLead throws synchronously
+    // before any DDB call.
+    await expect(transitionLead('slug', LeadStatus.ENRICHED, LeadStatus.BOUNCED, 'Score: 20')).resolves.toBeTruthy();
+    expect(VALID_TRANSITIONS[LeadStatus.ENRICHED]).toContain(LeadStatus.BOUNCED);
   });
 });

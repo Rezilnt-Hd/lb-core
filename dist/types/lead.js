@@ -30,7 +30,8 @@ export const TERMINAL_REASONS = [
 // Valid state transitions -- anything not listed here is rejected
 export const VALID_TRANSITIONS = {
     [LeadStatus.PROSPECT]: [LeadStatus.ENRICHED, LeadStatus.SKIPPED, LeadStatus.NO_CONTACT],
-    [LeadStatus.ENRICHED]: [LeadStatus.VERIFIED, LeadStatus.NO_CONTACT],
+    // BOUNCED added 2026-05-31 — prospector calls transitionLead(ENRICHED, BOUNCED) on failed email verification; was silently throwing pre-fix.
+    [LeadStatus.ENRICHED]: [LeadStatus.VERIFIED, LeadStatus.NO_CONTACT, LeadStatus.BOUNCED],
     [LeadStatus.VERIFIED]: [LeadStatus.SITE_BUILT, LeadStatus.BOUNCED],
     [LeadStatus.SITE_BUILT]: [LeadStatus.PITCHED, LeadStatus.BUILD_FAILED],
     [LeadStatus.PITCHED]: [LeadStatus.PAID, LeadStatus.NO_REPLY, LeadStatus.BOUNCED, LeadStatus.OPT_OUT],

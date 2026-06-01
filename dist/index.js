@@ -5,7 +5,7 @@ export { TIER_ENTITLEMENTS, getEntitlements, TIER_PRICING, TIER_CONFIG, } from '
 export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, canUseKeywordResearch, canUseCompetitorAnalysis, } from './entitlements/access.js';
 export { EVENT_SOURCE, EventType, } from './types/events.js';
 // DynamoDB clients
-export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, updateLeadFields } from './dynamo/leads.js';
+export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields } from './dynamo/leads.js';
 export { docClient, TABLE_NAMES } from './dynamo/client.js';
 // Events
 export { publishEvent } from './events/publisher.js';
