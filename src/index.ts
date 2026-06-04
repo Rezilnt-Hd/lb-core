@@ -1,46 +1,78 @@
 // Types
 export {
-  Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval,
-  OutreachSkipReason, RETRY_WORTHY_REASONS, TERMINAL_REASONS,
-} from './types/lead.js';
+  Lead,
+  LeadStatus,
+  VALID_TRANSITIONS,
+  StatusTransition,
+  Tier,
+  BillingInterval,
+  OutreachSkipReason,
+  RETRY_WORTHY_REASONS,
+  TERMINAL_REASONS,
+} from "./types/lead.js";
 export {
-  TierEntitlements, TIER_ENTITLEMENTS, getEntitlements,
-  TierPricing, TIER_PRICING, TIER_CONFIG,
-} from './types/entitlements.js';
+  TierEntitlements,
+  TIER_ENTITLEMENTS,
+  getEntitlements,
+  TierPricing,
+  TIER_PRICING,
+  TIER_CONFIG,
+} from "./types/entitlements.js";
 // Entitlement ACCESSORS (P-GATE spine) — P1 owns the data/getEntitlements above; do not duplicate those here.
 export {
   isEntitled,
-  blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain,
-  canUseWebp, canUseFullTextSearch, canUseInfoGain,
-  canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages,
-  canUseKeywordResearch, canUseCompetitorAnalysis,
-} from './entitlements/access.js';
-export { Site, BlogPost, KeywordData, RobotsTxtConfig } from './types/site.js';
-export { Template } from './types/template.js';
+  blogPostsPerWeek,
+  canUseSmartLinking,
+  canUseAdvancedSchema,
+  canUseCustomDomain,
+  canUseWebp,
+  canUseFullTextSearch,
+  canUseInfoGain,
+  canUseAnomalyAlerts,
+  canUseMonthlyReport,
+  canUseGoogleAdsPages,
+  canUseKeywordResearch,
+  canUseCompetitorAnalysis,
+} from "./entitlements/access.js";
+export { Site, BlogPost, KeywordData, RobotsTxtConfig } from "./types/site.js";
+export { Template } from "./types/template.js";
 export {
-  EVENT_SOURCE, EventType,
-  LeadStatusChangedPayload, SiteBuiltPayload,
-  PaymentCompletedPayload, DomainProvisionedPayload,
+  EVENT_SOURCE,
+  EventType,
+  LeadStatusChangedPayload,
+  SiteBuiltPayload,
+  PaymentCompletedPayload,
+  DomainProvisionedPayload,
   RetentionSaveOfferPayload,
-  PaymentFailedPayload, PaymentRecoveredPayload,
-  AnomalyDetectedPayload, MonthlyReportReadyPayload,
-} from './types/events.js';
+  PaymentFailedPayload,
+  PaymentRecoveredPayload,
+  AnomalyDetectedPayload,
+  MonthlyReportReadyPayload,
+} from "./types/events.js";
 
 // DynamoDB clients
-export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields } from './dynamo/leads.js';
-export { docClient, TABLE_NAMES } from './dynamo/client.js';
+export {
+  createLead,
+  getLead,
+  transitionLead,
+  getLeadsByStatus,
+  countActiveLeads,
+  countLeadsByStatus,
+  updateLeadFields,
+} from "./dynamo/leads.js";
+export { docClient, TABLE_NAMES } from "./dynamo/client.js";
 
 // Events
-export { publishEvent } from './events/publisher.js';
-export { PATTERNS } from './events/patterns.js';
+export { publishEvent } from "./events/publisher.js";
+export { PATTERNS } from "./events/patterns.js";
 
 // Utilities
-export { generateSlug } from './utils/slug.js';
-export { createLogger } from './utils/logger.js';
-export { getSecret, invalidateSecret } from './utils/secrets.js';
+export { generateSlug } from "./utils/slug.js";
+export { createLogger } from "./utils/logger.js";
+export { getSecret, invalidateSecret } from "./utils/secrets.js";
 
 // Campaigns + approval token (Phase 2)
-export * from './types/campaign.js';
+export * from "./types/campaign.js";
 export {
   getCampaignForNiche,
   listKnownCampaignNiches,
@@ -48,18 +80,28 @@ export {
   updateCampaignApproved,
   updateCampaignStatus,
   getCampaignRow,
-} from './dynamo/campaigns.js';
+} from "./dynamo/campaigns.js";
 export {
   signApprovalToken,
   verifyApprovalToken,
   getApprovalSecret,
-} from './services/approval-token.js';
+} from "./services/approval-token.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
-export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, _resetClient as _resetBedrockClientForTests } from './bedrock/adapter.js';
+export {
+  invokeBedrock,
+  detectProvider,
+  buildRequestBody,
+  parseResponseBody,
+  supportsVision,
+  _resetClient as _resetBedrockClientForTests,
+} from "./bedrock/adapter.js";
 export {
   BedrockAdapterError,
-  type BedrockProvider, type BedrockMessage,
-  type InvokeBedrockInput, type InvokeBedrockResult,
-} from './bedrock/types.js';
-export { emitBedrockMetrics, _resetCwClient } from './bedrock/metrics.js';
+  type BedrockProvider,
+  type BedrockMessage,
+  type ContentBlock,
+  type InvokeBedrockInput,
+  type InvokeBedrockResult,
+} from "./bedrock/types.js";
+export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
