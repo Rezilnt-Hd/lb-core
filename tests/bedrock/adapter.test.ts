@@ -277,3 +277,143 @@ describe("invokeBedrock metrics", () => {
     });
   });
 });
+
+import { supportsVision } from "../../src/bedrock/adapter.js";
+import type { ContentBlock } from "../../src/bedrock/types.js";
+
+describe("supportsVision", () => {
+  it("returns true for anthropic.* and us.anthropic.*", () => {
+    expect(supportsVision("us.anthropic.claude-sonnet-4-6")).toBe(true);
+    expect(supportsVision("anthropic.claude-opus-4-8")).toBe(true);
+  });
+  it("returns false for meta, amazon, deepseek (today)", () => {
+    expect(supportsVision("us.meta.llama3-3-70b-instruct-v1:0")).toBe(false);
+    expect(supportsVision("us.amazon.nova-micro-v1:0")).toBe(false);
+    expect(supportsVision("us.amazon.nova-pro-v1:0")).toBe(false);
+    expect(supportsVision("us.deepseek.r1-v1:0")).toBe(false);
+  });
+});
+
+describe("buildRequestBody multimodal (Anthropic)", () => {
+  const visionContent: ContentBlock[] = [
+    { type: "image", mediaType: "image/png", data: "BASE64IMAGE" },
+    { type: "text", text: "describe this design" },
+  ];
+  const visionInput = {
+    modelId: "us.anthropic.claude-sonnet-4-6",
+    messages: [{ role: "user" as const, content: visionContent }],
+    maxTokens: 100,
+  };
+
+  it("translates ContentBlock[] into Anthropic's source-wrapped envelope", () => {
+    const body = JSON.parse(buildRequestBody(visionInput));
+    expect(body.messages[0].content).toEqual([
+      {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: "image/png",
+          data: "BASE64IMAGE",
+        },
+      },
+      { type: "text", text: "describe this design" },
+    ]);
+  });
+
+  it("backward-compat: string content still produces string content (no array wrapping)", () => {
+    const body = JSON.parse(
+      buildRequestBody({
+        modelId: "us.anthropic.claude-sonnet-4-6",
+        messages: [{ role: "user", content: "plain text" }],
+        maxTokens: 100,
+      }),
+    );
+    expect(body.messages[0].content).toBe("plain text");
+  });
+
+  it("preserves max_tokens + system + temperature with multimodal content", () => {
+    const body = JSON.parse(
+      buildRequestBody({
+        ...visionInput,
+        system: "be brief",
+        temperature: 0.2,
+      }),
+    );
+    expect(body.max_tokens).toBe(100);
+    expect(body.system).toBe("be brief");
+    expect(body.temperature).toBe(0.2);
+  });
+});
+
+describe("buildRequestBody multimodal rejection on text-only providers", () => {
+  const imageContent: ContentBlock[] = [
+    { type: "image", mediaType: "image/png", data: "BASE64" },
+    { type: "text", text: "describe" },
+  ];
+
+  it("Meta/Llama rejects image content with actionable error mentioning vision", () => {
+    expect(() =>
+      buildRequestBody({
+        modelId: "us.meta.llama3-3-70b-instruct-v1:0",
+        messages: [{ role: "user", content: imageContent }],
+        maxTokens: 100,
+      }),
+    ).toThrow(/does not support vision/i);
+  });
+
+  it("Amazon/Nova-Micro rejects image content with actionable error", () => {
+    expect(() =>
+      buildRequestBody({
+        modelId: "us.amazon.nova-micro-v1:0",
+        messages: [{ role: "user", content: imageContent }],
+        maxTokens: 100,
+      }),
+    ).toThrow(/does not support vision/i);
+  });
+
+  it("DeepSeek rejects image content with actionable error", () => {
+    expect(() =>
+      buildRequestBody({
+        modelId: "us.deepseek.r1-v1:0",
+        messages: [{ role: "user", content: imageContent }],
+        maxTokens: 100,
+      }),
+    ).toThrow(/does not support vision/i);
+  });
+
+  it("text-only ContentBlock[] on text-only providers gets a string-content-only message", () => {
+    expect(() =>
+      buildRequestBody({
+        modelId: "us.meta.llama3-3-70b-instruct-v1:0",
+        messages: [{ role: "user", content: [{ type: "text", text: "hi" }] }],
+        maxTokens: 100,
+      }),
+    ).toThrow(/only accepts string content/i);
+  });
+
+  it("rejection error is a BedrockAdapterError with modelId", () => {
+    try {
+      buildRequestBody({
+        modelId: "us.meta.llama3-3-70b-instruct-v1:0",
+        messages: [{ role: "user", content: imageContent }],
+        maxTokens: 100,
+      });
+      expect.unreachable("should have thrown");
+    } catch (err) {
+      expect((err as Error).name).toBe("BedrockAdapterError");
+      expect((err as { modelId: string }).modelId).toBe(
+        "us.meta.llama3-3-70b-instruct-v1:0",
+      );
+    }
+  });
+
+  it("recommends a vision-capable model in the error suffix", () => {
+    expect(() =>
+      buildRequestBody({
+        modelId: "us.meta.llama3-3-70b-instruct-v1:0",
+        messages: [{ role: "user", content: imageContent }],
+        maxTokens: 100,
+      }),
+    ).toThrow(/us\.anthropic\.claude-sonnet-4-6/);
+  });
+});

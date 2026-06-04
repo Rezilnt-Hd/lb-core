@@ -1,4 +1,5 @@
 import type {
+  BedrockMessage,
   BedrockProvider,
   InvokeBedrockInput,
   InvokeBedrockResult,
@@ -23,7 +24,59 @@ export function detectProvider(modelId: string): BedrockProvider {
   );
 }
 
+/**
+ * Returns true if the model accepts multimodal `ContentBlock[]` message content
+ * (text + image). Anthropic Claude 3+ supports this natively via Bedrock's
+ * messages content-array shape. Non-Anthropic vision SKUs (Nova Pro/Lite/Premier,
+ * Llama 3.2 Vision) are deferred behind explicit consumer demand — see
+ * lb-infra/docs/superpowers/specs/2026-06-04-bedrock-multimodal-adapter-design.md §3.2.
+ */
+export function supportsVision(modelId: string): boolean {
+  const stripped = modelId.replace(/^(us|global|eu|apac)\./, "");
+  return stripped.startsWith("anthropic.");
+}
+
+function assertContentCompatibility(input: InvokeBedrockInput): void {
+  const usesContentBlocks = input.messages.some((m) =>
+    Array.isArray(m.content),
+  );
+  if (!usesContentBlocks) return;
+  if (supportsVision(input.modelId)) return;
+
+  const hasImage = input.messages.some(
+    (m) =>
+      Array.isArray(m.content) && m.content.some((b) => b.type === "image"),
+  );
+  const suffix = hasImage
+    ? "does not support vision"
+    : "only accepts string content (not ContentBlock arrays)";
+  throw new BedrockAdapterError(
+    `Model ${input.modelId} ${suffix}. Pass message.content as a string, or use a vision-capable model (e.g. us.anthropic.claude-sonnet-4-6).`,
+    input.modelId,
+  );
+}
+
+function toAnthropicMessage(m: BedrockMessage): {
+  role: string;
+  content: unknown;
+} {
+  if (typeof m.content === "string") {
+    return { role: m.role, content: m.content };
+  }
+  return {
+    role: m.role,
+    content: m.content.map((b) => {
+      if (b.type === "text") return { type: "text", text: b.text };
+      return {
+        type: "image",
+        source: { type: "base64", media_type: b.mediaType, data: b.data },
+      };
+    }),
+  };
+}
+
 export function buildRequestBody(input: InvokeBedrockInput): string {
+  assertContentCompatibility(input);
   const provider = detectProvider(input.modelId);
   switch (provider) {
     case "anthropic":
@@ -35,14 +88,18 @@ export function buildRequestBody(input: InvokeBedrockInput): string {
           temperature: input.temperature,
         }),
         ...(input.system && { system: input.system }),
-        messages: input.messages,
+        messages: input.messages.map(toAnthropicMessage),
       });
     case "meta": {
       // Llama on Bedrock uses completion-style envelope.
       // Prepend system as a leading line; concatenate messages.
+      // assertContentCompatibility above guarantees m.content is string here.
       const systemBlock = input.system ? `${input.system}\n\n` : "";
       const conversation = input.messages
-        .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+        .map(
+          (m) =>
+            `${m.role === "user" ? "User" : "Assistant"}: ${m.content as string}`,
+        )
         .join("\n\n");
       return JSON.stringify({
         prompt: systemBlock + conversation,
@@ -53,12 +110,13 @@ export function buildRequestBody(input: InvokeBedrockInput): string {
       });
     }
     case "amazon":
+      // assertContentCompatibility above guarantees m.content is string here.
       return JSON.stringify({
         schemaVersion: "messages-v1",
         ...(input.system && { system: [{ text: input.system }] }),
         messages: input.messages.map((m) => ({
           role: m.role,
-          content: [{ text: m.content }],
+          content: [{ text: m.content as string }],
         })),
         inferenceConfig: {
           maxTokens: input.maxTokens,
