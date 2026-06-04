@@ -49,3 +49,57 @@ describe("detectProvider", () => {
     );
   });
 });
+
+import { buildRequestBody } from "../../src/bedrock/adapter.js";
+
+describe("buildRequestBody", () => {
+  const input = {
+    modelId: "us.anthropic.claude-sonnet-4-6",
+    messages: [{ role: "user" as const, content: "hi" }],
+    system: "be brief",
+    maxTokens: 100,
+    temperature: 0.5,
+  };
+
+  it("anthropic envelope uses anthropic_version + max_tokens", () => {
+    const body = JSON.parse(buildRequestBody(input));
+    expect(body.anthropic_version).toBe("bedrock-2023-05-31");
+    expect(body.max_tokens).toBe(100);
+    expect(body.system).toBe("be brief");
+    expect(body.messages[0].content).toBe("hi");
+    expect(body.temperature).toBe(0.5);
+  });
+
+  it("meta envelope uses prompt + max_gen_len", () => {
+    const body = JSON.parse(
+      buildRequestBody({
+        ...input,
+        modelId: "us.meta.llama3-3-70b-instruct-v1:0",
+      }),
+    );
+    expect(body.prompt).toContain("be brief");
+    expect(body.prompt).toContain("hi");
+    expect(body.max_gen_len).toBe(100);
+    expect(body.temperature).toBe(0.5);
+    expect(body.anthropic_version).toBeUndefined();
+  });
+
+  it("amazon nova envelope uses messages + inferenceConfig + schemaVersion", () => {
+    const body = JSON.parse(
+      buildRequestBody({ ...input, modelId: "us.amazon.nova-micro-v1:0" }),
+    );
+    expect(body.schemaVersion).toBe("messages-v1");
+    expect(body.inferenceConfig.maxTokens).toBe(100);
+    expect(body.inferenceConfig.temperature).toBe(0.5);
+    expect(body.messages[0].content[0].text).toBe("hi");
+    expect(body.system?.[0]?.text).toBe("be brief");
+  });
+
+  it("deepseek envelope mirrors anthropic shape", () => {
+    const body = JSON.parse(
+      buildRequestBody({ ...input, modelId: "us.deepseek.r1-v1:0" }),
+    );
+    expect(body.max_tokens).toBe(100);
+    expect(body.messages[0].content).toBe("hi");
+  });
+});
