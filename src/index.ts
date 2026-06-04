@@ -54,3 +54,11 @@ export {
   verifyApprovalToken,
   getApprovalSecret,
 } from './services/approval-token.js';
+
+// Bedrock adapter — provider-switch envelope + response normalization
+export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, _resetClient as _resetBedrockClientForTests } from './bedrock/adapter.js';
+export {
+  BedrockAdapterError,
+  type BedrockProvider, type BedrockMessage,
+  type InvokeBedrockInput, type InvokeBedrockResult,
+} from './bedrock/types.js';
