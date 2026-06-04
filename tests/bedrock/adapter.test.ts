@@ -226,3 +226,54 @@ describe("invokeBedrock", () => {
     });
   });
 });
+
+const mockPutMetricData = vi.fn();
+vi.mock("@aws-sdk/client-cloudwatch", () => ({
+  CloudWatchClient: vi.fn(() => ({ send: mockPutMetricData })),
+  PutMetricDataCommand: vi.fn((input) => ({ input })),
+  StandardUnit: { Milliseconds: "Milliseconds", Count: "Count" },
+}));
+
+describe("invokeBedrock metrics", () => {
+  beforeEach(() => {
+    mockPutMetricData.mockReset();
+    mockSend.mockReset();
+    _resetClient();
+  });
+
+  it("emits latency + output-token metrics with callSite dimension", async () => {
+    mockSend.mockResolvedValueOnce({
+      body: new TextEncoder().encode(
+        JSON.stringify({
+          content: [{ type: "text", text: "ok" }],
+          stop_reason: "end_turn",
+          usage: { input_tokens: 5, output_tokens: 3 },
+        }),
+      ),
+    });
+    mockPutMetricData.mockResolvedValueOnce({});
+
+    await invokeBedrock({
+      modelId: "us.anthropic.claude-sonnet-4-6",
+      messages: [{ role: "user", content: "hi" }],
+      maxTokens: 100,
+      callSite: "test-site",
+    });
+
+    // Wait a tick so the fire-and-forget metric emission resolves.
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(mockPutMetricData).toHaveBeenCalledTimes(1);
+    const cmd = mockPutMetricData.mock.calls[0][0].input;
+    expect(cmd.Namespace).toBe("LocalBuilder/Bedrock");
+    const metricNames = cmd.MetricData.map(
+      (m: { MetricName: string }) => m.MetricName,
+    );
+    expect(metricNames).toContain("InvocationLatency");
+    expect(metricNames).toContain("OutputTokens");
+    expect(cmd.MetricData[0].Dimensions).toContainEqual({
+      Name: "CallSite",
+      Value: "test-site",
+    });
+  });
+});

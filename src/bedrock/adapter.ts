@@ -8,6 +8,7 @@ import {
   BedrockRuntimeClient,
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
+import { emitBedrockMetrics } from "./metrics.js";
 
 export function detectProvider(modelId: string): BedrockProvider {
   // Strip leading inference-profile region prefix if present (us., global., eu., apac.)
@@ -154,6 +155,9 @@ export function _resetClient(): void {
 export async function invokeBedrock(
   input: InvokeBedrockInput,
 ): Promise<InvokeBedrockResult> {
+  const start = Date.now();
+  let result: InvokeBedrockResult;
+
   try {
     const response = await getClient().send(
       new InvokeModelCommand({
@@ -164,7 +168,7 @@ export async function invokeBedrock(
       }),
     );
     const decoded = new TextDecoder().decode(response.body as Uint8Array);
-    return parseResponseBody(input.modelId, decoded);
+    result = parseResponseBody(input.modelId, decoded);
   } catch (err) {
     if (err instanceof BedrockAdapterError) throw err;
     throw new BedrockAdapterError(
@@ -173,4 +177,28 @@ export async function invokeBedrock(
       err,
     );
   }
+
+  // Optional schema validation. Failures are observed via the SchemaPass metric;
+  // they do NOT throw — the caller decides what to do with the (possibly invalid) text.
+  let schemaPass: boolean | undefined;
+  if (input.responseSchema) {
+    try {
+      const parsed = JSON.parse(result.text);
+      schemaPass = input.responseSchema.safeParse(parsed).success;
+    } catch {
+      schemaPass = false;
+    }
+  }
+
+  // Fire-and-forget metric emission. callSite defaults to 'unknown' for backward compat.
+  void emitBedrockMetrics({
+    callSite: input.callSite ?? "unknown",
+    modelId: input.modelId,
+    latencyMs: Date.now() - start,
+    inputTokens: result.usage.inputTokens,
+    outputTokens: result.usage.outputTokens,
+    schemaPass,
+  });
+
+  return result;
 }
