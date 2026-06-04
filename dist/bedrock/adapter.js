@@ -1,5 +1,6 @@
 import { BedrockAdapterError } from "./types.js";
 import { BedrockRuntimeClient, InvokeModelCommand, } from "@aws-sdk/client-bedrock-runtime";
+import { emitBedrockMetrics } from "./metrics.js";
 export function detectProvider(modelId) {
     // Strip leading inference-profile region prefix if present (us., global., eu., apac.)
     const stripped = modelId.replace(/^(us|global|eu|apac)\./, "");
@@ -131,6 +132,8 @@ export function _resetClient() {
     _client = undefined;
 }
 export async function invokeBedrock(input) {
+    const start = Date.now();
+    let result;
     try {
         const response = await getClient().send(new InvokeModelCommand({
             modelId: input.modelId,
@@ -139,11 +142,33 @@ export async function invokeBedrock(input) {
             body: buildRequestBody(input),
         }));
         const decoded = new TextDecoder().decode(response.body);
-        return parseResponseBody(input.modelId, decoded);
+        result = parseResponseBody(input.modelId, decoded);
     }
     catch (err) {
         if (err instanceof BedrockAdapterError)
             throw err;
         throw new BedrockAdapterError(`Bedrock invocation failed for ${input.modelId}: ${err instanceof Error ? err.message : String(err)}`, input.modelId, err);
     }
+    // Optional schema validation. Failures are observed via the SchemaPass metric;
+    // they do NOT throw — the caller decides what to do with the (possibly invalid) text.
+    let schemaPass;
+    if (input.responseSchema) {
+        try {
+            const parsed = JSON.parse(result.text);
+            schemaPass = input.responseSchema.safeParse(parsed).success;
+        }
+        catch {
+            schemaPass = false;
+        }
+    }
+    // Fire-and-forget metric emission. callSite defaults to 'unknown' for backward compat.
+    void emitBedrockMetrics({
+        callSite: input.callSite ?? "unknown",
+        modelId: input.modelId,
+        latencyMs: Date.now() - start,
+        inputTokens: result.usage.inputTokens,
+        outputTokens: result.usage.outputTokens,
+        schemaPass,
+    });
+    return result;
 }
