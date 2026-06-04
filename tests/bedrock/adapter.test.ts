@@ -175,3 +175,54 @@ describe("parseResponseBody", () => {
     expect(result.text).toBe("intermediate  conclusion");
   });
 });
+
+import { invokeBedrock, _resetClient } from "../../src/bedrock/adapter.js";
+import { vi, beforeEach } from "vitest";
+
+const mockSend = vi.fn();
+vi.mock("@aws-sdk/client-bedrock-runtime", () => ({
+  BedrockRuntimeClient: vi.fn(() => ({ send: mockSend })),
+  InvokeModelCommand: vi.fn((input) => ({ input })),
+}));
+
+describe("invokeBedrock", () => {
+  beforeEach(() => {
+    mockSend.mockReset();
+    _resetClient();
+  });
+
+  it("invokes Bedrock with Anthropic envelope and returns normalized result", async () => {
+    const responsePayload = JSON.stringify({
+      content: [{ type: "text", text: "hello" }],
+      stop_reason: "end_turn",
+      usage: { input_tokens: 3, output_tokens: 1 },
+    });
+    mockSend.mockResolvedValueOnce({
+      body: new TextEncoder().encode(responsePayload),
+    });
+
+    const result = await invokeBedrock({
+      modelId: "us.anthropic.claude-sonnet-4-6",
+      messages: [{ role: "user", content: "hi" }],
+      maxTokens: 100,
+    });
+
+    expect(result.text).toBe("hello");
+    expect(result.usage.outputTokens).toBe(1);
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it("wraps SDK errors in BedrockAdapterError with modelId", async () => {
+    mockSend.mockRejectedValueOnce(new Error("AccessDeniedException"));
+    await expect(
+      invokeBedrock({
+        modelId: "us.amazon.nova-micro-v1:0",
+        messages: [{ role: "user", content: "hi" }],
+        maxTokens: 100,
+      }),
+    ).rejects.toMatchObject({
+      name: "BedrockAdapterError",
+      modelId: "us.amazon.nova-micro-v1:0",
+    });
+  });
+});

@@ -1,5 +1,13 @@
-import type { BedrockProvider, InvokeBedrockInput } from "./types.js";
+import type {
+  BedrockProvider,
+  InvokeBedrockInput,
+  InvokeBedrockResult,
+} from "./types.js";
 import { BedrockAdapterError } from "./types.js";
+import {
+  BedrockRuntimeClient,
+  InvokeModelCommand,
+} from "@aws-sdk/client-bedrock-runtime";
 
 export function detectProvider(modelId: string): BedrockProvider {
   // Strip leading inference-profile region prefix if present (us., global., eu., apac.)
@@ -120,5 +128,49 @@ export function parseResponseBody(
         },
       };
     }
+  }
+}
+
+let _client: BedrockRuntimeClient | undefined;
+
+function getClient(): BedrockRuntimeClient {
+  if (!_client) {
+    _client = new BedrockRuntimeClient({
+      region: process.env.AWS_REGION || "us-east-1",
+    });
+  }
+  return _client;
+}
+
+/**
+ * Test-only: reset the cached client so vi.mock can replace the SDK constructor.
+ * Production code must NOT call this — it forces a fresh SDK client on the next
+ * invocation, which is expensive and pointless outside of tests.
+ */
+export function _resetClient(): void {
+  _client = undefined;
+}
+
+export async function invokeBedrock(
+  input: InvokeBedrockInput,
+): Promise<InvokeBedrockResult> {
+  try {
+    const response = await getClient().send(
+      new InvokeModelCommand({
+        modelId: input.modelId,
+        contentType: "application/json",
+        accept: "application/json",
+        body: buildRequestBody(input),
+      }),
+    );
+    const decoded = new TextDecoder().decode(response.body as Uint8Array);
+    return parseResponseBody(input.modelId, decoded);
+  } catch (err) {
+    if (err instanceof BedrockAdapterError) throw err;
+    throw new BedrockAdapterError(
+      `Bedrock invocation failed for ${input.modelId}: ${err instanceof Error ? err.message : String(err)}`,
+      input.modelId,
+      err,
+    );
   }
 }
