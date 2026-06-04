@@ -14,3 +14,5 @@ export { getSecret, invalidateSecret } from './utils/secrets.js';
 export * from './types/campaign.js';
 export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from './dynamo/campaigns.js';
 export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from './services/approval-token.js';
+export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, _resetClient as _resetBedrockClientForTests } from './bedrock/adapter.js';
+export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type InvokeBedrockInput, type InvokeBedrockResult, } from './bedrock/types.js';
