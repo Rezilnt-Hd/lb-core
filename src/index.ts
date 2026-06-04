@@ -62,3 +62,4 @@ export {
   type BedrockProvider, type BedrockMessage,
   type InvokeBedrockInput, type InvokeBedrockResult,
 } from './bedrock/types.js';
+export { emitBedrockMetrics, _resetCwClient } from './bedrock/metrics.js';
