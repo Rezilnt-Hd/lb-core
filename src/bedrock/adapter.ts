@@ -60,3 +60,65 @@ export function buildRequestBody(input: InvokeBedrockInput): string {
       });
   }
 }
+
+export function parseResponseBody(
+  modelId: string,
+  rawBody: string,
+): InvokeBedrockResult {
+  const provider = detectProvider(modelId);
+  const parsed = JSON.parse(rawBody);
+
+  switch (provider) {
+    case "anthropic": {
+      const text: string =
+        parsed.content?.find((c: { type: string }) => c.type === "text")
+          ?.text ?? "";
+      return {
+        text,
+        stopReason: parsed.stop_reason ?? "unknown",
+        usage: {
+          inputTokens: parsed.usage?.input_tokens ?? 0,
+          outputTokens: parsed.usage?.output_tokens ?? 0,
+        },
+      };
+    }
+    case "deepseek": {
+      // R1 uses Anthropic-compatible envelope but emits <think>...</think> blocks
+      // before the answer. Strip all <think>...</think> spans.
+      const rawText: string =
+        parsed.content?.find((c: { type: string }) => c.type === "text")
+          ?.text ?? "";
+      const text = rawText.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+      return {
+        text,
+        stopReason: parsed.stop_reason ?? "unknown",
+        usage: {
+          inputTokens: parsed.usage?.input_tokens ?? 0,
+          outputTokens: parsed.usage?.output_tokens ?? 0,
+        },
+      };
+    }
+    case "meta":
+      return {
+        text: parsed.generation ?? "",
+        stopReason: parsed.stop_reason ?? "unknown",
+        usage: {
+          inputTokens: parsed.prompt_token_count ?? 0,
+          outputTokens: parsed.generation_token_count ?? 0,
+        },
+      };
+    case "amazon": {
+      const text: string =
+        parsed.output?.message?.content?.find((c: { text?: string }) => c.text)
+          ?.text ?? "";
+      return {
+        text,
+        stopReason: parsed.stopReason ?? "unknown",
+        usage: {
+          inputTokens: parsed.usage?.inputTokens ?? 0,
+          outputTokens: parsed.usage?.outputTokens ?? 0,
+        },
+      };
+    }
+  }
+}

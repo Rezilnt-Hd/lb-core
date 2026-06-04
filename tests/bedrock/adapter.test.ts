@@ -103,3 +103,75 @@ describe("buildRequestBody", () => {
     expect(body.messages[0].content).toBe("hi");
   });
 });
+
+import { parseResponseBody } from "../../src/bedrock/adapter.js";
+
+describe("parseResponseBody", () => {
+  it("parses Anthropic response shape", () => {
+    const raw = JSON.stringify({
+      content: [{ type: "text", text: "hello world" }],
+      stop_reason: "end_turn",
+      usage: { input_tokens: 12, output_tokens: 7 },
+    });
+    const result = parseResponseBody("us.anthropic.claude-sonnet-4-6", raw);
+    expect(result.text).toBe("hello world");
+    expect(result.stopReason).toBe("end_turn");
+    expect(result.usage).toEqual({ inputTokens: 12, outputTokens: 7 });
+  });
+
+  it("parses Meta Llama response shape", () => {
+    const raw = JSON.stringify({
+      generation: "hello from llama",
+      stop_reason: "stop",
+      prompt_token_count: 8,
+      generation_token_count: 5,
+    });
+    const result = parseResponseBody("us.meta.llama3-3-70b-instruct-v1:0", raw);
+    expect(result.text).toBe("hello from llama");
+    expect(result.stopReason).toBe("stop");
+    expect(result.usage).toEqual({ inputTokens: 8, outputTokens: 5 });
+  });
+
+  it("parses Amazon Nova response shape", () => {
+    const raw = JSON.stringify({
+      output: { message: { content: [{ text: "hello from nova" }] } },
+      stopReason: "end_turn",
+      usage: { inputTokens: 10, outputTokens: 4 },
+    });
+    const result = parseResponseBody("us.amazon.nova-micro-v1:0", raw);
+    expect(result.text).toBe("hello from nova");
+    expect(result.stopReason).toBe("end_turn");
+    expect(result.usage).toEqual({ inputTokens: 10, outputTokens: 4 });
+  });
+
+  it("strips DeepSeek R1 <think> blocks from response text", () => {
+    const raw = JSON.stringify({
+      content: [
+        {
+          type: "text",
+          text: "<think>reasoning here</think>\n\nfinal answer",
+        },
+      ],
+      stop_reason: "end_turn",
+      usage: { input_tokens: 5, output_tokens: 15 },
+    });
+    const result = parseResponseBody("us.deepseek.r1-v1:0", raw);
+    expect(result.text).toBe("final answer");
+    expect(result.stopReason).toBe("end_turn");
+  });
+
+  it("strips multiple/nested <think> blocks from DeepSeek", () => {
+    const raw = JSON.stringify({
+      content: [
+        {
+          type: "text",
+          text: "<think>step 1</think> intermediate <think>step 2</think> conclusion",
+        },
+      ],
+      stop_reason: "end_turn",
+      usage: { input_tokens: 5, output_tokens: 15 },
+    });
+    const result = parseResponseBody("us.deepseek.r1-v1:0", raw);
+    expect(result.text).toBe("intermediate  conclusion");
+  });
+});
