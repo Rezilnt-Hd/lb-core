@@ -16,3 +16,4 @@ export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, upd
 export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from './services/approval-token.js';
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, _resetClient as _resetBedrockClientForTests } from './bedrock/adapter.js';
 export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type InvokeBedrockInput, type InvokeBedrockResult, } from './bedrock/types.js';
+export { emitBedrockMetrics, _resetCwClient } from './bedrock/metrics.js';

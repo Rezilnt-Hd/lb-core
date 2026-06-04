@@ -9,6 +9,15 @@ export interface InvokeBedrockInput {
     system?: string;
     maxTokens: number;
     temperature?: number;
+    /** Logical call-site identifier for metric dimensions (e.g. "change-applier", "content-artifact"). */
+    callSite?: string;
+    /** Optional zod schema. When provided, the adapter parses + validates the JSON response and emits a SchemaPass metric. */
+    responseSchema?: {
+        parse: (raw: unknown) => unknown;
+        safeParse: (raw: unknown) => {
+            success: boolean;
+        };
+    };
 }
 export interface InvokeBedrockResult {
     text: string;
