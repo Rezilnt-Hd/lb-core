@@ -2,8 +2,8 @@ import { it, expect, vi, beforeEach } from 'vitest';
 
 const send = vi.hoisted(() => vi.fn());
 vi.mock('@aws-sdk/client-secrets-manager', () => ({
-  SecretsManagerClient: vi.fn(() => ({ send })),
-  GetSecretValueCommand: vi.fn((input) => input),
+  SecretsManagerClient: vi.fn(function () { this.send = send; }),
+  GetSecretValueCommand: vi.fn(function (input) { Object.assign(this, input); }),
 }));
 
 import { getSecret, invalidateSecret } from '../../src/utils/secrets.js';

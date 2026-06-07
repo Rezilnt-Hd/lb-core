@@ -181,8 +181,8 @@ import { vi, beforeEach } from "vitest";
 
 const mockSend = vi.fn();
 vi.mock("@aws-sdk/client-bedrock-runtime", () => ({
-  BedrockRuntimeClient: vi.fn(() => ({ send: mockSend })),
-  InvokeModelCommand: vi.fn((input) => ({ input })),
+  BedrockRuntimeClient: vi.fn(function () { this.send = mockSend; }),
+  InvokeModelCommand: vi.fn(function (input) { this.input = input; }),
 }));
 
 describe("invokeBedrock", () => {
@@ -229,8 +229,8 @@ describe("invokeBedrock", () => {
 
 const mockPutMetricData = vi.fn();
 vi.mock("@aws-sdk/client-cloudwatch", () => ({
-  CloudWatchClient: vi.fn(() => ({ send: mockPutMetricData })),
-  PutMetricDataCommand: vi.fn((input) => ({ input })),
+  CloudWatchClient: vi.fn(function () { this.send = mockPutMetricData; }),
+  PutMetricDataCommand: vi.fn(function (input) { this.input = input; }),
   StandardUnit: { Milliseconds: "Milliseconds", Count: "Count" },
 }));
 
