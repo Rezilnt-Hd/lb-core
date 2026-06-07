@@ -3,7 +3,7 @@ import {
   getNicheProfile,
   isContentSupported,
   listContentSupportedNiches,
-} from "./registry.js";
+} from "../../src/niche/registry.js";
 
 describe("niche registry", () => {
   it("resolves a content-supported niche with all facets", () => {

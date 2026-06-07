@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { listContentSupportedNiches, getNicheProfile } from "./registry.js";
+import { listContentSupportedNiches, getNicheProfile } from "../../src/niche/registry.js";
 
 describe("registry invariant: content-supported ⇒ fully renderable", () => {
   it("every content-supported niche resolves to a profile with a category", () => {

@@ -3,7 +3,7 @@ import {
   getNicheProfile,
   isContentSupported,
   listContentSupportedNiches,
-} from "../index.js";
+} from "../../src/index.js";
 
 describe("barrel exports niche registry", () => {
   it("re-exports getNicheProfile and isContentSupported", () => {
