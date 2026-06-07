@@ -14,6 +14,8 @@ export { getSecret, invalidateSecret } from "./utils/secrets.js";
 export * from "./types/campaign.js";
 export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from "./dynamo/campaigns.js";
 export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./services/approval-token.js";
+export { getNicheProfile, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
+export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type ContentBlock, type InvokeBedrockInput, type InvokeBedrockResult, } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";

@@ -87,6 +87,14 @@ export {
   getApprovalSecret,
 } from "./services/approval-token.js";
 
+// Niche registry — single source of truth for all niche metadata
+export {
+  getNicheProfile,
+  isContentSupported,
+  listContentSupportedNiches,
+} from "./niche/registry.js";
+export type { NicheProfile, NicheCategory } from "./niche/registry.js";
+
 // Bedrock adapter — provider-switch envelope + response normalization
 export {
   invokeBedrock,
