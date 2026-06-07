@@ -44,6 +44,11 @@ const CONTEXT: Record<string, string> = {
 
 // ── Niche → Category ──────────────────────────────────────────────────────────
 // Ported verbatim from lb-site-builder/src/services/niche-templates.ts → NICHE_CATEGORY_MAP
+//
+// Intentional asymmetry: a niche may appear here (template-supported) WITHOUT a
+// CONTEXT entry above. That means "template-only, not content-supported" and is
+// CORRECT, not an omission — do NOT "fix" it by inventing bogus context prose.
+// Adding context is what makes a niche content-supported; absence fails loud.
 const CATEGORY: Record<string, NicheCategory> = {
   // Emergency Services
   plumber: "emergency",
@@ -176,11 +181,14 @@ export function getNicheProfile(
   const key = norm(niche);
   const category = CATEGORY[key];
   if (!category) return null;
+  // Normalize an empty/whitespace-only context to undefined so no caller can
+  // mistake "" for real content (truthiness checks and isContentSupported agree).
+  const ctx = CONTEXT[key];
   return {
     niche: key,
     category,
     schemaType: SCHEMA_TYPE[key] ?? "LocalBusiness",
-    context: CONTEXT[key],
+    context: ctx && ctx.trim().length > 0 ? ctx : undefined,
   };
 }
 
@@ -199,5 +207,5 @@ export function isContentSupported(niche: string | undefined | null): boolean {
  * arbitrary input (use getNicheProfile for that).
  */
 export function listContentSupportedNiches(): string[] {
-  return Object.keys(CONTEXT);
+  return Object.keys(CONTEXT).map(norm);
 }

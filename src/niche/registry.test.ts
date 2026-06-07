@@ -36,10 +36,42 @@ describe("niche registry", () => {
     expect(isContentSupported("plumbing")).toBe(true);
   });
 
+  it("never leaks an empty/whitespace-only context: every CONTEXT key has real prose and getNicheProfile maps blank ⇒ undefined", () => {
+    // Behavioral contract: a content-supported niche always yields non-empty,
+    // trimmed prose; and a caller checking profile.context truthiness must
+    // agree with isContentSupported (no "" leak that looks unsupported via
+    // truthiness but reports supported, or vice-versa).
+    for (const niche of listContentSupportedNiches()) {
+      const p = getNicheProfile(niche);
+      expect(p, `niche ${niche} missing profile`).not.toBeNull();
+      // Real prose: present and non-empty after trim.
+      expect(
+        p!.context,
+        `niche ${niche} has empty/whitespace context`,
+      ).toBeTruthy();
+      expect(p!.context!.trim().length).toBeGreaterThan(0);
+      // truthiness of context agrees with isContentSupported.
+      expect(!!p!.context).toBe(isContentSupported(niche));
+    }
+  });
+
   it("listContentSupportedNiches returns exactly the niches with context", () => {
     const list = listContentSupportedNiches();
     expect(list).toContain("landscaping");
     expect(list).toContain("plumbing");
     expect(list).not.toContain("hvac");
+  });
+
+  it("listContentSupportedNiches returns normalized keys that round-trip through getNicheProfile", () => {
+    for (const niche of listContentSupportedNiches()) {
+      // Already-normalized: trimming + lowercasing is a no-op.
+      expect(niche).toBe(niche.trim().toLowerCase());
+      // Round-trip resolves and is content-supported.
+      expect(
+        getNicheProfile(niche),
+        `niche ${niche} did not round-trip`,
+      ).not.toBeNull();
+      expect(isContentSupported(niche)).toBe(true);
+    }
   });
 });
