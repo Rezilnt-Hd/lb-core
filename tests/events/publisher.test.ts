@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('@aws-sdk/client-eventbridge', () => {
   const send = vi.fn().mockResolvedValue({ FailedEntryCount: 0 });
   return {
-    EventBridgeClient: vi.fn().mockImplementation(() => ({ send })),
-    PutEventsCommand: vi.fn().mockImplementation((input) => input),
+    EventBridgeClient: vi.fn(function () { this.send = send; }),
+    PutEventsCommand: vi.fn(function (input) { Object.assign(this, input); }),
   };
 });
 
