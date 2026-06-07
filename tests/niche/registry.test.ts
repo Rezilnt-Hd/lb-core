@@ -62,6 +62,20 @@ describe('niche registry', () => {
     expect(list).not.toContain('hvac');
   });
 
+  it('aliases plumber to the plumbing profile (same trade, no split-brain)', () => {
+    const plumber = getNicheProfile('plumber');
+    const plumbing = getNicheProfile('plumbing');
+    expect(plumber).not.toBeNull();
+    expect(plumber!.category).toBe(plumbing!.category);       // emergency
+    expect(plumber!.schemaType).toBe(plumbing!.schemaType);   // Plumber
+    expect(plumber!.context).toBe(plumbing!.context);         // inherits pricing context
+    expect(isContentSupported('plumber')).toBe(true);
+  });
+
+  it('alias is case/whitespace-insensitive', () => {
+    expect(getNicheProfile('  Plumber ')!.schemaType).toBe('Plumber');
+  });
+
   it('listContentSupportedNiches returns normalized keys that round-trip through getNicheProfile', () => {
     for (const niche of listContentSupportedNiches()) {
       // Already-normalized: trimming + lowercasing is a no-op.

@@ -31,6 +31,14 @@ function norm(niche: string): string {
   return niche.trim().toLowerCase();
 }
 
+// Niche aliases — distinct spellings of the SAME trade collapse to one canonical
+// profile, so a synonym can never become an unsupported split-brain (the 'plumber'
+// vs 'plumbing' gap, found in the 2026-06-06 prod audit). Add synonyms here, never
+// a parallel CONTEXT/CATEGORY entry.
+const ALIASES: Record<string, string> = {
+  plumber: 'plumbing',
+};
+
 // ── Content context (pricing + services grounding prose) ─────────────────────
 // Presence of a key here means the niche is content-supported.
 // DO NOT add a key here without also adding it to CATEGORY below.
@@ -51,7 +59,6 @@ const CONTEXT: Record<string, string> = {
 // Adding context is what makes a niche content-supported; absence fails loud.
 const CATEGORY: Record<string, NicheCategory> = {
   // Emergency Services
-  plumber: 'emergency',
   plumbing: 'emergency',
   'water damage': 'emergency',
   'water damage restoration': 'emergency',
@@ -118,7 +125,6 @@ const CATEGORY: Record<string, NicheCategory> = {
 // Ported verbatim from lb-site-builder/astro-template/src/utils/niche-templates.ts → NICHE_SCHEMA_TYPE_MAP
 const SCHEMA_TYPE: Record<string, string> = {
   // Plumbing → Plumber
-  plumber: 'Plumber',
   plumbing: 'Plumber',
   'emergency plumber': 'Plumber',
   'burst pipe': 'Plumber',
@@ -178,7 +184,7 @@ export function getNicheProfile(
   niche: string | undefined | null,
 ): NicheProfile | null {
   if (!niche) return null;
-  const key = norm(niche);
+  const key = ALIASES[norm(niche)] ?? norm(niche);
   const category = CATEGORY[key];
   if (!category) return null;
   // Normalize an empty/whitespace-only context to undefined so no caller can
