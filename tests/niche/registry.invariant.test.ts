@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { listContentSupportedNiches, getNicheProfile } from "../../src/niche/registry.js";
+import { describe, it, expect } from 'vitest';
+import { listContentSupportedNiches, getNicheProfile } from '../../src/niche/registry.js';
 
-describe("registry invariant: content-supported ⇒ fully renderable", () => {
-  it("every content-supported niche resolves to a profile with a category", () => {
+describe('registry invariant: content-supported ⇒ fully renderable', () => {
+  it('every content-supported niche resolves to a profile with a category', () => {
     for (const niche of listContentSupportedNiches()) {
       const p = getNicheProfile(niche);
       // The meaningful guard: a CONTEXT key with no CATEGORY entry returns

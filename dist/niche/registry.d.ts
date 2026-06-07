@@ -13,7 +13,7 @@
  * to another niche's context. That silent substitution is the exact bug this
  * registry was built to prevent (landscaping lead → plumbing website, 2026-06-07).
  */
-export type NicheCategory = "emergency" | "home-improvement" | "outdoor" | "general-trade";
+export type NicheCategory = 'emergency' | 'home-improvement' | 'outdoor' | 'general-trade';
 export interface NicheProfile {
     niche: string;
     category: NicheCategory;
