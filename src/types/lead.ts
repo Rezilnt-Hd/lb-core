@@ -85,6 +85,8 @@ export interface Lead {
   brandColors?: { primary: string; secondary: string; accent: string };
   logoUrl?: string;
   existingSite?: ExistingSite;
+  /** Cached per-prospect personalized opening line for first-touch outreach (Phase 3). */
+  openingLine?: string;
   leadScore?: number;
   scoreBand?: ScoreBand;
   createdAt: string;

@@ -16,4 +16,9 @@ describe('ExistingSite type', () => {
     const lead = { slug: 's', existingSite } as unknown as Lead;
     expect(lead.existingSite?.services).toEqual(['lawn care', 'irrigation']);
   });
+
+  it('accepts a cached openingLine for Phase 3 outreach', () => {
+    const fields: Pick<Lead, 'openingLine'> = { openingLine: 'Saw your new patio service.' };
+    expect(fields.openingLine).toBe('Saw your new patio service.');
+  });
 });
