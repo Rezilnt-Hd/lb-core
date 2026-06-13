@@ -18,6 +18,11 @@ export interface ExistingSite {
     about?: string;
     /** Their current hero/headline line (Firecrawl page title). */
     headline?: string;
+    /** Concise classification of what this business ACTUALLY is, derived from the scraped
+     *  site — distinguishes e.g. a "landscape design & architecture firm" from a
+     *  "residential lawn maintenance service" even when both are discovered under the
+     *  coarse "landscaping" niche. Drives accurate site copy + template variant selection. */
+    businessType?: string;
     /** Firecrawl meta description. */
     metaDescription?: string;
     /** Firecrawl markdown, length-capped (≤ 8 KB). */

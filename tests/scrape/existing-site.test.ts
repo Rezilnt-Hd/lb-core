@@ -63,4 +63,9 @@ describe('captureExistingSite', () => {
     expect(es!.services).toEqual(['drain cleaning']);
     expect(es!.about).toBe('Family plumber');
   });
+  it('classifies businessType from the scraped site (specialization signal)', async () => {
+    mockInvoke.mockResolvedValueOnce({ text: '```json\n{"services":["site planning"],"about":"Award-winning studio","businessType":"landscape design & architecture firm"}\n```' });
+    const es = await captureExistingSite('https://x.com', { businessName: 'Acme', niche: 'landscaping' });
+    expect(es!.businessType).toBe('landscape design & architecture firm');
+  });
 });
