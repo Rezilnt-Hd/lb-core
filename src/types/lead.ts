@@ -23,6 +23,8 @@ export enum LeadStatus {
   OPT_OUT = 'OPT_OUT',
 }
 
+export type ScoreBand = 'HOT' | 'WARM' | 'COLD';
+
 export interface StatusTransition {
   from: LeadStatus;
   to: LeadStatus;
@@ -80,6 +82,8 @@ export interface Lead {
   customDomain?: string;
   brandColors?: { primary: string; secondary: string; accent: string };
   logoUrl?: string;
+  leadScore?: number;
+  scoreBand?: ScoreBand;
   createdAt: string;
   updatedAt: string;
   statusHistory: StatusTransition[];

@@ -1,9 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import {
   RETRY_WORTHY_REASONS,
   TERMINAL_REASONS,
   OutreachSkipReason,
 } from '../../src/types/lead.js';
+import type { Lead, ScoreBand } from '../../src/index.js';
 
 describe('OutreachSkipReason constants', () => {
   it('retry-worthy and terminal sets are disjoint', () => {
@@ -22,5 +23,17 @@ describe('OutreachSkipReason constants', () => {
       expect(union.has(r)).toBe(true);
     }
     expect(union.size).toBe(expected.length);
+  });
+});
+
+describe('Lead scoring fields', () => {
+  it('carries an optional leadScore + scoreBand (tsc-guarded)', () => {
+    // Pick<> forces the object to satisfy the REAL field types, so `tsc` (CI build)
+    // fails if either field is removed/renamed/mistyped — the runtime assertions
+    // alone can't guard a type-only change.
+    const lead: Pick<Lead, 'leadScore' | 'scoreBand'> = { leadScore: 87, scoreBand: 'HOT' };
+    expectTypeOf<Lead['scoreBand']>().toEqualTypeOf<ScoreBand | undefined>();
+    expect(lead.scoreBand).toBe('HOT');
+    expect(lead.leadScore).toBe(87);
   });
 });
