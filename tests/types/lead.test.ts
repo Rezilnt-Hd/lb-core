@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import {
   RETRY_WORTHY_REASONS,
   TERMINAL_REASONS,
@@ -26,9 +26,14 @@ describe('OutreachSkipReason constants', () => {
   });
 });
 
-it('Lead carries an optional leadScore + scoreBand', () => {
-  const band: ScoreBand = 'HOT';
-  const lead = { slug: 's', leadScore: 87, scoreBand: band } as unknown as Lead;
-  expect(lead.scoreBand).toBe('HOT');
-  expect(lead.leadScore).toBe(87);
+describe('Lead scoring fields', () => {
+  it('carries an optional leadScore + scoreBand (tsc-guarded)', () => {
+    // Pick<> forces the object to satisfy the REAL field types, so `tsc` (CI build)
+    // fails if either field is removed/renamed/mistyped — the runtime assertions
+    // alone can't guard a type-only change.
+    const lead: Pick<Lead, 'leadScore' | 'scoreBand'> = { leadScore: 87, scoreBand: 'HOT' };
+    expectTypeOf<Lead['scoreBand']>().toEqualTypeOf<ScoreBand | undefined>();
+    expect(lead.scoreBand).toBe('HOT');
+    expect(lead.leadScore).toBe(87);
+  });
 });
