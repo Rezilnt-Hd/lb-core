@@ -24,3 +24,5 @@ export { getNicheProfile, isContentSupported, listContentSupportedNiches, } from
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
+// Existing-site capture — shared Firecrawl scrape + Haiku facet extraction
+export { scrapeExistingSite, captureExistingSite } from "./scrape/existing-site.js";

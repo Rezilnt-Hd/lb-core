@@ -21,3 +21,5 @@ export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type ContentBlock, type InvokeBedrockInput, type InvokeBedrockResult, } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
+export { scrapeExistingSite, captureExistingSite } from "./scrape/existing-site.js";
+export type { ScrapedContent } from "./scrape/existing-site.js";
