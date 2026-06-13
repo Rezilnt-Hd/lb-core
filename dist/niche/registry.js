@@ -312,11 +312,14 @@ const ALIASES_BY_NICHE = {
     repiping: ['whole house repipe', 'pex repipe', 'copper repipe', 'plumbing remodel', 'pipe replacement', 'repiping', 'repipe', 'new construction plumbing'],
     'well and water treatment': ['whole house water filter', 'well pump installation', 'well pump repair', 'water softener', 'water filtration', 'water treatment', 'well and water treatment', 'water purification', 'well water'],
     // Roofing
-    'residential roofing': ['residential roof replacement', 'residential roofing contractor', 'asphalt shingle roofing', 'shingle roof replacement', 'residential roofing', 're-roofing', 'reroof', 'roof repair', 'roofer'],
-    'commercial roofing': ['commercial flat roof', 'single-ply membrane', 'commercial roofing contractor', 'modified bitumen', 'flat roof replacement', 'low-slope roofing', 'tpo roofing', 'epdm roofing', 'pvc roofing', 'commercial roofing'],
+    // NOTE: bare 'roofer' REMOVED — it is generic across ALL roofing siblings, so
+    // "commercial roofer"/"metal roofer" would mis-route to residential. Qualified
+    // *-roofer fragments live on their specific sub-niche; otherwise Haiku decides.
+    'residential roofing': ['residential roof replacement', 'residential roofing contractor', 'asphalt shingle roofing', 'shingle roof replacement', 'residential roofing', 're-roofing', 'reroof', 'roof repair'],
+    'commercial roofing': ['commercial roofing contractor', 'commercial flat roof', 'single-ply membrane', 'modified bitumen', 'flat roof replacement', 'low-slope roofing', 'commercial roofing', 'commercial roofer', 'tpo roofing', 'epdm roofing', 'pvc roofing'],
     'storm damage roofing': ['storm damage roof repair', 'insurance restoration roofing', 'emergency roof tarp', 'roof insurance claim', 'hail damage roof', 'wind damage roof', 'storm restoration', 'roof restoration'],
     'roof inspection': ['roof inspection and certification', 'preventive roof maintenance', 'drone roof inspection', 'roof certification', 'roof maintenance plan', 'roof inspection', 'roof condition report'],
-    'metal roofing': ['standing seam metal roof', 'metal roofing contractor', 'standing seam roofing', 'metal roof installation', 'steel roofing', 'aluminum roofing', 'copper roofing', 'metal roofing'],
+    'metal roofing': ['standing seam metal roof', 'metal roofing contractor', 'standing seam roofing', 'metal roof installation', 'steel roofing', 'aluminum roofing', 'copper roofing', 'metal roofing', 'metal roofer'],
     'gutter installation': ['seamless gutter installation', 'gutter installation and repair', 'gutter replacement', 'gutter guards', 'seamless gutters', 'gutter installation', 'downspout installation'],
     // HVAC
     'ac installation': ['air conditioning installation', 'central air installation', 'air conditioner replacement', 'ac installation', 'ac replacement', 'new air conditioner', 'ac install', 'cooling installation'],

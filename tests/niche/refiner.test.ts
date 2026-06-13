@@ -29,6 +29,23 @@ describe('resolveRefinedNiche — deterministic alias pass', () => {
     expect(r).toBe('gutter installation');
   });
 
+  it('SORT-SENSITIVE: longer alias of a later-listed sibling beats a shorter alias of an earlier sibling', async () => {
+    // 'heating and furnace' is registered BEFORE 'hvac maintenance'. The input
+    // contains BOTH 'furnace' (len 7, on heating-and-furnace) AND 'furnace tune-up'
+    // (len 15, on hvac maintenance). ONLY the length DESC sort yields the correct
+    // 'hvac maintenance'; remove the sort and the earlier-listed 'furnace' wins
+    // (→ 'heating and furnace'), failing this test. This is the guard that the
+    // sort is actually load-bearing (not just incidentally green).
+    const r = await resolveRefinedNiche('hvac', 'furnace tune-up and seasonal service');
+    expect(r).toBe('hvac maintenance');
+    expect(mockInvoke).not.toHaveBeenCalled();
+  });
+
+  it('does NOT mis-route a commercial roofer to residential (bare "roofer" removed)', async () => {
+    expect(await resolveRefinedNiche('roofing', 'commercial roofer and flat-roof specialist')).toBe('commercial roofing');
+    expect(await resolveRefinedNiche('roofing', 'metal roofer / standing seam installer')).toBe('metal roofing');
+  });
+
   it('resolves the coarse parent through an alias (electrician → electrical)', async () => {
     const r = await resolveRefinedNiche('electrician', 'residential electrician serving the metro');
     expect(r).toBe('residential electrical');
