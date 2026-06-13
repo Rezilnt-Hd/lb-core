@@ -92,10 +92,13 @@ export {
 // Niche registry — single source of truth for all niche metadata
 export {
   getNicheProfile,
+  getNichesByParent,
   isContentSupported,
   listContentSupportedNiches,
 } from "./niche/registry.js";
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";
+// Niche refiner — businessType → sub-niche specialization (PR-A; additive)
+export { resolveRefinedNiche } from "./niche/refiner.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
 export {

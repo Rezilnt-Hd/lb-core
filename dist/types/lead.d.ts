@@ -69,6 +69,12 @@ export interface Lead {
     };
     logoUrl?: string;
     existingSite?: ExistingSite;
+    /**
+     * businessType-derived specialization (sub-niche) resolved by resolveRefinedNiche.
+     * The coarse `niche` stays the routing/campaign key; `refinedNiche` is a more
+     * specific template/content signal. Consumers read `refinedNiche ?? niche`.
+     */
+    refinedNiche?: string;
     /** Cached per-prospect personalized opening line for first-touch outreach (Phase 3). */
     openingLine?: string;
     leadScore?: number;
