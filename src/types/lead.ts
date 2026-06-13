@@ -1,3 +1,5 @@
+import type { ExistingSite } from './existing-site.js';
+
 export enum Tier {
   BASIC = 'BASIC',
   PREMIUM = 'PREMIUM',
@@ -82,6 +84,7 @@ export interface Lead {
   customDomain?: string;
   brandColors?: { primary: string; secondary: string; accent: string };
   logoUrl?: string;
+  existingSite?: ExistingSite;
   leadScore?: number;
   scoreBand?: ScoreBand;
   createdAt: string;

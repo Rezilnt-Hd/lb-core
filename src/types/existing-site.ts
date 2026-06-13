@@ -1,0 +1,25 @@
+/**
+ * A prospect's CURRENT (pre-LocalBuilder) website, captured once at enrichment.
+ * Single source of truth consumed by lb-site-builder (Phase 2) and lb-outreach
+ * (Phase 3). Absence (undefined) means "no existing site captured" — every
+ * consumer must degrade to metadata-only behavior. A failed/empty scrape is a
+ * normal state, never an error.
+ */
+export interface ExistingSite {
+  /** ISO timestamp of the scrape. */
+  scrapedAt: string;
+  /** The URL scraped (lead.website at scrape time). */
+  url: string;
+  /** True if the URL was found via Phase-1b discovery rather than SERP. */
+  discovered?: boolean;
+  /** Services the business currently advertises. */
+  services?: string[];
+  /** Positioning / about blurb (trimmed, capped). */
+  about?: string;
+  /** Their current hero/headline line (Firecrawl page title). */
+  headline?: string;
+  /** Firecrawl meta description. */
+  metaDescription?: string;
+  /** Firecrawl markdown, length-capped (≤ 8 KB). */
+  rawMarkdown?: string;
+}
