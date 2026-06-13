@@ -10,6 +10,7 @@ export {
   RETRY_WORTHY_REASONS,
   TERMINAL_REASONS,
 } from "./types/lead.js";
+export type { ScoreBand } from "./types/lead.js";
 export {
   TierEntitlements,
   TIER_ENTITLEMENTS,

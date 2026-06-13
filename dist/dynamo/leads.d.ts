@@ -9,6 +9,8 @@ interface CreateLeadInput {
     website?: string;
     ownerEmail?: string;
     ownerName?: string;
+    leadScore?: number;
+    scoreBand?: import('../types/lead.js').ScoreBand;
 }
 export declare function createLead(input: CreateLeadInput): Promise<Lead>;
 export declare function getLead(slug: string): Promise<Lead | null>;

@@ -4,6 +4,7 @@ import {
   TERMINAL_REASONS,
   OutreachSkipReason,
 } from '../../src/types/lead.js';
+import type { Lead, ScoreBand } from '../../src/index.js';
 
 describe('OutreachSkipReason constants', () => {
   it('retry-worthy and terminal sets are disjoint', () => {
@@ -23,4 +24,11 @@ describe('OutreachSkipReason constants', () => {
     }
     expect(union.size).toBe(expected.length);
   });
+});
+
+it('Lead carries an optional leadScore + scoreBand', () => {
+  const band: ScoreBand = 'HOT';
+  const lead = { slug: 's', leadScore: 87, scoreBand: band } as unknown as Lead;
+  expect(lead.scoreBand).toBe('HOT');
+  expect(lead.leadScore).toBe(87);
 });
