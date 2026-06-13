@@ -11,6 +11,7 @@ export {
   TERMINAL_REASONS,
 } from "./types/lead.js";
 export type { ScoreBand } from "./types/lead.js";
+export type { ExistingSite } from "./types/existing-site.js";
 export {
   TierEntitlements,
   TIER_ENTITLEMENTS,
@@ -114,3 +115,7 @@ export {
   type InvokeBedrockResult,
 } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
+
+// Existing-site capture — shared Firecrawl scrape + Haiku facet extraction
+export { scrapeExistingSite, captureExistingSite } from "./scrape/existing-site.js";
+export type { ScrapedContent } from "./scrape/existing-site.js";

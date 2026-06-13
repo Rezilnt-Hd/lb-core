@@ -1,3 +1,4 @@
+import type { ExistingSite } from './existing-site.js';
 export declare enum Tier {
     BASIC = "BASIC",
     PREMIUM = "PREMIUM",
@@ -67,6 +68,9 @@ export interface Lead {
         accent: string;
     };
     logoUrl?: string;
+    existingSite?: ExistingSite;
+    /** Cached per-prospect personalized opening line for first-touch outreach (Phase 3). */
+    openingLine?: string;
     leadScore?: number;
     scoreBand?: ScoreBand;
     createdAt: string;
