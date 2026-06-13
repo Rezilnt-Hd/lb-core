@@ -25,6 +25,8 @@ export interface NicheProfile {
   category: NicheCategory; // always present for a registered niche
   schemaType: string; // most specific valid schema.org subtype; always present
   context?: string; // pricing/services grounding prose; ABSENT ⇒ not content-supported
+  parent?: string; // coarse niche this sub-niche rolls up to (NEW, PR-A)
+  aliases?: string[]; // businessType fragments, ordered longest/most-specific FIRST (NEW, PR-A)
 }
 
 function norm(niche: string): string {
@@ -37,6 +39,15 @@ function norm(niche: string): string {
 // a parallel CONTEXT/CATEGORY entry.
 const ALIASES: Record<string, string> = {
   plumber: 'plumbing',
+  // PR-A collapses: a colliding spelling resolves to ONE canonical sub-niche
+  // (single source of truth). 'drain cleaning' and 'electrician' previously had
+  // their own CATEGORY/SCHEMA rows; those rows are REMOVED below so the alias is
+  // the only definition (no parallel CONTEXT/CATEGORY split-brain).
+  'drain cleaning': 'drain and sewer',
+  electrician: 'electrical',
+  'tree trimming': 'tree service',
+  'tree removal': 'tree service',
+  'sprinkler system': 'irrigation',
 };
 
 // ── Content context (pricing + services grounding prose) ─────────────────────
@@ -48,6 +59,47 @@ const CONTEXT: Record<string, string> = {
   'sewage backup': `Services: sewage cleanup ($2,000-$8,000), sewer line inspection ($150-$500), sewer line repair ($2,500-$6,000), backflow preventer install ($300-$700), biohazard decontamination ($1,500-$5,000), drain clearing ($150-$350), sump pump install ($800-$1,800), odor elimination ($200-$800), preventive maintenance ($100-$300/visit). Icons: 🚿🔍🔧🛡️☣️🔧💧🌸🔄`,
   plumbing: `Services: emergency plumbing ($125-$350), drain cleaning ($130-$250), water heater repair ($150-$450), leak detection ($150-$350), pipe replacement ($350-$1,500), sewer line repair ($2,500-$7,000), backflow prevention ($250-$700), water filtration ($700-$2,500), bathroom remodeling ($1,500-$5,000). Icons: 🚨🔧🔥💧🔩🌳🛡️💎🏠`,
   landscaping: `lawn maintenance + mowing $40-$100 per visit, irrigation + sprinkler repair $150-$600, hardscaping + retaining walls $3,000-$15,000 per project, tree + shrub care $200-$800 per visit, seasonal cleanup $250-$700, sod + planting $1-$2 per sqft; pricing per visit / per month / per project; serves homeowners + HOAs`,
+
+  // ── Landscaping sub-niches (PR-A) ──────────────────────────────────────────
+  'landscape design': `Services: design consultation/site analysis ($500-$2,000), conceptual design ($2,000-$8,000), full CAD plans & construction documents ($5,000-$15,000), 3D renderings ($1,500-$5,000), design-build installation ($25,000-$150,000+), master planning, planting & lighting design, project management ($150-$250/hr). Portfolio-driven; serves residential & commercial. Icons: 📐🌿🏡🖼️🌳💡🧭🛠️💼`,
+  'lawn care': `Services: mowing ($40-$100/visit), fertilization & weed control ($50-$100/treatment), aeration ($80-$200), overseeding ($150-$400), seasonal cleanup ($250-$700), leaf removal ($150-$450), edging & trimming. Recurring weekly/biweekly; homeowners & HOAs. Icons: 🌱🚜🍃🌾🧹🍂✂️`,
+  hardscaping: `Services: paver patios ($10-$25/sqft), retaining walls ($3,000-$15,000), outdoor kitchens ($5,000-$20,000), fire pits ($1,500-$6,000), walkways ($8-$20/sqft), driveways, stonework. Per-project; homeowners. Icons: 🧱🔥🍳🪨🚶🛤️🏗️`,
+  irrigation: `Services: sprinkler system installation ($2,500-$8,000), sprinkler repair ($150-$600), drip irrigation, backflow testing ($75-$150), smart controllers, winterization ($75-$200), seasonal service. Icons: 💧🌧️🔧🚿🛡️❄️🌱`,
+  'tree service': `Services: tree removal ($400-$2,000), trimming/pruning ($200-$800), stump grinding ($100-$400), emergency storm removal ($500-$3,000), arborist consultation ($100-$300), cabling & bracing. Certified-arborist signal. Icons: 🌳🪚🪵⛈️🧗🩺🔗`,
+  'landscape lighting': `Services: low-voltage path & accent lighting ($80-$300/fixture), full lighting systems ($2,000-$6,000), transformer & timer install, LED retrofit ($100-$250/fixture), security/architectural lighting, smart controls. Icons: 💡🌙🔦🏡🌳🔌⭐`,
+
+  // ── Plumbing sub-niches (PR-A) ─────────────────────────────────────────────
+  'residential plumbing': `Services: emergency plumbing ($150-$400), faucet/fixture repair ($125-$350), toilet repair ($125-$300), drain cleaning ($150-$350), water heater repair ($150-$450), leak detection ($150-$400), garbage disposal install ($150-$400), sump pump install ($800-$1,800), bathroom remodeling ($1,500-$5,000). Icons: 🚨🔧🚽💧🔥🔍🗑️💦🏠`,
+  'commercial plumbing': `Services: commercial plumbing service ($150-$250/hr), backflow testing/certification ($75-$300/device), grease trap installation ($1,400-$18,000), grease trap cleaning ($150-$500), commercial water heater service ($500-$3,000), tenant build-out plumbing ($2,000-$25,000), hydro jetting ($600-$1,400), preventive maintenance contracts ($100-$300/visit), code compliance & permits. Icons: 🏢🔧🛡️🍳🔥🚧💦🔄📋`,
+  'drain and sewer': `Services: drain snaking ($100-$275), main line snaking ($150-$500), hydro jetting ($300-$600), main sewer hydro jetting ($600-$1,400), sewer camera inspection ($125-$500), sewer line repair ($2,500-$7,000), trenchless sewer replacement ($60-$250/ft), sump pump service ($300-$1,200), backwater valve install ($300-$700). Icons: 🚿🐍💦🔧📷🔍🚧🔄🛡️`,
+  'water heater service': `Services: water heater repair ($150-$450), tank water heater replacement ($1,000-$2,500), tankless water heater installation ($1,800-$5,500), gas tankless ($2,700-$5,500), electric tankless ($1,800-$4,200), thermostat/element replacement ($150-$400), anode rod replacement ($150-$300), expansion tank install ($150-$350), annual flush ($100-$200). Icons: 🔥💧🔧♨️⚡🌡️🔩🛢️🧰`,
+  repiping: `Services: whole-house repipe ($4,000-$15,000), PEX repipe ($0.40-$2/ft), copper repipe ($2-$8/ft), per-fixture repipe ($200-$400), water/main line replacement ($1,500-$5,000), bathroom remodel plumbing ($1,500-$5,000), kitchen remodel plumbing ($1,500-$6,000), gas line installation ($350-$2,000), fixture upgrades ($150-$500). Icons: 🔩🏠🔧🚿🛁🍳⛽💧🧰`,
+  'well and water treatment': `Services: well pump repair ($200-$1,500), well pump replacement ($1,500-$4,500), pressure tank replacement ($400-$1,200), water softener installation ($800-$3,000), whole-house water filtration ($700-$2,500), well water treatment systems ($500-$10,000), reverse osmosis install ($300-$1,200), UV purification install ($300-$1,500), water testing ($100-$300). Icons: 🚰🔧💧🧂🛢️🪣💦☀️🔬`,
+
+  // ── Roofing sub-niches (PR-A) ──────────────────────────────────────────────
+  'residential roofing': `Services: roof repair ($350-$1,500), asphalt shingle replacement ($4.25-$8.25/sqft; $9,000-$25,000 typical), full tear-off & re-roof ($10,500-$33,000), shingle/flashing repair ($350-$1,100/square), leak repair ($400-$1,200), ridge & ventilation ($300-$900). Icons: 🏠🔨🪜💧🧰🌬️`,
+  'commercial roofing': `Services: TPO membrane install ($8-$17/sqft), EPDM rubber roofing ($3.50-$9/sqft), built-up & modified-bitumen systems, flat-roof replacement (10,000 sqft from $40,000), membrane repair & seam sealing ($500-$3,000), roof coatings & restoration. Icons: 🏢🪟🔧🧱🛢️🪜`,
+  'storm damage roofing': `Services: emergency roof tarping ($400-$1,500, insurance-reimbursable), wind damage repair ($300-$5,000), hail damage repair ($1,500-$8,000), full storm replacement ($20,000+), insurance claim assistance & adjuster meetings, 24/7 emergency response, leak mitigation. Icons: ⛈️🏠🔨🧾🛡️🚨`,
+  'roof inspection': `Services: standard roof inspection ($150-$600), drone roof inspection ($100-$450), roof certification ($75-$200), annual/biennial maintenance plans, real-estate transaction inspections, moisture & infrared scans, condition reports with photo documentation. Icons: 🔍🚁📋📷🏠🛰️`,
+  'metal roofing': `Services: standing seam metal roof install ($10-$25/sqft; $20,000-$36,000 typical 2,000 sqft), steel panels ($10-$16/sqft), aluminum ($11-$17/sqft), copper ($20-$40/sqft), metal roof repair & re-coating, snow guards & specialty trim. Icons: 🏠🔩✨🪙🛠️❄️`,
+  'gutter installation': `Services: seamless aluminum gutter install ($8-$14/linear ft), gutter replacement ($12-$61/linear ft material), gutter guard install ($6-$23/linear ft), downspout install, gutter repair & resealing, old gutter removal. Icons: 🏠🌧️🔧🪜🍂💧`,
+
+  // ── HVAC sub-niches (PR-A) ─────────────────────────────────────────────────
+  'ac installation': `Services: central AC installation ($3,300-$7,800), AC replacement ($5,750 avg 3-ton), full HVAC system replacement ($11,590-$14,100), AC load sizing & permits ($250-$500). Icons: ❄️🌬️🔧🏠📐⚡`,
+  'heating and furnace': `Services: furnace replacement ($3,000-$8,500), gas furnace install ($3,800-$12,000), electric furnace install ($2,000-$7,000), furnace repair ($125-$480), boiler service. Icons: 🔥🌡️🔧🏠⚡🛠️`,
+  'hvac repair': `Services: HVAC service call/diagnostic ($75-$200), AC repair ($150-$650), furnace repair ($125-$480), emergency/after-hours repair ($150-$450+), refrigerant recharge ($200-$600). Icons: 🚨🔧❄️🔥🌡️💨`,
+  'hvac maintenance': `Services: HVAC tune-up ($70-$200), AC tune-up ($90-$200), seasonal maintenance plans ($150-$400/yr), filter & coil service ($75-$150), system inspection ($100-$500). Icons: 🧰🌬️🔧📋♻️✅`,
+  'indoor air quality': `Services: air duct cleaning ($300-$500), whole-house air purifier install ($500-$6,000), whole-house humidifier ($400-$1,200), per-vent cleaning ($25-$50/vent), filtration & UV systems. Icons: 🌬️🦠💨🏠🔧✨`,
+  'heat pump': `Services: ductless mini-split install ($2,000-$7,000/zone), single-zone system ($2,000-$6,000), air-source heat pump ($4,944/ton avg), multi-zone whole-home ($10,500+), 30% federal tax credit up to $2,000 + utility rebates. Icons: ♻️❄️🔥🔌🏠💲`,
+  'commercial hvac': `Services: rooftop unit (RTU) replacement ($6,500-$25,000 small bldg), preventative maintenance ($0.15-$0.40/sqft/yr), walk-in cooler repair ($200-$4,000+), refrigeration compressor replacement ($2,000-$4,500), light-commercial install & service contracts. Icons: 🏢🌬️🔧🧊🛠️📋`,
+
+  // ── Electrical sub-niches (PR-A) ───────────────────────────────────────────
+  'residential electrical': `Services: emergency electrical repair ($150-$450), outlet/switch installation ($133-$350), 240V outlet install ($300-$800), ceiling fan & light fixture install ($150-$400), circuit/breaker repair ($150-$350), GFCI installation ($130-$300), troubleshooting/diagnostics ($75-$250/hr), smoke detector wiring ($90-$250). Icons: ⚡🔌🔧💡🔦🛡️🧰🚨`,
+  'commercial electrical': `Services: commercial electrical service ($100-$150/hr), tenant build-out wiring ($3-$8/sqft), three-phase power install ($2,000-$10,000), commercial panel & subpanel upgrades ($2,500-$8,000), lighting retrofit/LED ($75-$300/fixture), data/low-voltage cabling ($1.50-$4/ft), code-compliance corrections ($500-$5,000), emergency service calls ($150-$400). Icons: 🏢⚡🔧💡🔌🛠️🧰📋`,
+  'panel upgrade': `Services: 100-amp panel swap ($800-$1,500), 200-amp service upgrade ($1,500-$3,000), 300-400 amp heavy-up ($3,000-$5,000+), subpanel installation ($500-$1,000), breaker replacement ($150-$300), meter base replacement ($600-$1,500), grounding/bonding correction ($150-$500), permit & inspection. Icons: ⚡🔌🛡️🔧📦🧰📋`,
+  'electrical rewiring': `Services: whole-house rewire ($10,000-$30,000 / $5-$17 sqft), partial rewire & new circuits ($2-$4/sqft), knob-and-tube replacement ($8,000-$20,000), aluminum wiring remediation ($4,000-$12,000), dedicated circuit install ($250-$900), code-correction rewiring ($1,000-$5,000), permit & inspection. Icons: ⚡🔌🧰🔧🏠🛡️📋`,
+  'ev charger installation': `Services: Level 2 charger installation ($1,200-$3,000), 240V circuit & breaker ($300-$800), charger equipment supply ($400-$1,200), panel upgrade for charger load ($1,500-$3,000), detached-garage trenching/wiring ($300-$2,000), smart/Wi-Fi charger setup ($150-$400), load calculation & permit. Icons: 🔌🚗⚡🔋🧰🛠️📋🏠`,
+  'generator installation': `Services: whole-house standby generator installed ($10,000-$15,000), generator unit supply ($3,000-$6,000), installation labor ($3,000-$5,000), automatic transfer switch install ($600-$1,200), gas/propane hookup & trenching ($500-$3,000), dedicated circuit & subpanel wiring ($500-$2,000), annual maintenance ($150-$400/visit). Icons: ⚡🔋🏠🔧🛠️🔌📋🚨`,
 };
 
 // ── Niche → Category ──────────────────────────────────────────────────────────
@@ -65,11 +117,19 @@ const CATEGORY: Record<string, NicheCategory> = {
   'flood remediation': 'emergency',
   'sewage backup': 'emergency',
   locksmith: 'emergency',
-  electrician: 'emergency',
+  // NOTE: 'electrician' is now an ALIAS → 'electrical' (no parallel row here).
   electrical: 'emergency',
   'emergency plumber': 'emergency',
   'burst pipe': 'emergency',
-  'drain cleaning': 'emergency',
+  // NOTE: 'drain cleaning' is now an ALIAS → 'drain and sewer' (no parallel row here).
+
+  // ── Plumbing sub-niches (PR-A) — buyer-intent categories ──
+  'residential plumbing': 'emergency',
+  'commercial plumbing': 'general-trade',
+  'drain and sewer': 'emergency',
+  'water heater service': 'home-improvement',
+  repiping: 'home-improvement',
+  'well and water treatment': 'home-improvement',
 
   // Home Improvement
   'garage door': 'home-improvement',
@@ -89,21 +149,52 @@ const CATEGORY: Record<string, NicheCategory> = {
   'fence installation': 'home-improvement',
   fencing: 'home-improvement',
 
+  // ── Landscaping sub-niche that diverges to home-improvement (PR-A) ──
+  // The ONE landscaping sub-niche whose category diverges from 'outdoor':
+  // routes the premium/gallery template family (Cultivators/Ambiance fix).
+  'landscape design': 'home-improvement',
+
+  // ── Roofing sub-niches (PR-A) ──
+  'residential roofing': 'home-improvement',
+  'commercial roofing': 'home-improvement',
+  'storm damage roofing': 'emergency',
+  'roof inspection': 'home-improvement',
+  'metal roofing': 'home-improvement',
+  'gutter installation': 'home-improvement',
+
+  // ── HVAC sub-niches (PR-A) — buyer-intent categories ──
+  'ac installation': 'home-improvement',
+  'heating and furnace': 'home-improvement',
+  'hvac repair': 'emergency',
+  'hvac maintenance': 'general-trade',
+  'indoor air quality': 'home-improvement',
+  'heat pump': 'home-improvement',
+  'commercial hvac': 'general-trade',
+
+  // ── Electrical sub-niches (PR-A) — buyer-intent categories ──
+  'residential electrical': 'emergency',
+  'commercial electrical': 'general-trade',
+  'panel upgrade': 'home-improvement',
+  'electrical rewiring': 'home-improvement',
+  'ev charger installation': 'home-improvement',
+  'generator installation': 'home-improvement',
+
   // Outdoor / Property
   landscaping: 'outdoor',
   'lawn care': 'outdoor',
   'tree service': 'outdoor',
-  'tree trimming': 'outdoor',
-  'tree removal': 'outdoor',
+  // NOTE: 'tree trimming' / 'tree removal' are now ALIASES → 'tree service'.
   'pressure washing': 'outdoor',
   'power washing': 'outdoor',
   irrigation: 'outdoor',
-  'sprinkler system': 'outdoor',
+  // NOTE: 'sprinkler system' is now an ALIAS → 'irrigation'.
   'snow removal': 'outdoor',
   'gutter cleaning': 'outdoor',
   'pool cleaning': 'outdoor',
   'pool service': 'outdoor',
   hardscaping: 'outdoor',
+  // ── Landscaping sub-niche (PR-A) — stays outdoor ──
+  'landscape lighting': 'outdoor',
 
   // General Trade
   hvac: 'general-trade',
@@ -128,20 +219,48 @@ const SCHEMA_TYPE: Record<string, string> = {
   plumbing: 'Plumber',
   'emergency plumber': 'Plumber',
   'burst pipe': 'Plumber',
-  'drain cleaning': 'Plumber',
+  // 'drain cleaning' is now an ALIAS → 'drain and sewer' (Plumber, below).
+  // ── Plumbing sub-niches (PR-A) ──
+  'residential plumbing': 'Plumber',
+  'commercial plumbing': 'Plumber',
+  'drain and sewer': 'Plumber',
+  'water heater service': 'Plumber',
+  repiping: 'Plumber',
+  'well and water treatment': 'Plumber',
 
   // HVAC / heating / cooling → HVACBusiness
   hvac: 'HVACBusiness',
   'air conditioning': 'HVACBusiness',
   heating: 'HVACBusiness',
+  // ── HVAC sub-niches (PR-A) ──
+  'ac installation': 'HVACBusiness',
+  'heating and furnace': 'HVACBusiness',
+  'hvac repair': 'HVACBusiness',
+  'hvac maintenance': 'HVACBusiness',
+  'indoor air quality': 'HVACBusiness',
+  'heat pump': 'HVACBusiness',
+  'commercial hvac': 'HVACBusiness',
 
   // Roofing → RoofingContractor
   roofing: 'RoofingContractor',
   'roof repair': 'RoofingContractor',
+  // ── Roofing sub-niches (PR-A) ──
+  'residential roofing': 'RoofingContractor',
+  'commercial roofing': 'RoofingContractor',
+  'storm damage roofing': 'RoofingContractor',
+  'roof inspection': 'RoofingContractor',
+  'metal roofing': 'RoofingContractor',
+  'gutter installation': 'RoofingContractor',
 
-  // Electrical → Electrician
-  electrician: 'Electrician',
+  // Electrical → Electrician  ('electrician' is now an ALIAS → 'electrical')
   electrical: 'Electrician',
+  // ── Electrical sub-niches (PR-A) ──
+  'residential electrical': 'Electrician',
+  'commercial electrical': 'Electrician',
+  'panel upgrade': 'Electrician',
+  'electrical rewiring': 'Electrician',
+  'ev charger installation': 'Electrician',
+  'generator installation': 'Electrician',
 
   // General contracting → GeneralContractor
   general: 'GeneralContractor',
@@ -163,11 +282,98 @@ const SCHEMA_TYPE: Record<string, string> = {
   landscaping: 'HomeAndConstructionBusiness',
   'lawn care': 'HomeAndConstructionBusiness',
   'tree service': 'HomeAndConstructionBusiness',
-  'tree trimming': 'HomeAndConstructionBusiness',
-  'tree removal': 'HomeAndConstructionBusiness',
+  // 'tree trimming' / 'tree removal' are now ALIASES → 'tree service'.
   hardscaping: 'HomeAndConstructionBusiness',
   irrigation: 'HomeAndConstructionBusiness',
-  'sprinkler system': 'HomeAndConstructionBusiness',
+  // 'sprinkler system' is now an ALIAS → 'irrigation'.
+  // ── Landscaping sub-niches (PR-A) ──
+  'landscape design': 'HomeAndConstructionBusiness',
+  'landscape lighting': 'HomeAndConstructionBusiness',
+};
+
+// ── Sub-niche → coarse parent (PR-A) ──────────────────────────────────────────
+// Keyed by canonical sub-niche key. Coarse parents themselves have NO entry
+// (parent === undefined). getNichesByParent() reverses this map.
+const PARENT: Record<string, string> = {
+  // Landscaping
+  'landscape design': 'landscaping',
+  'lawn care': 'landscaping',
+  hardscaping: 'landscaping',
+  irrigation: 'landscaping',
+  'tree service': 'landscaping',
+  'landscape lighting': 'landscaping',
+  // Plumbing
+  'residential plumbing': 'plumbing',
+  'commercial plumbing': 'plumbing',
+  'drain and sewer': 'plumbing',
+  'water heater service': 'plumbing',
+  repiping: 'plumbing',
+  'well and water treatment': 'plumbing',
+  // Roofing
+  'residential roofing': 'roofing',
+  'commercial roofing': 'roofing',
+  'storm damage roofing': 'roofing',
+  'roof inspection': 'roofing',
+  'metal roofing': 'roofing',
+  'gutter installation': 'roofing',
+  // HVAC
+  'ac installation': 'hvac',
+  'heating and furnace': 'hvac',
+  'hvac repair': 'hvac',
+  'hvac maintenance': 'hvac',
+  'indoor air quality': 'hvac',
+  'heat pump': 'hvac',
+  'commercial hvac': 'hvac',
+  // Electrical
+  'residential electrical': 'electrical',
+  'commercial electrical': 'electrical',
+  'panel upgrade': 'electrical',
+  'electrical rewiring': 'electrical',
+  'ev charger installation': 'electrical',
+  'generator installation': 'electrical',
+};
+
+// ── Sub-niche → businessType aliases, ordered longest/most-specific FIRST ──────
+// The classifier matches longest-fragment-first against businessType.toLowerCase().
+// Never include a fragment generic enough to capture a sibling (e.g. bare
+// 'commercial' or bare 'electrical').
+const ALIASES_BY_NICHE: Record<string, string[]> = {
+  // Landscaping
+  'landscape design': ['landscape architecture', 'landscape architect', 'landscape design and build', 'landscape design-build', 'landscape design', 'outdoor living design', 'garden design', 'landscape designer'],
+  'lawn care': ['lawn maintenance', 'lawn mowing', 'turf management', 'grounds maintenance', 'lawn care', 'mowing', 'lawn service'],
+  hardscaping: ['retaining wall', 'outdoor kitchen', 'paver patio', 'hardscape', 'hardscaping', 'pavers', 'stonework'],
+  irrigation: ['sprinkler system installation', 'sprinkler repair', 'drip irrigation', 'irrigation system', 'sprinkler', 'irrigation'],
+  'tree service': ['tree removal', 'tree trimming', 'tree pruning', 'stump grinding', 'arborist', 'tree care', 'tree service'],
+  'landscape lighting': ['landscape lighting installation', 'low voltage lighting', 'outdoor lighting', 'landscape lighting', 'accent lighting'],
+  // Plumbing
+  'residential plumbing': ['residential plumbing', 'residential plumber', 'home plumbing', 'house plumbing', 'local plumber'],
+  'commercial plumbing': ['commercial plumbing contractor', 'commercial plumbing', 'commercial plumber', 'industrial plumbing', 'grease trap', 'tenant improvement plumbing'],
+  'drain and sewer': ['sewer line repair', 'sewer camera inspection', 'trenchless sewer', 'hydro jetting', 'main line cleaning', 'drain and sewer', 'drain cleaning', 'rooter service', 'rooter', 'clogged drain'],
+  'water heater service': ['tankless water heater installation', 'tankless water heater', 'water heater installation', 'water heater replacement', 'water heater repair', 'water heater service', 'hot water heater'],
+  repiping: ['whole house repipe', 'pex repipe', 'copper repipe', 'plumbing remodel', 'pipe replacement', 'repiping', 'repipe', 'new construction plumbing'],
+  'well and water treatment': ['whole house water filter', 'well pump installation', 'well pump repair', 'water softener', 'water filtration', 'water treatment', 'well and water treatment', 'water purification', 'well water'],
+  // Roofing
+  'residential roofing': ['residential roof replacement', 'residential roofing contractor', 'asphalt shingle roofing', 'shingle roof replacement', 'residential roofing', 're-roofing', 'reroof', 'roof repair', 'roofer'],
+  'commercial roofing': ['commercial flat roof', 'single-ply membrane', 'commercial roofing contractor', 'modified bitumen', 'flat roof replacement', 'low-slope roofing', 'tpo roofing', 'epdm roofing', 'pvc roofing', 'commercial roofing'],
+  'storm damage roofing': ['storm damage roof repair', 'insurance restoration roofing', 'emergency roof tarp', 'roof insurance claim', 'hail damage roof', 'wind damage roof', 'storm restoration', 'roof restoration'],
+  'roof inspection': ['roof inspection and certification', 'preventive roof maintenance', 'drone roof inspection', 'roof certification', 'roof maintenance plan', 'roof inspection', 'roof condition report'],
+  'metal roofing': ['standing seam metal roof', 'metal roofing contractor', 'standing seam roofing', 'metal roof installation', 'steel roofing', 'aluminum roofing', 'copper roofing', 'metal roofing'],
+  'gutter installation': ['seamless gutter installation', 'gutter installation and repair', 'gutter replacement', 'gutter guards', 'seamless gutters', 'gutter installation', 'downspout installation'],
+  // HVAC
+  'ac installation': ['air conditioning installation', 'central air installation', 'air conditioner replacement', 'ac installation', 'ac replacement', 'new air conditioner', 'ac install', 'cooling installation'],
+  'heating and furnace': ['furnace installation', 'furnace replacement', 'heating installation', 'gas furnace', 'furnace repair', 'heating system', 'heating and furnace', 'furnace', 'boiler'],
+  'hvac repair': ['emergency hvac repair', 'air conditioning repair', 'heating and cooling repair', '24 hour hvac', 'ac repair', 'hvac repair', 'hvac service', 'no cooling', 'no heat'],
+  'hvac maintenance': ['preventative maintenance', 'seasonal tune-up', 'hvac maintenance', 'hvac tune-up', 'ac tune-up', 'furnace tune-up', 'maintenance plan', 'service plan'],
+  'indoor air quality': ['indoor air quality', 'whole house air purifier', 'air filtration system', 'air duct cleaning', 'duct cleaning', 'ductwork', 'air purification', 'humidifier'],
+  'heat pump': ['ductless mini split', 'mini split heat pump', 'ductless heat pump', 'air source heat pump', 'heat pump installation', 'mini split', 'heat pump', 'ductless'],
+  'commercial hvac': ['commercial refrigeration', 'walk-in cooler repair', 'commercial hvac', 'rooftop unit', 'walk in freezer', 'rtu replacement', 'commercial cooling', 'light commercial hvac'],
+  // Electrical
+  'residential electrical': ['residential electrical contractor', 'residential electrician', 'home electrician', 'house electrician', 'residential electrical'],
+  'commercial electrical': ['commercial electrical contractor', 'commercial & industrial electrician', 'industrial electrician', 'commercial electrician', 'commercial electrical', 'industrial electrical'],
+  'panel upgrade': ['electrical panel upgrade', 'electrical service panel', '200 amp upgrade', 'breaker box replacement', 'service upgrade', 'panel replacement', 'panel upgrade'],
+  'electrical rewiring': ['whole house rewiring', 'knob and tube replacement', 'aluminum wiring replacement', 'whole-home rewire', 'house rewiring', 'electrical rewiring', 'rewire'],
+  'ev charger installation': ['ev charger installation', 'level 2 charger install', 'ev charging station', 'electric vehicle charger', 'tesla charger install', 'ev charger install', 'ev charger'],
+  'generator installation': ['whole-home generator install', 'standby generator installation', 'automatic standby generator', 'backup generator install', 'whole house generator', 'generator installation', 'generator install'],
 };
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -190,12 +396,31 @@ export function getNicheProfile(
   // Normalize an empty/whitespace-only context to undefined so no caller can
   // mistake '' for real content (truthiness checks and isContentSupported agree).
   const ctx = CONTEXT[key];
+  const parent = PARENT[key];
+  const aliases = ALIASES_BY_NICHE[key];
   return {
     niche: key,
     category,
     schemaType: SCHEMA_TYPE[key] ?? 'LocalBusiness',
     context: ctx && ctx.trim().length > 0 ? ctx : undefined,
+    ...(parent ? { parent } : {}),
+    ...(aliases && aliases.length > 0 ? { aliases } : {}),
   };
+}
+
+/**
+ * Returns the NicheProfile of every registered sub-niche whose `parent` matches
+ * the given coarse niche. Parent matching is alias-aware + case/whitespace
+ * insensitive. Returns [] for a coarse niche with no registered children (e.g.
+ * one that has not been broken into sub-niches yet).
+ */
+export function getNichesByParent(parent: string | undefined | null): NicheProfile[] {
+  if (!parent) return [];
+  const key = ALIASES[norm(parent)] ?? norm(parent);
+  return Object.keys(PARENT)
+    .filter((sub) => PARENT[sub] === key)
+    .map((sub) => getNicheProfile(sub))
+    .filter((p): p is NicheProfile => p !== null);
 }
 
 /**
