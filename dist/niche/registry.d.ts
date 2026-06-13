@@ -19,6 +19,8 @@ export interface NicheProfile {
     category: NicheCategory;
     schemaType: string;
     context?: string;
+    parent?: string;
+    aliases?: string[];
 }
 /**
  * Returns the NicheProfile for the given niche string, or null if the niche
@@ -29,6 +31,13 @@ export interface NicheProfile {
  * supported for this niche; callers must also not fall back in that case.
  */
 export declare function getNicheProfile(niche: string | undefined | null): NicheProfile | null;
+/**
+ * Returns the NicheProfile of every registered sub-niche whose `parent` matches
+ * the given coarse niche. Parent matching is alias-aware + case/whitespace
+ * insensitive. Returns [] for a coarse niche with no registered children (e.g.
+ * one that has not been broken into sub-niches yet).
+ */
+export declare function getNichesByParent(parent: string | undefined | null): NicheProfile[];
 /**
  * True iff the niche is registered AND has content context (pricing/services
  * prose that enables Bedrock page generation).
