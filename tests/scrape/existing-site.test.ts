@@ -57,4 +57,10 @@ describe('captureExistingSite', () => {
     const es = await captureExistingSite('https://x.com', { businessName: 'Acme', niche: 'landscaping', discovered: true });
     expect(es!.discovered).toBe(true);
   });
+  it('still extracts facets when Haiku wraps the JSON in a ```json fence', async () => {
+    mockInvoke.mockResolvedValueOnce({ text: '```json\n{"services":["drain cleaning"],"about":"Family plumber"}\n```' });
+    const es = await captureExistingSite('https://x.com', { businessName: 'Acme', niche: 'plumbing' });
+    expect(es!.services).toEqual(['drain cleaning']);
+    expect(es!.about).toBe('Family plumber');
+  });
 });

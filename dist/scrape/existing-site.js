@@ -53,7 +53,8 @@ ${scraped.markdown.slice(0, MAX_MARKDOWN)}`;
         maxTokens: 600,
         temperature: 0,
     });
-    const parsed = JSON.parse(text);
+    const cleaned = text.replace(/```json?\n?/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
     const services = Array.isArray(parsed.services)
         ? parsed.services.filter((s) => typeof s === 'string' && !!s.trim()).slice(0, 8)
         : undefined;
