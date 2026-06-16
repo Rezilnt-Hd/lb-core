@@ -1,6 +1,7 @@
 export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInterval, OutreachSkipReason, RETRY_WORTHY_REASONS, TERMINAL_REASONS, } from "./types/lead.js";
 export type { ScoreBand } from "./types/lead.js";
 export type { ExistingSite } from "./types/existing-site.js";
+export type { KeywordClaim, ClaimStatus } from "./types/claim.js";
 export { TierEntitlements, TIER_ENTITLEMENTS, getEntitlements, TierPricing, TIER_PRICING, TIER_CONFIG, } from "./types/entitlements.js";
 export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, canUseKeywordResearch, canUseCompetitorAnalysis, } from "./entitlements/access.js";
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from "./types/site.js";
@@ -8,6 +9,8 @@ export { Template } from "./types/template.js";
 export { EVENT_SOURCE, EventType, LeadStatusChangedPayload, SiteBuiltPayload, PaymentCompletedPayload, DomainProvisionedPayload, RetentionSaveOfferPayload, PaymentFailedPayload, PaymentRecoveredPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload, } from "./types/events.js";
 export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields, } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
+export type { ClaimInput } from "./dynamo/claims.js";
 export { publishEvent } from "./events/publisher.js";
 export { PATTERNS } from "./events/patterns.js";
 export { generateSlug } from "./utils/slug.js";
@@ -19,6 +22,8 @@ export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./se
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 export { resolveRefinedNiche } from "./niche/refiner.js";
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
+export type { LadderRung } from "./niche/ladder.js";
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type ContentBlock, type InvokeBedrockInput, type InvokeBedrockResult, } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";

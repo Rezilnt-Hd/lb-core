@@ -12,6 +12,7 @@ export {
 } from "./types/lead.js";
 export type { ScoreBand } from "./types/lead.js";
 export type { ExistingSite } from "./types/existing-site.js";
+export type { KeywordClaim, ClaimStatus } from "./types/claim.js";
 export {
   TierEntitlements,
   TIER_ENTITLEMENTS,
@@ -63,6 +64,8 @@ export {
   updateLeadFields,
 } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
+export type { ClaimInput } from "./dynamo/claims.js";
 
 // Events
 export { publishEvent } from "./events/publisher.js";
@@ -99,6 +102,9 @@ export {
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 // Niche refiner — businessType → sub-niche specialization (PR-A; additive)
 export { resolveRefinedNiche } from "./niche/refiner.js";
+// Keyword differentiation ladder + normalizers (anti-cannibalization claim system)
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
+export type { LadderRung } from "./niche/ladder.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
 export {

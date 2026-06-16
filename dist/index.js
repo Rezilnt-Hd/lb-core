@@ -7,6 +7,7 @@ export { EVENT_SOURCE, EventType, } from "./types/events.js";
 // DynamoDB clients
 export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields, } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
 // Events
 export { publishEvent } from "./events/publisher.js";
 export { PATTERNS } from "./events/patterns.js";
@@ -22,6 +23,8 @@ export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./se
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
 // Niche refiner — businessType → sub-niche specialization (PR-A; additive)
 export { resolveRefinedNiche } from "./niche/refiner.js";
+// Keyword differentiation ladder + normalizers (anti-cannibalization claim system)
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
 // Bedrock adapter — provider-switch envelope + response normalization
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, } from "./bedrock/types.js";
