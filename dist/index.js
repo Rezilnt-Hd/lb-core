@@ -7,6 +7,7 @@ export { EVENT_SOURCE, EventType, } from "./types/events.js";
 // DynamoDB clients
 export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields, } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
 // Events
 export { publishEvent } from "./events/publisher.js";
 export { PATTERNS } from "./events/patterns.js";

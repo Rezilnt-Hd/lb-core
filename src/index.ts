@@ -64,6 +64,8 @@ export {
   updateLeadFields,
 } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
+export type { ClaimInput } from "./dynamo/claims.js";
 
 // Events
 export { publishEvent } from "./events/publisher.js";

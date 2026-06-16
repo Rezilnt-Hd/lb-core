@@ -10,4 +10,5 @@ export const TABLE_NAMES = {
     templates: process.env.TEMPLATES_TABLE || 'lb-templates-prod',
     targets: process.env.TARGETS_TABLE || 'lb-targets-prod',
     campaigns: process.env.CAMPAIGNS_TABLE || 'lb-campaigns-prod',
+    claims: process.env.CLAIMS_TABLE || 'lb-keyword-claims-prod',
 };

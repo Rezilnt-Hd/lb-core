@@ -6,4 +6,5 @@ export declare const TABLE_NAMES: {
     templates: string;
     targets: string;
     campaigns: string;
+    claims: string;
 };

@@ -9,6 +9,8 @@ export { Template } from "./types/template.js";
 export { EVENT_SOURCE, EventType, LeadStatusChangedPayload, SiteBuiltPayload, PaymentCompletedPayload, DomainProvisionedPayload, RetentionSaveOfferPayload, PaymentFailedPayload, PaymentRecoveredPayload, AnomalyDetectedPayload, MonthlyReportReadyPayload, } from "./types/events.js";
 export { createLead, getLead, transitionLead, getLeadsByStatus, countActiveLeads, countLeadsByStatus, updateLeadFields, } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
+export type { ClaimInput } from "./dynamo/claims.js";
 export { publishEvent } from "./events/publisher.js";
 export { PATTERNS } from "./events/patterns.js";
 export { generateSlug } from "./utils/slug.js";
