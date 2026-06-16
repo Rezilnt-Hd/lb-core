@@ -30,17 +30,23 @@ export const KEYWORD_MODIFIERS = [
 export function buildLadder(niche: string, city: string, state: string): LadderRung[] {
   const canonical = getNicheProfile(niche)?.niche ?? normalizeKeyword(niche);
   const cityStr = normalizeKeyword(city);
+  // Wrap every rung keyword in normalizeKeyword so the ladder's keywords are
+  // byte-identical to what the call site uses to build the slot pk
+  // (`KEYWORD#${normalizeKeyword(keyword)}#...`). canonical/cityStr are already
+  // normalized; this guards the unregistered-niche fallback (registry norm does
+  // NOT collapse internal whitespace, normalizeKeyword does).
+  const rung = (keyword: string): string => normalizeKeyword(keyword);
   const rungs: LadderRung[] = [];
-  rungs.push({ rung: 0, keyword: `${canonical} ${cityStr}` });
+  rungs.push({ rung: 0, keyword: rung(`${canonical} ${cityStr}`) });
   for (const mod of KEYWORD_MODIFIERS) {
-    rungs.push({ rung: rungs.length, keyword: `${mod} ${canonical} ${cityStr}` });
+    rungs.push({ rung: rungs.length, keyword: rung(`${mod} ${canonical} ${cityStr}`) });
   }
   // Sub-niche slices, alphabetized by canonical key for stable order.
   const subs = getNichesByParent(canonical)
     .map(p => p.niche)
     .sort();
   for (const sub of subs) {
-    rungs.push({ rung: rungs.length, keyword: `${sub} ${cityStr}` });
+    rungs.push({ rung: rungs.length, keyword: rung(`${sub} ${cityStr}`) });
   }
   return rungs;
 }

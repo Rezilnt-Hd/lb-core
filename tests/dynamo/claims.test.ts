@@ -6,61 +6,85 @@ vi.mock('../../src/dynamo/client.js', () => {
 });
 import * as client from '../../src/dynamo/client.js';
 const sendMock = (client as any).__sendMock as ReturnType<typeof vi.fn>;
-import { claimSlot, getActiveClaim, releaseClaimsForLead } from '../../src/dynamo/claims.js';
+import { claimSlot, getActiveClaim, releaseClaimsForLead, SLOT_SK } from '../../src/dynamo/claims.js';
+
+const input = (slug: string, keyword = 'landscaping dallas') => ({
+  pk: `KEYWORD#${keyword}#dallas|tx`, slug, keyword,
+  baseKeyword: 'landscaping dallas', niche: 'landscaping', city: 'Dallas', state: 'TX', rung: 0,
+});
 
 beforeEach(() => sendMock.mockReset());
 
 describe('claimSlot', () => {
-  it('returns true on a successful conditional put', async () => {
+  it('writes the single sentinel item (sk=SLOT) with a conditional put and returns true', async () => {
     sendMock.mockResolvedValueOnce({});
-    const ok = await claimSlot({
-      pk: 'KEYWORD#landscaping dallas#dallas|tx', slug: 'acme', keyword: 'landscaping dallas',
-      baseKeyword: 'landscaping dallas', niche: 'landscaping', city: 'Dallas', state: 'TX', rung: 0,
-    });
+    const ok = await claimSlot(input('acme'));
     expect(ok).toBe(true);
     const cmd = sendMock.mock.calls[0][0];
-    expect(cmd.input.ConditionExpression).toContain('attribute_not_exists');
-    expect(cmd.input.Item.sk).toBe('LEAD#acme');
+    expect(cmd.input.Item.sk).toBe(SLOT_SK);   // constant — all leads contend for ONE item
+    expect(cmd.input.Item.sk).toBe('SLOT');
+    expect(cmd.input.Item.slug).toBe('acme');  // owner recorded on the slot
     expect(cmd.input.Item.status).toBe('active');
+    expect(cmd.input.ConditionExpression).toContain('attribute_not_exists');
   });
 
-  it('returns false when the slot is already taken (ConditionalCheckFailed)', async () => {
+  it('two different leads target the SAME (pk, SLOT) item so DDB arbitrates one winner', async () => {
+    sendMock.mockResolvedValueOnce({}); // acme wins
+    sendMock.mockRejectedValueOnce(Object.assign(new Error('x'), { name: 'ConditionalCheckFailedException' })); // corp loses
+    const a = await claimSlot(input('acme'));
+    const b = await claimSlot(input('corp'));
+    expect(a).toBe(true);
+    expect(b).toBe(false); // the mutex held — corp did NOT also win the slot
+    expect(sendMock.mock.calls[0][0].input.Item.sk).toBe(SLOT_SK);
+    expect(sendMock.mock.calls[1][0].input.Item.sk).toBe(SLOT_SK);
+    expect(sendMock.mock.calls[0][0].input.Item.pk).toBe(sendMock.mock.calls[1][0].input.Item.pk);
+  });
+
+  it('returns false on ConditionalCheckFailed (slot already held)', async () => {
     sendMock.mockRejectedValueOnce(Object.assign(new Error('x'), { name: 'ConditionalCheckFailedException' }));
-    const ok = await claimSlot({
-      pk: 'KEYWORD#landscaping dallas#dallas|tx', slug: 'b', keyword: 'landscaping dallas',
-      baseKeyword: 'landscaping dallas', niche: 'landscaping', city: 'Dallas', state: 'TX', rung: 0,
-    });
-    expect(ok).toBe(false);
+    expect(await claimSlot(input('b'))).toBe(false);
   });
 
   it('rethrows non-conditional errors', async () => {
     sendMock.mockRejectedValueOnce(Object.assign(new Error('throttle'), { name: 'ProvisionedThroughputExceededException' }));
-    await expect(claimSlot({
-      pk: 'x', slug: 'b', keyword: 'k', baseKeyword: 'k', niche: 'n', city: 'c', state: 's', rung: 0,
-    })).rejects.toThrow('throttle');
+    await expect(claimSlot(input('b'))).rejects.toThrow('throttle');
   });
 });
 
 describe('getActiveClaim', () => {
-  it('returns the active claim for a slot, or null', async () => {
-    sendMock.mockResolvedValueOnce({ Items: [{ pk: 'KEYWORD#k#c', sk: 'LEAD#acme', status: 'active' }] });
+  it('GetItem on the sentinel returns the active owner', async () => {
+    sendMock.mockResolvedValueOnce({ Item: { pk: 'KEYWORD#k#c', sk: 'SLOT', slug: 'acme', status: 'active' } });
     const c = await getActiveClaim('KEYWORD#k#c');
-    expect(c?.sk).toBe('LEAD#acme');
-    sendMock.mockResolvedValueOnce({ Items: [{ status: 'released' }] });
+    expect(c?.slug).toBe('acme');
+    expect(sendMock.mock.calls[0][0].input.Key).toEqual({ pk: 'KEYWORD#k#c', sk: 'SLOT' });
+  });
+
+  it('returns null when the sentinel is released or absent', async () => {
+    sendMock.mockResolvedValueOnce({ Item: { status: 'released' } });
+    expect(await getActiveClaim('KEYWORD#k#c')).toBeNull();
+    sendMock.mockResolvedValueOnce({}); // no Item
     expect(await getActiveClaim('KEYWORD#k#c')).toBeNull();
   });
 });
 
 describe('releaseClaimsForLead', () => {
-  it('queries lead-index then marks each active claim released', async () => {
+  it('queries lead-index and releases each active slot with a guarded update', async () => {
     sendMock.mockResolvedValueOnce({ Items: [
-      { pk: 'KEYWORD#a#c', sk: 'LEAD#acme', status: 'active' },
-      { pk: 'KEYWORD#b#c', sk: 'LEAD#acme', status: 'released' }, // already released — skipped
+      { pk: 'KEYWORD#a#c', sk: 'SLOT', slug: 'acme', status: 'active' },
+      { pk: 'KEYWORD#b#c', sk: 'SLOT', slug: 'acme', status: 'released' }, // already released — skipped
     ] });
-    sendMock.mockResolvedValueOnce({}); // the one update
+    sendMock.mockResolvedValueOnce({}); // the one guarded update
     const n = await releaseClaimsForLead('acme', '2026-06-15T00:00:00.000Z');
     expect(n).toBe(1);
-    const q = sendMock.mock.calls[0][0];
-    expect(q.input.IndexName).toBe('lead-index');
+    expect(sendMock.mock.calls[0][0].input.IndexName).toBe('lead-index');
+    const upd = sendMock.mock.calls[1][0];
+    expect(upd.input.ConditionExpression).toContain('slug = :slug');
+    expect(upd.input.Key).toEqual({ pk: 'KEYWORD#a#c', sk: 'SLOT' });
+  });
+
+  it('skips a slot re-won by another lead mid-release (guarded update fails → not counted)', async () => {
+    sendMock.mockResolvedValueOnce({ Items: [{ pk: 'KEYWORD#a#c', sk: 'SLOT', slug: 'acme', status: 'active' }] });
+    sendMock.mockRejectedValueOnce(Object.assign(new Error('x'), { name: 'ConditionalCheckFailedException' }));
+    expect(await releaseClaimsForLead('acme')).toBe(0);
   });
 });
