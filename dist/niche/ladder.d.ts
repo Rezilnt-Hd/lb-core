@@ -16,5 +16,12 @@ export declare const KEYWORD_MODIFIERS: readonly ["commercial", "residential", "
  * rung 0:            "<canonicalNiche> <city>"          (head)
  * rungs 1..M:        "<modifier> <canonicalNiche> <city>"
  * rungs M+1..K:      "<subNiche> <city>"  (registered sub-niches via taxonomy)
+ *
+ * A sub-niche slice can be byte-identical to a modifier rung when a registered
+ * sub-niche normalizes to "<modifier> <niche>" (e.g. 'commercial plumbing' /
+ * 'residential plumbing'). We dedup keeping the FIRST occurrence so head and
+ * modifier rungs always win over a colliding sub-niche slice (preserving the
+ * priority above), then re-number rungs sequentially so rung === array index —
+ * the live claim resolver and the keyword-claim backfill both rely on that.
  */
 export declare function buildLadder(niche: string, city: string, state: string): LadderRung[];

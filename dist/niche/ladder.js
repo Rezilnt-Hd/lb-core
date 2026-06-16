@@ -20,6 +20,13 @@ export const KEYWORD_MODIFIERS = [
  * rung 0:            "<canonicalNiche> <city>"          (head)
  * rungs 1..M:        "<modifier> <canonicalNiche> <city>"
  * rungs M+1..K:      "<subNiche> <city>"  (registered sub-niches via taxonomy)
+ *
+ * A sub-niche slice can be byte-identical to a modifier rung when a registered
+ * sub-niche normalizes to "<modifier> <niche>" (e.g. 'commercial plumbing' /
+ * 'residential plumbing'). We dedup keeping the FIRST occurrence so head and
+ * modifier rungs always win over a colliding sub-niche slice (preserving the
+ * priority above), then re-number rungs sequentially so rung === array index —
+ * the live claim resolver and the keyword-claim backfill both rely on that.
  */
 export function buildLadder(niche, city, state) {
     const canonical = getNicheProfile(niche)?.niche ?? normalizeKeyword(niche);
@@ -30,17 +37,27 @@ export function buildLadder(niche, city, state) {
     // normalized; this guards the unregistered-niche fallback (registry norm does
     // NOT collapse internal whitespace, normalizeKeyword does).
     const rung = (keyword) => normalizeKeyword(keyword);
-    const rungs = [];
-    rungs.push({ rung: 0, keyword: rung(`${canonical} ${cityStr}`) });
+    const candidates = [];
+    candidates.push(rung(`${canonical} ${cityStr}`));
     for (const mod of KEYWORD_MODIFIERS) {
-        rungs.push({ rung: rungs.length, keyword: rung(`${mod} ${canonical} ${cityStr}`) });
+        candidates.push(rung(`${mod} ${canonical} ${cityStr}`));
     }
     // Sub-niche slices, alphabetized by canonical key for stable order.
     const subs = getNichesByParent(canonical)
         .map(p => p.niche)
         .sort();
     for (const sub of subs) {
-        rungs.push({ rung: rungs.length, keyword: rung(`${sub} ${cityStr}`) });
+        candidates.push(rung(`${sub} ${cityStr}`));
+    }
+    // Dedup on the FINAL normalized keyword, first occurrence wins, then re-number
+    // rungs contiguously so rung === array index for every rung.
+    const seen = new Set();
+    const rungs = [];
+    for (const keyword of candidates) {
+        if (seen.has(keyword))
+            continue;
+        seen.add(keyword);
+        rungs.push({ rung: rungs.length, keyword });
     }
     return rungs;
 }
