@@ -12,6 +12,7 @@ export {
 } from "./types/lead.js";
 export type { ScoreBand } from "./types/lead.js";
 export type { ExistingSite } from "./types/existing-site.js";
+export type { KeywordClaim, ClaimStatus } from "./types/claim.js";
 export {
   TierEntitlements,
   TIER_ENTITLEMENTS,
