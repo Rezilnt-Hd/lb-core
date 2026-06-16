@@ -100,6 +100,9 @@ export {
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 // Niche refiner — businessType → sub-niche specialization (PR-A; additive)
 export { resolveRefinedNiche } from "./niche/refiner.js";
+// Keyword differentiation ladder + normalizers (anti-cannibalization claim system)
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
+export type { LadderRung } from "./niche/ladder.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
 export {

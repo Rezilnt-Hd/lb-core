@@ -20,6 +20,8 @@ export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./se
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 export { resolveRefinedNiche } from "./niche/refiner.js";
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
+export type { LadderRung } from "./niche/ladder.js";
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type ContentBlock, type InvokeBedrockInput, type InvokeBedrockResult, } from "./bedrock/types.js";
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";

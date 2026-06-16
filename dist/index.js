@@ -22,6 +22,8 @@ export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./se
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
 // Niche refiner — businessType → sub-niche specialization (PR-A; additive)
 export { resolveRefinedNiche } from "./niche/refiner.js";
+// Keyword differentiation ladder + normalizers (anti-cannibalization claim system)
+export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
 // Bedrock adapter — provider-switch envelope + response normalization
 export { invokeBedrock, detectProvider, buildRequestBody, parseResponseBody, supportsVision, _resetClient as _resetBedrockClientForTests, } from "./bedrock/adapter.js";
 export { BedrockAdapterError, } from "./bedrock/types.js";
