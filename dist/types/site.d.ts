@@ -22,6 +22,9 @@ export interface Site {
     leadSlug: string;
     templateId: string;
     keywords: KeywordData[];
+    /** Differentiated homepage target keyword chosen by the claim system.
+     * Absent ⇒ homepage targets the default "<niche> in <city>" (byte-identical to today). */
+    targetKeyword?: string;
     blogPosts: BlogPost[];
     robotsTxt: RobotsTxtConfig;
     scrapedContent?: string;
