@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeKeyword, normalizeCity } from '../../src/niche/ladder.js';
 import { buildLadder, KEYWORD_MODIFIERS } from '../../src/niche/ladder.js';
+import {
+  KEYWORD_QUALIFIERS, KEYWORD_INTENT_PREFIX, KEYWORD_INTENT_SUFFIX,
+} from '../../src/niche/ladder.js';
 
 describe('normalizeKeyword', () => {
   it('lowercases, trims, and collapses internal whitespace', () => {
@@ -96,13 +99,43 @@ describe('buildLadder', () => {
     expect(subSlice.rung).toBeGreaterThan(lastModifierRung);
   });
 
-  it('leaves a non-colliding niche (landscaping) unchanged in length and keywords', () => {
+  it('landscaping ladder grows to 23 distinct rungs after the qualifier+intent tiers', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const keywords = ladder.map(r => r.keyword);
-    // landscaping sub-niches never start with a modifier word → no dedup happens.
-    // head (1) + 8 modifiers + 6 landscaping sub-niches = 15 distinct rungs.
-    expect(keywords).toHaveLength(15);
-    expect(new Set(keywords).size).toBe(15);
+    expect(keywords).toHaveLength(23);
+    expect(new Set(keywords).size).toBe(23);
+    expect(ladder.every((r, i) => r.rung === i)).toBe(true);
+  });
+
+  it('appends qualifier rungs "<niche> <qualifier> <city>" after the sub-niche block', () => {
+    const ladder = buildLadder('landscaping', 'Dallas', 'TX').map(r => r.keyword);
+    for (const q of KEYWORD_QUALIFIERS) {
+      expect(ladder).toContain(`landscaping ${q} dallas`);
+    }
+    const lastSub = buildLadder('landscaping', 'Dallas', 'TX')
+      .find(r => r.keyword === 'tree service dallas')!;
+    const firstQual = buildLadder('landscaping', 'Dallas', 'TX')
+      .find(r => r.keyword === `landscaping ${KEYWORD_QUALIFIERS[0]} dallas`)!;
+    expect(firstQual.rung).toBeGreaterThan(lastSub.rung);
+  });
+
+  it('appends intent prefix rungs "<prefix> <niche> <city>" and suffix rungs "<niche> <suffix> <city>"', () => {
+    const ladder = buildLadder('landscaping', 'Dallas', 'TX').map(r => r.keyword);
+    for (const p of KEYWORD_INTENT_PREFIX) expect(ladder).toContain(`${p} landscaping dallas`);
+    for (const s of KEYWORD_INTENT_SUFFIX) expect(ladder).toContain(`landscaping ${s} dallas`);
+  });
+
+  it('intent rungs come after qualifier rungs (priority order)', () => {
+    const ladder = buildLadder('landscaping', 'Dallas', 'TX');
+    const lastQual = ladder.find(r => r.keyword === `landscaping ${KEYWORD_QUALIFIERS[KEYWORD_QUALIFIERS.length - 1]} dallas`)!;
+    const firstIntent = ladder.find(r => r.keyword === `${KEYWORD_INTENT_PREFIX[0]} landscaping dallas`)!;
+    expect(firstIntent.rung).toBeGreaterThan(lastQual.rung);
+  });
+
+  it('still emits no duplicate keywords and re-numbers contiguously with the new tiers', () => {
+    const ladder = buildLadder('plumbing', 'Houston', 'TX');
+    const kws = ladder.map(r => r.keyword);
+    expect(new Set(kws).size).toBe(kws.length);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 });
