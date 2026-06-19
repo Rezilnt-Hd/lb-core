@@ -68,6 +68,14 @@ const CONTEXT: Record<string, string> = {
   'tree service': `Services: tree removal ($400-$2,000), trimming/pruning ($200-$800), stump grinding ($100-$400), emergency storm removal ($500-$3,000), arborist consultation ($100-$300), cabling & bracing. Certified-arborist signal. Icons: 🌳🪚🪵⛈️🧗🩺🔗`,
   'landscape lighting': `Services: low-voltage path & accent lighting ($80-$300/fixture), full lighting systems ($2,000-$6,000), transformer & timer install, LED retrofit ($100-$250/fixture), security/architectural lighting, smart controls. Icons: 💡🌙🔦🏡🌳🔌⭐`,
 
+  // ── Landscaping sub-niches (Lever 2) ───────────────────────────────────────
+  'sod installation': `Services: sod supply & installation ($1-$2/sqft installed), soil prep & grading ($0.50-$1.50/sqft), old lawn removal ($1-$2/sqft), warm-season sod (Bermuda/Zoysia/St. Augustine), delivery & roll-out, first-water & care plan. Per-project; homeowners & HOAs. Icons: 🌱🚜🟩💧📦🏡`,
+  'artificial turf': `Services: synthetic turf installation ($8-$15/sqft installed), pet turf systems, putting greens ($20-$40/sqft), base prep & drainage, infill & seaming, turf for play areas. Low-water, low-maintenance. Per-project. Icons: 🟩🐾⛳💧🧱✨`,
+  'drainage solutions': `Services: French drain installation ($1,000-$5,000), yard grading & regrading ($1,000-$3,000), channel/trench drains, dry wells, downspout extensions, catch basins, erosion control. Solves standing water & runoff. Icons: 💧🌧️🛠️⛏️🏞️🚰`,
+  xeriscaping: `Services: drought-tolerant landscape design & install ($5-$20/sqft), native & succulent planting, decomposed-granite & gravel beds, drip irrigation conversion, rock features, water-wise plant selection. Low-water. Icons: 🌵🪨💧🌾☀️🌿`,
+  'mulch installation': `Services: mulch supply & spreading ($35-$110/cu yd installed), bed edging ($1-$2/linear ft), weed-barrier fabric, hardwood/cedar/dyed mulch, seasonal refresh, bed cleanup & prep. Recurring/seasonal. Icons: 🪵🍂🌳🧹🛤️🌱`,
+  'outdoor living': `Services: outdoor living space design & build, pergolas & pavilions ($4,000-$12,000), outdoor kitchens ($5,000-$20,000), fire features ($1,500-$6,000), pavers & seating areas, shade structures, landscape integration. Per-project. Icons: 🏡🔥🍳⛱️🪑🌿`,
+
   // ── Plumbing sub-niches (PR-A) ─────────────────────────────────────────────
   'residential plumbing': `Services: emergency plumbing ($150-$400), faucet/fixture repair ($125-$350), toilet repair ($125-$300), drain cleaning ($150-$350), water heater repair ($150-$450), leak detection ($150-$400), garbage disposal install ($150-$400), sump pump install ($800-$1,800), bathroom remodeling ($1,500-$5,000). Icons: 🚨🔧🚽💧🔥🔍🗑️💦🏠`,
   'commercial plumbing': `Services: commercial plumbing service ($150-$250/hr), backflow testing/certification ($75-$300/device), grease trap installation ($1,400-$18,000), grease trap cleaning ($150-$500), commercial water heater service ($500-$3,000), tenant build-out plumbing ($2,000-$25,000), hydro jetting ($600-$1,400), preventive maintenance contracts ($100-$300/visit), code compliance & permits. Icons: 🏢🔧🛡️🍳🔥🚧💦🔄📋`,
@@ -195,6 +203,13 @@ const CATEGORY: Record<string, NicheCategory> = {
   hardscaping: 'outdoor',
   // ── Landscaping sub-niche (PR-A) — stays outdoor ──
   'landscape lighting': 'outdoor',
+  // ── Landscaping sub-niches (Lever 2) — all outdoor ──
+  'sod installation': 'outdoor',
+  'artificial turf': 'outdoor',
+  'drainage solutions': 'outdoor',
+  xeriscaping: 'outdoor',
+  'mulch installation': 'outdoor',
+  'outdoor living': 'outdoor',
 
   // General Trade
   hvac: 'general-trade',
@@ -289,6 +304,13 @@ const SCHEMA_TYPE: Record<string, string> = {
   // ── Landscaping sub-niches (PR-A) ──
   'landscape design': 'HomeAndConstructionBusiness',
   'landscape lighting': 'HomeAndConstructionBusiness',
+  // ── Landscaping sub-niches (Lever 2) ──
+  'sod installation': 'HomeAndConstructionBusiness',
+  'artificial turf': 'HomeAndConstructionBusiness',
+  'drainage solutions': 'HomeAndConstructionBusiness',
+  xeriscaping: 'HomeAndConstructionBusiness',
+  'mulch installation': 'HomeAndConstructionBusiness',
+  'outdoor living': 'HomeAndConstructionBusiness',
 };
 
 // ── Sub-niche → coarse parent (PR-A) ──────────────────────────────────────────
@@ -302,6 +324,13 @@ const PARENT: Record<string, string> = {
   irrigation: 'landscaping',
   'tree service': 'landscaping',
   'landscape lighting': 'landscaping',
+  // Landscaping (Lever 2)
+  'sod installation': 'landscaping',
+  'artificial turf': 'landscaping',
+  'drainage solutions': 'landscaping',
+  xeriscaping: 'landscaping',
+  'mulch installation': 'landscaping',
+  'outdoor living': 'landscaping',
   // Plumbing
   'residential plumbing': 'plumbing',
   'commercial plumbing': 'plumbing',
@@ -345,6 +374,13 @@ const ALIASES_BY_NICHE: Record<string, string[]> = {
   irrigation: ['sprinkler system installation', 'sprinkler repair', 'drip irrigation', 'irrigation system', 'sprinkler', 'irrigation'],
   'tree service': ['tree removal', 'tree trimming', 'tree pruning', 'stump grinding', 'arborist', 'tree care', 'tree service'],
   'landscape lighting': ['landscape lighting installation', 'low voltage lighting', 'outdoor lighting', 'landscape lighting', 'accent lighting'],
+  // Landscaping (Lever 2)
+  'sod installation': ['sod installation', 'sod laying', 'lawn sodding', 'new lawn installation', 'turf laying', 'sodding'],
+  'artificial turf': ['artificial turf installation', 'synthetic turf', 'artificial grass', 'synthetic grass', 'putting green installation', 'pet turf'],
+  'drainage solutions': ['yard drainage', 'french drain installation', 'drainage solutions', 'french drain', 'yard grading', 'erosion control', 'standing water'],
+  xeriscaping: ['xeriscaping', 'xeriscape', 'drought tolerant landscaping', 'water wise landscaping', 'desert landscaping', 'native landscaping'],
+  'mulch installation': ['mulch installation', 'mulching service', 'mulch delivery', 'bed mulching', 'mulch spreading'],
+  'outdoor living': ['outdoor living space', 'pergola installation', 'outdoor kitchen', 'pavilion installation', 'outdoor living', 'fire pit installation'],
   // Plumbing
   'residential plumbing': ['residential plumbing', 'residential plumber', 'home plumbing', 'house plumbing', 'local plumber'],
   'commercial plumbing': ['commercial plumbing contractor', 'commercial plumbing', 'commercial plumber', 'industrial plumbing', 'grease trap', 'tenant improvement plumbing'],

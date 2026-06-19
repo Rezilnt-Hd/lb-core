@@ -88,4 +88,18 @@ describe('niche registry', () => {
       expect(isContentSupported(niche)).toBe(true);
     }
   });
+
+  it('registers the 6 new landscaping sub-niches as content-supported children', () => {
+    const subs = ['sod installation', 'artificial turf', 'drainage solutions',
+                  'xeriscaping', 'mulch installation', 'outdoor living'];
+    for (const s of subs) {
+      const p = getNicheProfile(s);
+      expect(p, `missing ${s}`).not.toBeNull();
+      expect(p!.parent).toBe('landscaping');
+      expect(p!.category).toBe('outdoor');
+      expect(p!.schemaType).toBe('HomeAndConstructionBusiness');
+      expect(p!.context, `${s} needs content context`).toBeTruthy();
+      expect(p!.aliases!.length).toBeGreaterThan(0);
+    }
+  });
 });
