@@ -401,7 +401,7 @@ const ALIASES_BY_NICHE: Record<string, string[]> = {
   'drainage solutions': ['yard drainage', 'french drain installation', 'drainage solutions', 'french drain', 'yard grading', 'erosion control', 'standing water'],
   xeriscaping: ['xeriscaping', 'xeriscape', 'drought tolerant landscaping', 'water wise landscaping', 'desert landscaping', 'native landscaping'],
   'mulch installation': ['mulch installation', 'mulching service', 'mulch delivery', 'bed mulching', 'mulch spreading'],
-  'outdoor living': ['outdoor living space', 'pergola installation', 'outdoor kitchen', 'pavilion installation', 'outdoor living', 'fire pit installation'],
+  'outdoor living': ['outdoor living space', 'pergola installation', 'pavilion installation', 'outdoor living', 'fire pit installation'],
   // Plumbing
   'residential plumbing': ['residential plumbing', 'residential plumber', 'home plumbing', 'house plumbing', 'local plumber'],
   'commercial plumbing': ['commercial plumbing contractor', 'commercial plumbing', 'commercial plumber', 'industrial plumbing', 'grease trap', 'tenant improvement plumbing'],
