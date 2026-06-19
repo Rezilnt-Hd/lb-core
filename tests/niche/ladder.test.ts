@@ -99,11 +99,11 @@ describe('buildLadder', () => {
     expect(subSlice.rung).toBeGreaterThan(lastModifierRung);
   });
 
-  it('landscaping ladder is 29 distinct rungs after Lever 2 sub-niches', () => {
+  it('landscaping ladder is 34 distinct rungs after Lever 3 geo tier (29 + 5 geo)', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const keywords = ladder.map(r => r.keyword);
-    expect(keywords).toHaveLength(29);
-    expect(new Set(keywords).size).toBe(29);
+    expect(keywords).toHaveLength(34);
+    expect(new Set(keywords).size).toBe(34);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 
@@ -146,6 +146,27 @@ describe('buildLadder', () => {
     expect(kws).toContain('zorptastic widgetry company dallas');
     expect(kws).toContain('best zorptastic widgetry dallas');
     expect(new Set(kws).size).toBe(kws.length);
+    expect(ladder.every((r, i) => r.rung === i)).toBe(true);
+  });
+
+  it('appends geo rungs "<niche> <area>" last, only for a curated city', () => {
+    const ladder = buildLadder('landscaping', 'Dallas', 'TX');
+    const kws = ladder.map(r => r.keyword);
+    expect(kws).toContain('landscaping irving');
+    const lastIntent = ladder.find(r => r.keyword === `landscaping ${KEYWORD_INTENT_SUFFIX[KEYWORD_INTENT_SUFFIX.length - 1]} dallas`)!;
+    const firstGeo = ladder.find(r => r.keyword === 'landscaping irving')!;
+    expect(firstGeo.rung).toBeGreaterThan(lastIntent.rung);
+  });
+
+  it('emits NO geo rungs for an uncurated city', () => {
+    const kws = buildLadder('landscaping', 'Smalltown', 'WY').map(r => r.keyword);
+    // every landscaping keyword for an uncurated city ends with the city token
+    expect(kws.some(k => k.startsWith('landscaping ') && !k.includes('smalltown'))).toBe(false);
+  });
+
+  it('landscaping/Dallas reaches 34 rungs (29 + 5 geo)', () => {
+    const ladder = buildLadder('landscaping', 'Dallas', 'TX');
+    expect(ladder).toHaveLength(34);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 });
