@@ -26,3 +26,10 @@ export declare function getActiveClaim(pk: string): Promise<KeywordClaim | null>
  * re-won by another lead between the query and the update is never clobbered
  * (a guarded-update ConditionalCheckFailed is skipped, not counted). */
 export declare function releaseClaimsForLead(slug: string, nowIso?: string): Promise<number>;
+export interface ActiveClaimRef {
+    pk: string;
+    slug: string;
+}
+/** Every currently-active claim slot via the status-index GSI, paginated.
+ * Used by the reconcile rollout tool to seed slot ownership read-only. */
+export declare function listActiveClaims(): Promise<ActiveClaimRef[]>;

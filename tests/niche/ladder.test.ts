@@ -153,6 +153,8 @@ describe('buildLadder', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const kws = ladder.map(r => r.keyword);
     expect(kws).toContain('landscaping irving');
+    // geo rungs are city-less by design — the area IS the locator, no lead-city token appended
+    expect(kws).not.toContain('landscaping irving dallas');
     const lastIntent = ladder.find(r => r.keyword === `landscaping ${KEYWORD_INTENT_SUFFIX[KEYWORD_INTENT_SUFFIX.length - 1]} dallas`)!;
     const firstGeo = ladder.find(r => r.keyword === 'landscaping irving')!;
     expect(firstGeo.rung).toBeGreaterThan(lastIntent.rung);

@@ -80,3 +80,25 @@ export async function releaseClaimsForLead(slug, nowIso = new Date().toISOString
     log.info('Released claims for lead', { slug, count: released });
     return released;
 }
+/** Every currently-active claim slot via the status-index GSI, paginated.
+ * Used by the reconcile rollout tool to seed slot ownership read-only. */
+export async function listActiveClaims() {
+    const out = [];
+    let ExclusiveStartKey;
+    do {
+        const resp = await docClient.send(new QueryCommand({
+            TableName: TABLE_NAMES.claims,
+            IndexName: 'status-index',
+            KeyConditionExpression: '#s = :active',
+            ExpressionAttributeNames: { '#s': 'status' },
+            ExpressionAttributeValues: { ':active': 'active' },
+            ProjectionExpression: 'pk, slug',
+            ExclusiveStartKey,
+        }));
+        for (const it of (resp.Items ?? [])) {
+            out.push({ pk: it.pk, slug: it.slug });
+        }
+        ExclusiveStartKey = resp.LastEvaluatedKey;
+    } while (ExclusiveStartKey);
+    return out;
+}
