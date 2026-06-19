@@ -30,3 +30,5 @@ export { BedrockAdapterError, type BedrockProvider, type BedrockMessage, type Co
 export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
 export { scrapeExistingSite, captureExistingSite } from "./scrape/existing-site.js";
 export type { ScrapedContent } from "./scrape/existing-site.js";
+export { safeFetch, assertPublicUrl, isBlockedIp, SsrfError } from "./net/safe-fetch.js";
+export type { SafeFetchOptions, Lookup } from "./net/safe-fetch.js";
