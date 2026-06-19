@@ -113,6 +113,8 @@ export {
   KEYWORD_INTENT_SUFFIX,
 } from "./niche/ladder.js";
 export type { LadderRung } from "./niche/ladder.js";
+// Geographic overflow tier — offline-curated metro → nearby-area seed (Lever 3)
+export { GEO_NEIGHBORS, geoNeighbors, MAX_GEO_RUNGS } from "./niche/geo-neighbors.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
 export {
