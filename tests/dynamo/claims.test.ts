@@ -6,7 +6,7 @@ vi.mock('../../src/dynamo/client.js', () => {
 });
 import * as client from '../../src/dynamo/client.js';
 const sendMock = (client as any).__sendMock as ReturnType<typeof vi.fn>;
-import { claimSlot, getActiveClaim, releaseClaimsForLead, SLOT_SK } from '../../src/dynamo/claims.js';
+import { claimSlot, getActiveClaim, releaseClaimsForLead, listActiveClaims, SLOT_SK } from '../../src/dynamo/claims.js';
 
 const input = (slug: string, keyword = 'landscaping dallas') => ({
   pk: `KEYWORD#${keyword}#dallas|tx`, slug, keyword,
@@ -86,5 +86,29 @@ describe('releaseClaimsForLead', () => {
     sendMock.mockResolvedValueOnce({ Items: [{ pk: 'KEYWORD#a#c', sk: 'SLOT', slug: 'acme', status: 'active' }] });
     sendMock.mockRejectedValueOnce(Object.assign(new Error('x'), { name: 'ConditionalCheckFailedException' }));
     expect(await releaseClaimsForLead('acme')).toBe(0);
+  });
+});
+
+describe('listActiveClaims', () => {
+  it('pages the status-index and returns every active {pk, slug}', async () => {
+    sendMock
+      .mockResolvedValueOnce({
+        Items: [{ pk: 'KEYWORD#a#dallas|tx', slug: 'lead-a' }],
+        LastEvaluatedKey: { pk: 'KEYWORD#a#dallas|tx' },
+      })
+      .mockResolvedValueOnce({
+        Items: [{ pk: 'KEYWORD#b#dallas|tx', slug: 'lead-b' }],
+      });
+    const claims = await listActiveClaims();
+    expect(claims).toEqual([
+      { pk: 'KEYWORD#a#dallas|tx', slug: 'lead-a' },
+      { pk: 'KEYWORD#b#dallas|tx', slug: 'lead-b' },
+    ]);
+    // queries the status-index with the reserved-word alias on the first page
+    expect(sendMock.mock.calls[0][0].input.IndexName).toBe('status-index');
+    expect(sendMock.mock.calls[0][0].input.ExpressionAttributeNames['#s']).toBe('status');
+    // paginates: second call carries the prior page's LastEvaluatedKey
+    expect(sendMock.mock.calls[1][0].input.ExclusiveStartKey).toEqual({ pk: 'KEYWORD#a#dallas|tx' });
+    expect(sendMock).toHaveBeenCalledTimes(2);
   });
 });
