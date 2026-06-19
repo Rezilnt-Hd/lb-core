@@ -99,11 +99,11 @@ describe('buildLadder', () => {
     expect(subSlice.rung).toBeGreaterThan(lastModifierRung);
   });
 
-  it('landscaping ladder grows to 23 distinct rungs after the qualifier+intent tiers', () => {
+  it('landscaping ladder is 29 distinct rungs after Lever 2 sub-niches', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const keywords = ladder.map(r => r.keyword);
-    expect(keywords).toHaveLength(23);
-    expect(new Set(keywords).size).toBe(23);
+    expect(keywords).toHaveLength(29);
+    expect(new Set(keywords).size).toBe(29);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 
