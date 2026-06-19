@@ -138,3 +138,7 @@ export { emitBedrockMetrics, _resetCwClient } from "./bedrock/metrics.js";
 // Existing-site capture — shared Firecrawl scrape + Haiku facet extraction
 export { scrapeExistingSite, captureExistingSite } from "./scrape/existing-site.js";
 export type { ScrapedContent } from "./scrape/existing-site.js";
+
+// SSRF-hardened fetch — use for ANY fetch of an untrusted (lead/scrape) URL
+export { safeFetch, assertPublicUrl, isBlockedIp, SsrfError } from "./net/safe-fetch.js";
+export type { SafeFetchOptions, Lookup } from "./net/safe-fetch.js";
