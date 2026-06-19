@@ -138,4 +138,14 @@ describe('buildLadder', () => {
     expect(new Set(kws).size).toBe(kws.length);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
+
+  it('a niche with zero sub-niches still emits qualifier + intent tiers and stays contiguous', () => {
+    // unregistered token → normalizeKeyword fallback, getNichesByParent yields nothing
+    const ladder = buildLadder('zorptastic widgetry', 'Dallas', 'TX');
+    const kws = ladder.map(r => r.keyword);
+    expect(kws).toContain('zorptastic widgetry company dallas');
+    expect(kws).toContain('best zorptastic widgetry dallas');
+    expect(new Set(kws).size).toBe(kws.length);
+    expect(ladder.every((r, i) => r.rung === i)).toBe(true);
+  });
 });

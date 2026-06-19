@@ -68,11 +68,11 @@ export function buildLadder(niche: string, city: string, state: string): LadderR
   for (const sub of subs) {
     candidates.push(rung(`${sub} ${cityStr}`));
   }
-  // L1 — uniform commercial-qualifier tier (real buyer-intent searches, all niches).
+  // uniform commercial-qualifier tier (real buyer-intent searches, all niches).
   for (const q of KEYWORD_QUALIFIERS) {
     candidates.push(rung(`${canonical} ${q} ${cityStr}`));
   }
-  // L1 — intent tier: prefixes ("best <niche> <city>") then suffixes ("<niche> quotes <city>").
+  // intent tier: prefixes ("best <niche> <city>") then suffixes ("<niche> quotes <city>").
   for (const p of KEYWORD_INTENT_PREFIX) {
     candidates.push(rung(`${p} ${canonical} ${cityStr}`));
   }
