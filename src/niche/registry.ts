@@ -84,6 +84,12 @@ const CONTEXT: Record<string, string> = {
   repiping: `Services: whole-house repipe ($4,000-$15,000), PEX repipe ($0.40-$2/ft), copper repipe ($2-$8/ft), per-fixture repipe ($200-$400), water/main line replacement ($1,500-$5,000), bathroom remodel plumbing ($1,500-$5,000), kitchen remodel plumbing ($1,500-$6,000), gas line installation ($350-$2,000), fixture upgrades ($150-$500). Icons: 🔩🏠🔧🚿🛁🍳⛽💧🧰`,
   'well and water treatment': `Services: well pump repair ($200-$1,500), well pump replacement ($1,500-$4,500), pressure tank replacement ($400-$1,200), water softener installation ($800-$3,000), whole-house water filtration ($700-$2,500), well water treatment systems ($500-$10,000), reverse osmosis install ($300-$1,200), UV purification install ($300-$1,500), water testing ($100-$300). Icons: 🚰🔧💧🧂🛢️🪣💦☀️🔬`,
 
+  // ── Plumbing sub-niches (Lever 2) ──────────────────────────────────────────
+  'gas line services': `Services: gas line installation ($350-$2,000), gas line repair ($150-$750), gas leak detection ($150-$450), appliance gas hookup ($150-$600), gas line extension for grills/ranges/pool heaters, sediment trap & shutoff valve install, code compliance & permits. Icons: ⛽🔧🔥🚨🧰📋💧🔩`,
+  'slab leak repair': `Services: slab leak detection ($150-$500), electronic leak location, slab leak repair ($600-$4,000), pipe re-route/re-pipe under slab ($1,500-$6,000), spot repair via tunneling, epoxy pipe lining, foundation-safe access. Emergency response. Icons: 🚨💧🏠🔍🔧🛠️🧰🔩`,
+  'sump pump services': `Services: sump pump installation ($800-$1,800), sump pump replacement ($400-$1,200), battery backup pump ($300-$900), pit installation, float switch repair, discharge line service, basement flood prevention, annual testing. Icons: 💧🔋🏠🔧🚨🛠️🔌🪣`,
+  'bathroom plumbing': `Services: toilet repair/replacement ($125-$500), faucet & fixture install ($125-$400), shower/tub valve replacement ($200-$700), bathroom remodel plumbing ($1,500-$5,000), vanity & sink install ($150-$500), bidet install, leak repair, drain unclogging. Icons: 🚽🚿🛁🔧💧🪞🧰🔩`,
+
   // ── Roofing sub-niches (PR-A) ──────────────────────────────────────────────
   'residential roofing': `Services: roof repair ($350-$1,500), asphalt shingle replacement ($4.25-$8.25/sqft; $9,000-$25,000 typical), full tear-off & re-roof ($10,500-$33,000), shingle/flashing repair ($350-$1,100/square), leak repair ($400-$1,200), ridge & ventilation ($300-$900). Icons: 🏠🔨🪜💧🧰🌬️`,
   'commercial roofing': `Services: TPO membrane install ($8-$17/sqft), EPDM rubber roofing ($3.50-$9/sqft), built-up & modified-bitumen systems, flat-roof replacement (10,000 sqft from $40,000), membrane repair & seam sealing ($500-$3,000), roof coatings & restoration. Icons: 🏢🪟🔧🧱🛢️🪜`,
@@ -138,6 +144,11 @@ const CATEGORY: Record<string, NicheCategory> = {
   'water heater service': 'home-improvement',
   repiping: 'home-improvement',
   'well and water treatment': 'home-improvement',
+  // ── Plumbing sub-niches (Lever 2) — buyer-intent categories ──
+  'gas line services': 'home-improvement',
+  'slab leak repair': 'emergency',
+  'sump pump services': 'emergency',
+  'bathroom plumbing': 'home-improvement',
 
   // Home Improvement
   'garage door': 'home-improvement',
@@ -242,6 +253,11 @@ const SCHEMA_TYPE: Record<string, string> = {
   'water heater service': 'Plumber',
   repiping: 'Plumber',
   'well and water treatment': 'Plumber',
+  // ── Plumbing sub-niches (Lever 2) ──
+  'gas line services': 'Plumber',
+  'slab leak repair': 'Plumber',
+  'sump pump services': 'Plumber',
+  'bathroom plumbing': 'Plumber',
 
   // HVAC / heating / cooling → HVACBusiness
   hvac: 'HVACBusiness',
@@ -338,6 +354,11 @@ const PARENT: Record<string, string> = {
   'water heater service': 'plumbing',
   repiping: 'plumbing',
   'well and water treatment': 'plumbing',
+  // Plumbing (Lever 2)
+  'gas line services': 'plumbing',
+  'slab leak repair': 'plumbing',
+  'sump pump services': 'plumbing',
+  'bathroom plumbing': 'plumbing',
   // Roofing
   'residential roofing': 'roofing',
   'commercial roofing': 'roofing',
@@ -388,6 +409,11 @@ const ALIASES_BY_NICHE: Record<string, string[]> = {
   'water heater service': ['tankless water heater installation', 'tankless water heater', 'water heater installation', 'water heater replacement', 'water heater repair', 'water heater service', 'hot water heater'],
   repiping: ['whole house repipe', 'pex repipe', 'copper repipe', 'plumbing remodel', 'pipe replacement', 'repiping', 'repipe', 'new construction plumbing'],
   'well and water treatment': ['whole house water filter', 'well pump installation', 'well pump repair', 'water softener', 'water filtration', 'water treatment', 'well and water treatment', 'water purification', 'well water'],
+  // Plumbing (Lever 2)
+  'gas line services': ['gas line installation', 'gas line repair', 'gas leak detection', 'gas piping', 'gas line', 'gas plumber'],
+  'slab leak repair': ['slab leak detection', 'slab leak repair', 'foundation leak', 'under slab leak', 'slab leak'],
+  'sump pump services': ['sump pump installation', 'sump pump replacement', 'sump pump repair', 'battery backup sump pump', 'sump pump'],
+  'bathroom plumbing': ['bathroom plumbing', 'toilet repair', 'bathroom remodel plumbing', 'shower valve replacement', 'bathroom fixture installation'],
   // Roofing
   // NOTE: bare 'roofer' REMOVED — it is generic across ALL roofing siblings, so
   // "commercial roofer"/"metal roofer" would mis-route to residential. Qualified

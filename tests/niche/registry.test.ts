@@ -102,4 +102,21 @@ describe('niche registry', () => {
       expect(p!.aliases!.length).toBeGreaterThan(0);
     }
   });
+
+  it('registers the 4 new plumbing sub-niches as content-supported children', () => {
+    const expected = {
+      'gas line services': 'home-improvement',
+      'slab leak repair': 'emergency',
+      'sump pump services': 'emergency',
+      'bathroom plumbing': 'home-improvement',
+    } as const;
+    for (const [s, cat] of Object.entries(expected)) {
+      const p = getNicheProfile(s);
+      expect(p, `missing ${s}`).not.toBeNull();
+      expect(p!.parent).toBe('plumbing');
+      expect(p!.category).toBe(cat);
+      expect(p!.schemaType).toBe('Plumber');
+      expect(p!.context, `${s} needs content context`).toBeTruthy();
+    }
+  });
 });
