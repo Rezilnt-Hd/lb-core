@@ -64,8 +64,8 @@ export {
   updateLeadFields,
 } from "./dynamo/leads.js";
 export { docClient, TABLE_NAMES } from "./dynamo/client.js";
-export { claimSlot, getActiveClaim, releaseClaimsForLead } from "./dynamo/claims.js";
-export type { ClaimInput } from "./dynamo/claims.js";
+export { claimSlot, getActiveClaim, releaseClaimsForLead, listActiveClaims } from "./dynamo/claims.js";
+export type { ClaimInput, ActiveClaimRef } from "./dynamo/claims.js";
 
 // Events
 export { publishEvent } from "./events/publisher.js";
@@ -103,8 +103,18 @@ export type { NicheProfile, NicheCategory } from "./niche/registry.js";
 // Niche refiner — businessType → sub-niche specialization (PR-A; additive)
 export { resolveRefinedNiche } from "./niche/refiner.js";
 // Keyword differentiation ladder + normalizers (anti-cannibalization claim system)
-export { normalizeKeyword, normalizeCity, buildLadder, KEYWORD_MODIFIERS } from "./niche/ladder.js";
+export {
+  normalizeKeyword,
+  normalizeCity,
+  buildLadder,
+  KEYWORD_MODIFIERS,
+  KEYWORD_QUALIFIERS,
+  KEYWORD_INTENT_PREFIX,
+  KEYWORD_INTENT_SUFFIX,
+} from "./niche/ladder.js";
 export type { LadderRung } from "./niche/ladder.js";
+// Geographic overflow tier — offline-curated metro → nearby-area seed (Lever 3)
+export { GEO_NEIGHBORS, geoNeighbors, MAX_GEO_RUNGS } from "./niche/geo-neighbors.js";
 
 // Bedrock adapter — provider-switch envelope + response normalization
 export {

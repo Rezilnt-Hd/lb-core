@@ -53,7 +53,7 @@ describe('niche sub-taxonomy (PR-A)', () => {
   });
 
   describe('getNichesByParent', () => {
-    it('returns the 6 landscaping children', () => {
+    it('returns the 12 landscaping children (6 PR-A + 6 Lever 2)', () => {
       const keys = getNichesByParent('landscaping').map((p) => p.niche).sort();
       expect(keys).toEqual(
         [
@@ -63,16 +63,22 @@ describe('niche sub-taxonomy (PR-A)', () => {
           'irrigation',
           'tree service',
           'landscape lighting',
+          'sod installation',
+          'artificial turf',
+          'drainage solutions',
+          'xeriscaping',
+          'mulch installation',
+          'outdoor living',
         ].sort(),
       );
     });
 
-    it('returns the 6 plumbing children', () => {
-      expect(getNichesByParent('plumbing').length).toBe(6);
+    it('returns the 10 plumbing children (6 PR-A + 4 Lever 2)', () => {
+      expect(getNichesByParent('plumbing').length).toBe(10);
     });
 
     it('is alias/whitespace-insensitive on the parent argument', () => {
-      expect(getNichesByParent('  Landscaping ').length).toBe(6);
+      expect(getNichesByParent('  Landscaping ').length).toBe(12);
     });
 
     it('returns empty for a parent with no registered children', () => {

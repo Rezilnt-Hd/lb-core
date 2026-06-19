@@ -68,6 +68,14 @@ const CONTEXT: Record<string, string> = {
   'tree service': `Services: tree removal ($400-$2,000), trimming/pruning ($200-$800), stump grinding ($100-$400), emergency storm removal ($500-$3,000), arborist consultation ($100-$300), cabling & bracing. Certified-arborist signal. Icons: 🌳🪚🪵⛈️🧗🩺🔗`,
   'landscape lighting': `Services: low-voltage path & accent lighting ($80-$300/fixture), full lighting systems ($2,000-$6,000), transformer & timer install, LED retrofit ($100-$250/fixture), security/architectural lighting, smart controls. Icons: 💡🌙🔦🏡🌳🔌⭐`,
 
+  // ── Landscaping sub-niches (Lever 2) ───────────────────────────────────────
+  'sod installation': `Services: sod supply & installation ($1-$2/sqft installed), soil prep & grading ($0.50-$1.50/sqft), old lawn removal ($1-$2/sqft), warm-season sod (Bermuda/Zoysia/St. Augustine), delivery & roll-out, first-water & care plan. Per-project; homeowners & HOAs. Icons: 🌱🚜🟩💧📦🏡`,
+  'artificial turf': `Services: synthetic turf installation ($8-$15/sqft installed), pet turf systems, putting greens ($20-$40/sqft), base prep & drainage, infill & seaming, turf for play areas. Low-water, low-maintenance. Per-project. Icons: 🟩🐾⛳💧🧱✨`,
+  'drainage solutions': `Services: French drain installation ($1,000-$5,000), yard grading & regrading ($1,000-$3,000), channel/trench drains, dry wells, downspout extensions, catch basins, erosion control. Solves standing water & runoff. Icons: 💧🌧️🛠️⛏️🏞️🚰`,
+  xeriscaping: `Services: drought-tolerant landscape design & install ($5-$20/sqft), native & succulent planting, decomposed-granite & gravel beds, drip irrigation conversion, rock features, water-wise plant selection. Low-water. Icons: 🌵🪨💧🌾☀️🌿`,
+  'mulch installation': `Services: mulch supply & spreading ($35-$110/cu yd installed), bed edging ($1-$2/linear ft), weed-barrier fabric, hardwood/cedar/dyed mulch, seasonal refresh, bed cleanup & prep. Recurring/seasonal. Icons: 🪵🍂🌳🧹🛤️🌱`,
+  'outdoor living': `Services: outdoor living space design & build, pergolas & pavilions ($4,000-$12,000), outdoor kitchens ($5,000-$20,000), fire features ($1,500-$6,000), pavers & seating areas, shade structures, landscape integration. Per-project. Icons: 🏡🔥🍳⛱️🪑🌿`,
+
   // ── Plumbing sub-niches (PR-A) ─────────────────────────────────────────────
   'residential plumbing': `Services: emergency plumbing ($150-$400), faucet/fixture repair ($125-$350), toilet repair ($125-$300), drain cleaning ($150-$350), water heater repair ($150-$450), leak detection ($150-$400), garbage disposal install ($150-$400), sump pump install ($800-$1,800), bathroom remodeling ($1,500-$5,000). Icons: 🚨🔧🚽💧🔥🔍🗑️💦🏠`,
   'commercial plumbing': `Services: commercial plumbing service ($150-$250/hr), backflow testing/certification ($75-$300/device), grease trap installation ($1,400-$18,000), grease trap cleaning ($150-$500), commercial water heater service ($500-$3,000), tenant build-out plumbing ($2,000-$25,000), hydro jetting ($600-$1,400), preventive maintenance contracts ($100-$300/visit), code compliance & permits. Icons: 🏢🔧🛡️🍳🔥🚧💦🔄📋`,
@@ -75,6 +83,12 @@ const CONTEXT: Record<string, string> = {
   'water heater service': `Services: water heater repair ($150-$450), tank water heater replacement ($1,000-$2,500), tankless water heater installation ($1,800-$5,500), gas tankless ($2,700-$5,500), electric tankless ($1,800-$4,200), thermostat/element replacement ($150-$400), anode rod replacement ($150-$300), expansion tank install ($150-$350), annual flush ($100-$200). Icons: 🔥💧🔧♨️⚡🌡️🔩🛢️🧰`,
   repiping: `Services: whole-house repipe ($4,000-$15,000), PEX repipe ($0.40-$2/ft), copper repipe ($2-$8/ft), per-fixture repipe ($200-$400), water/main line replacement ($1,500-$5,000), bathroom remodel plumbing ($1,500-$5,000), kitchen remodel plumbing ($1,500-$6,000), gas line installation ($350-$2,000), fixture upgrades ($150-$500). Icons: 🔩🏠🔧🚿🛁🍳⛽💧🧰`,
   'well and water treatment': `Services: well pump repair ($200-$1,500), well pump replacement ($1,500-$4,500), pressure tank replacement ($400-$1,200), water softener installation ($800-$3,000), whole-house water filtration ($700-$2,500), well water treatment systems ($500-$10,000), reverse osmosis install ($300-$1,200), UV purification install ($300-$1,500), water testing ($100-$300). Icons: 🚰🔧💧🧂🛢️🪣💦☀️🔬`,
+
+  // ── Plumbing sub-niches (Lever 2) ──────────────────────────────────────────
+  'gas line services': `Services: gas line installation ($350-$2,000), gas line repair ($150-$750), gas leak detection ($150-$450), appliance gas hookup ($150-$600), gas line extension for grills/ranges/pool heaters, sediment trap & shutoff valve install, code compliance & permits. Icons: ⛽🔧🔥🚨🧰📋💧🔩`,
+  'slab leak repair': `Services: slab leak detection ($150-$500), electronic leak location, slab leak repair ($600-$4,000), pipe re-route/re-pipe under slab ($1,500-$6,000), spot repair via tunneling, epoxy pipe lining, foundation-safe access. Emergency response. Icons: 🚨💧🏠🔍🔧🛠️🧰🔩`,
+  'sump pump services': `Services: sump pump installation ($800-$1,800), sump pump replacement ($400-$1,200), battery backup pump ($300-$900), pit installation, float switch repair, discharge line service, basement flood prevention, annual testing. Icons: 💧🔋🏠🔧🚨🛠️🔌🪣`,
+  'bathroom plumbing': `Services: toilet repair/replacement ($125-$500), faucet & fixture install ($125-$400), shower/tub valve replacement ($200-$700), bathroom remodel plumbing ($1,500-$5,000), vanity & sink install ($150-$500), bidet install, leak repair, drain unclogging. Icons: 🚽🚿🛁🔧💧🪞🧰🔩`,
 
   // ── Roofing sub-niches (PR-A) ──────────────────────────────────────────────
   'residential roofing': `Services: roof repair ($350-$1,500), asphalt shingle replacement ($4.25-$8.25/sqft; $9,000-$25,000 typical), full tear-off & re-roof ($10,500-$33,000), shingle/flashing repair ($350-$1,100/square), leak repair ($400-$1,200), ridge & ventilation ($300-$900). Icons: 🏠🔨🪜💧🧰🌬️`,
@@ -130,6 +144,11 @@ const CATEGORY: Record<string, NicheCategory> = {
   'water heater service': 'home-improvement',
   repiping: 'home-improvement',
   'well and water treatment': 'home-improvement',
+  // ── Plumbing sub-niches (Lever 2) — buyer-intent categories ──
+  'gas line services': 'home-improvement',
+  'slab leak repair': 'emergency',
+  'sump pump services': 'emergency',
+  'bathroom plumbing': 'home-improvement',
 
   // Home Improvement
   'garage door': 'home-improvement',
@@ -195,6 +214,13 @@ const CATEGORY: Record<string, NicheCategory> = {
   hardscaping: 'outdoor',
   // ── Landscaping sub-niche (PR-A) — stays outdoor ──
   'landscape lighting': 'outdoor',
+  // ── Landscaping sub-niches (Lever 2) — all outdoor ──
+  'sod installation': 'outdoor',
+  'artificial turf': 'outdoor',
+  'drainage solutions': 'outdoor',
+  xeriscaping: 'outdoor',
+  'mulch installation': 'outdoor',
+  'outdoor living': 'outdoor',
 
   // General Trade
   hvac: 'general-trade',
@@ -227,6 +253,11 @@ const SCHEMA_TYPE: Record<string, string> = {
   'water heater service': 'Plumber',
   repiping: 'Plumber',
   'well and water treatment': 'Plumber',
+  // ── Plumbing sub-niches (Lever 2) ──
+  'gas line services': 'Plumber',
+  'slab leak repair': 'Plumber',
+  'sump pump services': 'Plumber',
+  'bathroom plumbing': 'Plumber',
 
   // HVAC / heating / cooling → HVACBusiness
   hvac: 'HVACBusiness',
@@ -289,6 +320,13 @@ const SCHEMA_TYPE: Record<string, string> = {
   // ── Landscaping sub-niches (PR-A) ──
   'landscape design': 'HomeAndConstructionBusiness',
   'landscape lighting': 'HomeAndConstructionBusiness',
+  // ── Landscaping sub-niches (Lever 2) ──
+  'sod installation': 'HomeAndConstructionBusiness',
+  'artificial turf': 'HomeAndConstructionBusiness',
+  'drainage solutions': 'HomeAndConstructionBusiness',
+  xeriscaping: 'HomeAndConstructionBusiness',
+  'mulch installation': 'HomeAndConstructionBusiness',
+  'outdoor living': 'HomeAndConstructionBusiness',
 };
 
 // ── Sub-niche → coarse parent (PR-A) ──────────────────────────────────────────
@@ -302,6 +340,13 @@ const PARENT: Record<string, string> = {
   irrigation: 'landscaping',
   'tree service': 'landscaping',
   'landscape lighting': 'landscaping',
+  // Landscaping (Lever 2)
+  'sod installation': 'landscaping',
+  'artificial turf': 'landscaping',
+  'drainage solutions': 'landscaping',
+  xeriscaping: 'landscaping',
+  'mulch installation': 'landscaping',
+  'outdoor living': 'landscaping',
   // Plumbing
   'residential plumbing': 'plumbing',
   'commercial plumbing': 'plumbing',
@@ -309,6 +354,11 @@ const PARENT: Record<string, string> = {
   'water heater service': 'plumbing',
   repiping: 'plumbing',
   'well and water treatment': 'plumbing',
+  // Plumbing (Lever 2)
+  'gas line services': 'plumbing',
+  'slab leak repair': 'plumbing',
+  'sump pump services': 'plumbing',
+  'bathroom plumbing': 'plumbing',
   // Roofing
   'residential roofing': 'roofing',
   'commercial roofing': 'roofing',
@@ -345,6 +395,13 @@ const ALIASES_BY_NICHE: Record<string, string[]> = {
   irrigation: ['sprinkler system installation', 'sprinkler repair', 'drip irrigation', 'irrigation system', 'sprinkler', 'irrigation'],
   'tree service': ['tree removal', 'tree trimming', 'tree pruning', 'stump grinding', 'arborist', 'tree care', 'tree service'],
   'landscape lighting': ['landscape lighting installation', 'low voltage lighting', 'outdoor lighting', 'landscape lighting', 'accent lighting'],
+  // Landscaping (Lever 2)
+  'sod installation': ['sod installation', 'sod laying', 'lawn sodding', 'new lawn installation', 'turf laying', 'sodding'],
+  'artificial turf': ['artificial turf installation', 'synthetic turf', 'artificial grass', 'synthetic grass', 'putting green installation', 'pet turf'],
+  'drainage solutions': ['yard drainage', 'french drain installation', 'drainage solutions', 'french drain', 'yard grading', 'erosion control', 'standing water'],
+  xeriscaping: ['xeriscaping', 'xeriscape', 'drought tolerant landscaping', 'water wise landscaping', 'desert landscaping', 'native landscaping'],
+  'mulch installation': ['mulch installation', 'mulching service', 'mulch delivery', 'bed mulching', 'mulch spreading'],
+  'outdoor living': ['outdoor living space', 'pergola installation', 'pavilion installation', 'outdoor living', 'fire pit installation'],
   // Plumbing
   'residential plumbing': ['residential plumbing', 'residential plumber', 'home plumbing', 'house plumbing', 'local plumber'],
   'commercial plumbing': ['commercial plumbing contractor', 'commercial plumbing', 'commercial plumber', 'industrial plumbing', 'grease trap', 'tenant improvement plumbing'],
@@ -352,6 +409,11 @@ const ALIASES_BY_NICHE: Record<string, string[]> = {
   'water heater service': ['tankless water heater installation', 'tankless water heater', 'water heater installation', 'water heater replacement', 'water heater repair', 'water heater service', 'hot water heater'],
   repiping: ['whole house repipe', 'pex repipe', 'copper repipe', 'plumbing remodel', 'pipe replacement', 'repiping', 'repipe', 'new construction plumbing'],
   'well and water treatment': ['whole house water filter', 'well pump installation', 'well pump repair', 'water softener', 'water filtration', 'water treatment', 'well and water treatment', 'water purification', 'well water'],
+  // Plumbing (Lever 2)
+  'gas line services': ['gas line installation', 'gas line repair', 'gas leak detection', 'gas piping', 'gas line', 'gas plumber'],
+  'slab leak repair': ['slab leak detection', 'slab leak repair', 'foundation leak', 'under slab leak', 'slab leak'],
+  'sump pump services': ['sump pump installation', 'sump pump replacement', 'sump pump repair', 'battery backup sump pump', 'sump pump'],
+  'bathroom plumbing': ['bathroom plumbing', 'toilet repair', 'bathroom remodel plumbing', 'shower valve replacement', 'bathroom fixture installation'],
   // Roofing
   // NOTE: bare 'roofer' REMOVED — it is generic across ALL roofing siblings, so
   // "commercial roofer"/"metal roofer" would mis-route to residential. Qualified
