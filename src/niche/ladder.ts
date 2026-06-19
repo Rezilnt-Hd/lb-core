@@ -86,7 +86,7 @@ export function buildLadder(niche: string, city: string, state: string): LadderR
   // geographic overflow tier: "<niche> <nearbyArea>" in the lead's own city
   // pk-space. Lowest priority; empty for an uncurated city (fail-safe).
   for (const area of geoNeighbors(normalizeCity(city, state))) {
-    candidates.push(rung(`${canonical} ${normalizeKeyword(area)}`));
+    candidates.push(rung(`${canonical} ${area}`));
   }
   // Dedup on the FINAL normalized keyword, first occurrence wins, then re-number
   // rungs contiguously so rung === array index for every rung.

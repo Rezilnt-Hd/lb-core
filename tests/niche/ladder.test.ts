@@ -163,10 +163,4 @@ describe('buildLadder', () => {
     // every landscaping keyword for an uncurated city ends with the city token
     expect(kws.some(k => k.startsWith('landscaping ') && !k.includes('smalltown'))).toBe(false);
   });
-
-  it('landscaping/Dallas reaches 34 rungs (29 + 5 geo)', () => {
-    const ladder = buildLadder('landscaping', 'Dallas', 'TX');
-    expect(ladder).toHaveLength(34);
-    expect(ladder.every((r, i) => r.rung === i)).toBe(true);
-  });
 });

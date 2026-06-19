@@ -17,6 +17,10 @@ describe('geoNeighbors', () => {
     for (const [key, areas] of Object.entries(GEO_NEIGHBORS)) {
       expect(key).toBe(key.toLowerCase());
       expect(key).toMatch(/^[^|]+\|[a-z]{2}$/);
+      // round-trip: every key must exactly equal normalizeCity(city, state) so a
+      // future malformed metro key fails loudly instead of silently yielding 0 rungs.
+      const [cityPart, statePart] = key.split('|');
+      expect(normalizeCity(cityPart, statePart)).toBe(key);
       expect(areas.length).toBeGreaterThan(0);
       expect(areas.length).toBeLessThanOrEqual(MAX_GEO_RUNGS);
       areas.forEach(a => expect(a).toBe(a.toLowerCase().trim()));
