@@ -99,11 +99,11 @@ describe('buildLadder', () => {
     expect(subSlice.rung).toBeGreaterThan(lastModifierRung);
   });
 
-  it('landscaping ladder is 34 distinct rungs after Lever 3 geo tier (29 + 5 geo)', () => {
+  it('landscaping ladder is 36 distinct rungs after Lever 3 geo tier (31 + 5 geo)', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const keywords = ladder.map(r => r.keyword);
-    expect(keywords).toHaveLength(34);
-    expect(new Set(keywords).size).toBe(34);
+    expect(keywords).toHaveLength(36);
+    expect(new Set(keywords).size).toBe(36);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 

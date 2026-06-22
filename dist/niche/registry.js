@@ -55,6 +55,9 @@ const CONTEXT = {
     xeriscaping: `Services: drought-tolerant landscape design & install ($5-$20/sqft), native & succulent planting, decomposed-granite & gravel beds, drip irrigation conversion, rock features, water-wise plant selection. Low-water. Icons: 🌵🪨💧🌾☀️🌿`,
     'mulch installation': `Services: mulch supply & spreading ($35-$110/cu yd installed), bed edging ($1-$2/linear ft), weed-barrier fabric, hardwood/cedar/dyed mulch, seasonal refresh, bed cleanup & prep. Recurring/seasonal. Icons: 🪵🍂🌳🧹🛤️🌱`,
     'outdoor living': `Services: outdoor living space design & build, pergolas & pavilions ($4,000-$12,000), outdoor kitchens ($5,000-$20,000), fire features ($1,500-$6,000), pavers & seating areas, shade structures, landscape integration. Per-project. Icons: 🏡🔥🍳⛱️🪑🌿`,
+    // ── Landscaping sub-niches (high-intent service rungs; pricing web-sourced 2026-06) ──
+    'retaining walls': `Services: segmental block wall ($15-$40/sqft face), poured/CMU concrete wall ($30-$50/sqft), boulder & natural-stone wall ($20-$100/sqft), timber wall ($10-$40/sqft), typical installed project ($3,500-$10,000), engineered wall over 4ft w/ permits ($15,000-$25,000+), retaining wall repair ($250-$1,250), drainage & grading included. Per-project; homeowners. Icons: 🧱🪨🏗️📐💧🛠️🚜`,
+    'yard cleanup': `Services: one-time yard cleanup ($200-$600), leaf removal ($190-$590), brush & debris hauling ($75-$750/trip), fall cleanup ($200-$600), spring cleanup ($100-$300), bed & storm-debris cleanup, hourly crew ($30-$80/hr); quarter-acre ($200-$500) to full-acre ($850-$1,100). One-time & seasonal; homeowners & HOAs. Icons: 🍂🧹🌿🚛🍃🪵✨`,
     // ── Plumbing sub-niches (PR-A) ─────────────────────────────────────────────
     'residential plumbing': `Services: emergency plumbing ($150-$400), faucet/fixture repair ($125-$350), toilet repair ($125-$300), drain cleaning ($150-$350), water heater repair ($150-$450), leak detection ($150-$400), garbage disposal install ($150-$400), sump pump install ($800-$1,800), bathroom remodeling ($1,500-$5,000). Icons: 🚨🔧🚽💧🔥🔍🗑️💦🏠`,
     'commercial plumbing': `Services: commercial plumbing service ($150-$250/hr), backflow testing/certification ($75-$300/device), grease trap installation ($1,400-$18,000), grease trap cleaning ($150-$500), commercial water heater service ($500-$3,000), tenant build-out plumbing ($2,000-$25,000), hydro jetting ($600-$1,400), preventive maintenance contracts ($100-$300/visit), code compliance & permits. Icons: 🏢🔧🛡️🍳🔥🚧💦🔄📋`,
@@ -188,6 +191,9 @@ const CATEGORY = {
     xeriscaping: 'outdoor',
     'mulch installation': 'outdoor',
     'outdoor living': 'outdoor',
+    // ── Landscaping sub-niches (high-intent service rungs) — outdoor ──
+    'retaining walls': 'outdoor',
+    'yard cleanup': 'outdoor',
     // General Trade
     hvac: 'general-trade',
     'air conditioning': 'general-trade',
@@ -286,6 +292,9 @@ const SCHEMA_TYPE = {
     xeriscaping: 'HomeAndConstructionBusiness',
     'mulch installation': 'HomeAndConstructionBusiness',
     'outdoor living': 'HomeAndConstructionBusiness',
+    // ── Landscaping sub-niches (high-intent service rungs) ──
+    'retaining walls': 'HomeAndConstructionBusiness',
+    'yard cleanup': 'HomeAndConstructionBusiness',
 };
 // ── Sub-niche → coarse parent (PR-A) ──────────────────────────────────────────
 // Keyed by canonical sub-niche key. Coarse parents themselves have NO entry
@@ -305,6 +314,9 @@ const PARENT = {
     xeriscaping: 'landscaping',
     'mulch installation': 'landscaping',
     'outdoor living': 'landscaping',
+    // Landscaping (high-intent service rungs)
+    'retaining walls': 'landscaping',
+    'yard cleanup': 'landscaping',
     // Plumbing
     'residential plumbing': 'plumbing',
     'commercial plumbing': 'plumbing',
@@ -348,7 +360,10 @@ const ALIASES_BY_NICHE = {
     // Landscaping
     'landscape design': ['landscape architecture', 'landscape architect', 'landscape design and build', 'landscape design-build', 'landscape design', 'outdoor living design', 'garden design', 'landscape designer'],
     'lawn care': ['lawn maintenance', 'lawn mowing', 'turf management', 'grounds maintenance', 'lawn care', 'mowing', 'lawn service'],
-    hardscaping: ['retaining wall', 'outdoor kitchen', 'paver patio', 'hardscape', 'hardscaping', 'pavers', 'stonework'],
+    // NOTE: bare 'retaining wall' MOVED to its own 'retaining walls' rung below —
+    // an alias owned by two siblings makes resolveRefinedNiche order-dependent
+    // (the de-split-brain pattern, cf. 'drain cleaning' → 'drain and sewer').
+    hardscaping: ['outdoor kitchen', 'paver patio', 'hardscape', 'hardscaping', 'pavers', 'stonework'],
     irrigation: ['sprinkler system installation', 'sprinkler repair', 'drip irrigation', 'irrigation system', 'sprinkler', 'irrigation'],
     'tree service': ['tree removal', 'tree trimming', 'tree pruning', 'stump grinding', 'arborist', 'tree care', 'tree service'],
     'landscape lighting': ['landscape lighting installation', 'low voltage lighting', 'outdoor lighting', 'landscape lighting', 'accent lighting'],
@@ -359,6 +374,9 @@ const ALIASES_BY_NICHE = {
     xeriscaping: ['xeriscaping', 'xeriscape', 'drought tolerant landscaping', 'water wise landscaping', 'desert landscaping', 'native landscaping'],
     'mulch installation': ['mulch installation', 'mulching service', 'mulch delivery', 'bed mulching', 'mulch spreading'],
     'outdoor living': ['outdoor living space', 'pergola installation', 'pavilion installation', 'outdoor living', 'fire pit installation'],
+    // Landscaping (high-intent service rungs) — longest/most-specific FIRST
+    'retaining walls': ['retaining wall installation', 'retaining wall replacement', 'retaining wall contractor', 'retaining wall repair', 'segmental retaining wall', 'boulder retaining wall', 'block retaining wall', 'retaining wall'],
+    'yard cleanup': ['seasonal yard cleanup', 'yard waste removal', 'yard debris removal', 'spring yard cleanup', 'fall yard cleanup', 'storm debris cleanup', 'brush removal', 'leaf removal', 'yard cleanup', 'yard clean up'],
     // Plumbing
     'residential plumbing': ['residential plumbing', 'residential plumber', 'home plumbing', 'house plumbing', 'local plumber'],
     'commercial plumbing': ['commercial plumbing contractor', 'commercial plumbing', 'commercial plumber', 'industrial plumbing', 'grease trap', 'tenant improvement plumbing'],
