@@ -53,7 +53,7 @@ describe('niche sub-taxonomy (PR-A)', () => {
   });
 
   describe('getNichesByParent', () => {
-    it('returns the 12 landscaping children (6 PR-A + 6 Lever 2)', () => {
+    it('returns the 14 landscaping children (6 PR-A + 6 Lever 2 + 2 high-intent rungs)', () => {
       const keys = getNichesByParent('landscaping').map((p) => p.niche).sort();
       expect(keys).toEqual(
         [
@@ -69,6 +69,8 @@ describe('niche sub-taxonomy (PR-A)', () => {
           'xeriscaping',
           'mulch installation',
           'outdoor living',
+          'retaining walls',
+          'yard cleanup',
         ].sort(),
       );
     });
@@ -78,7 +80,7 @@ describe('niche sub-taxonomy (PR-A)', () => {
     });
 
     it('is alias/whitespace-insensitive on the parent argument', () => {
-      expect(getNichesByParent('  Landscaping ').length).toBe(12);
+      expect(getNichesByParent('  Landscaping ').length).toBe(14);
     });
 
     it('returns empty for a parent with no registered children', () => {
