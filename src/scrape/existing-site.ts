@@ -5,7 +5,7 @@ import type { ExistingSite } from '../types/existing-site.js';
 
 const log = createLogger('existing-site');
 const FIRECRAWL_BASE = 'https://api.firecrawl.dev/v1';
-const FACET_MODEL_ID = process.env.BEDROCK_MODEL_FACET || 'us.anthropic.claude-haiku-4-5';
+const FACET_MODEL_ID = process.env.BEDROCK_MODEL_FACET || 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
 const MAX_MARKDOWN = 8192;
 
 export interface ScrapedContent { markdown: string; title: string; description: string; }

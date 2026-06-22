@@ -4,7 +4,7 @@ import { getNicheProfile, getNichesByParent } from './registry.js';
 const log = createLogger('niche-refiner');
 // Haiku 4.5 by default; never hardcode the bare model id at call sites — read
 // from env/GitHub var so the model can be swapped without a redeploy.
-const REFINER_MODEL_ID = process.env.BEDROCK_MODEL_REFINER || 'us.anthropic.claude-haiku-4-5';
+const REFINER_MODEL_ID = process.env.BEDROCK_MODEL_REFINER || 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
 /**
  * Resolve a businessType-derived specialization (sub-niche) under a coarse niche.
  *

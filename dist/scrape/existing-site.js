@@ -3,7 +3,7 @@ import { invokeBedrock } from '../bedrock/adapter.js';
 import { createLogger } from '../utils/logger.js';
 const log = createLogger('existing-site');
 const FIRECRAWL_BASE = 'https://api.firecrawl.dev/v1';
-const FACET_MODEL_ID = process.env.BEDROCK_MODEL_FACET || 'us.anthropic.claude-haiku-4-5';
+const FACET_MODEL_ID = process.env.BEDROCK_MODEL_FACET || 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
 const MAX_MARKDOWN = 8192;
 /** Firecrawl-scrape a URL to markdown. Best-effort: returns null on any failure. */
 export async function scrapeExistingSite(url) {
