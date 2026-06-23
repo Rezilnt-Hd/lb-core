@@ -21,11 +21,18 @@ interface CreateLeadInput {
   placeId?: string;
   rating?: number;
   reviewCount?: number;
+  internal?: boolean;
 }
 
 export async function createLead(input: CreateLeadInput): Promise<Lead> {
   const slug = generateSlug(input.businessName, input.city);
   const now = new Date().toISOString();
+
+  // Persist `internal` ONLY when truthy so the attribute is genuinely absent
+  // for normal leads — absence (not `false`) is the contract relied on by the
+  // SITE_BUILT -> LIVE carve-out and outreach exclusion. Exclude it from the
+  // wholesale `...input` spread so an explicit `internal: false` is dropped.
+  const { internal: _internal, ...inputRest } = input;
 
   const lead: Lead = {
     pk: `LEAD#${slug}`,
@@ -36,7 +43,8 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
     createdAt: now,
     updatedAt: now,
     statusHistory: [{ from: LeadStatus.PROSPECT, to: LeadStatus.PROSPECT, timestamp: now, reason: 'created' }],
-    ...input,
+    ...inputRest,
+    ...(input.internal ? { internal: true } : {}),
   };
 
   await docClient.send(new PutCommand({

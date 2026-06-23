@@ -81,6 +81,55 @@ describe('createLead — review fields passthrough (B1)', () => {
   });
 });
 
+describe('createLead — internal flag (B2)', () => {
+  it('writes internal:true into the item when internal is true', async () => {
+    mockSend.mockResolvedValueOnce({});
+    const lead = await createLead({
+      businessName: 'Rezilnt Home Designs',
+      niche: 'interior-design',
+      city: 'Austin',
+      state: 'TX',
+      phone: '512-555-0000',
+      address: '1 Owned St, Austin, TX',
+      internal: true,
+    });
+    expect(lead.internal).toBe(true);
+    const cmd = mockSend.mock.calls[0][0] as { input: { Item: Record<string, unknown> } };
+    expect(cmd.input.Item.internal).toBe(true);
+  });
+
+  it('omits internal key entirely when not provided (absence, not false/undefined)', async () => {
+    mockSend.mockResolvedValueOnce({});
+    const lead = await createLead({
+      businessName: 'Regular Biz',
+      niche: 'plumber',
+      city: 'Miami',
+      state: 'FL',
+      phone: '305-555-0000',
+      address: '3 Main St, Miami, FL',
+    });
+    expect(lead.internal).toBeUndefined();
+    const cmd = mockSend.mock.calls[0][0] as { input: { Item: Record<string, unknown> } };
+    expect('internal' in cmd.input.Item).toBe(false);
+  });
+
+  it('omits internal key when falsy is passed (only truthy is persisted)', async () => {
+    mockSend.mockResolvedValueOnce({});
+    const lead = await createLead({
+      businessName: 'Falsy Biz',
+      niche: 'plumber',
+      city: 'Miami',
+      state: 'FL',
+      phone: '305-555-0001',
+      address: '4 Main St, Miami, FL',
+      internal: false,
+    });
+    expect(lead.internal).toBeUndefined();
+    const cmd = mockSend.mock.calls[0][0] as { input: { Item: Record<string, unknown> } };
+    expect('internal' in cmd.input.Item).toBe(false);
+  });
+});
+
 describe('getLead', () => {
   it('returns lead by slug', async () => {
     const mockLead: Lead = {
