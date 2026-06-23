@@ -100,3 +100,39 @@ describe('candidateImages extraction', () => {
     expect(es!.candidateImages).toBeUndefined();
   });
 });
+
+describe('multi-page deepening', () => {
+  it('maps the site, scrapes high-value pages, and merges their images', async () => {
+    mockFetch.mockReset();
+    mockFetch
+      // homepage scrape
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: {
+        markdown: '# Acme', html: '<img src="https://acme.com/home.jpg" alt="home">',
+        metadata: { title: 'Acme', description: '' } } }) })
+      // /map
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ links: [
+        'https://acme.com/', 'https://acme.com/about', 'https://acme.com/gallery', 'https://acme.com/blog/post-1',
+      ] }) })
+      // gallery scrape
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: {
+        markdown: 'gallery', html: '<img src="https://acme.com/patio.jpg" alt="patio">',
+        metadata: { title: 'Gallery' } } }) })
+      // about scrape
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: {
+        markdown: 'about', html: '<img src="https://acme.com/owner.jpg" alt="owner">',
+        metadata: { title: 'About' } } }) });
+    mockInvoke.mockResolvedValue({ text: JSON.stringify({ services: [], about: '' }) });
+
+    const es = await captureExistingSite('https://acme.com', { businessName: 'Acme', niche: 'landscaping', deepen: true });
+    const urls = es!.candidateImages!.map(c => c.url);
+    expect(urls).toContain('https://acme.com/home.jpg');
+    expect(urls).toContain('https://acme.com/patio.jpg');
+    expect(urls).toContain('https://acme.com/owner.jpg');
+    expect(es!.scrapedPages!.length).toBeGreaterThan(1);
+  });
+
+  it('does not deepen when deepen flag is absent (back-compat)', async () => {
+    const es = await captureExistingSite('https://acme.com', { businessName: 'Acme', niche: 'landscaping' });
+    expect(es!.scrapedPages).toEqual(['https://acme.com']);
+  });
+});

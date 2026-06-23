@@ -11,6 +11,30 @@ const MAX_MARKDOWN = 8192;
 export interface ScrapedContent { markdown: string; html: string; title: string; description: string; }
 
 const MAX_CANDIDATE_IMAGES = 30;
+const DEEPEN_PATH_KEYWORDS = ['gallery', 'portfolio', 'work', 'project', 'about', 'team', 'service'];
+const MAX_DEEPEN_PAGES = 3;
+
+/** Firecrawl /map → URL list, filtered to high-value paths. Best-effort: [] on failure. */
+export async function discoverHighValuePages(url: string, key: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${FIRECRAWL_BASE}/map`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ url }),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { links?: string[] };
+    const links = json.links ?? [];
+    const origin = new URL(url).origin;
+    const picked = links
+      .filter(l => { try { return new URL(l).origin === origin; } catch { return false; } })
+      .filter(l => DEEPEN_PATH_KEYWORDS.some(k => l.toLowerCase().includes(k)))
+      .filter(l => l.replace(/\/$/, '') !== url.replace(/\/$/, '')); // not the homepage
+    return Array.from(new Set(picked)).slice(0, MAX_DEEPEN_PAGES);
+  } catch {
+    return [];
+  }
+}
 
 /** Extract absolute <img> src URLs (+ alt) from HTML, resolved against pageUrl. De-dupes. */
 export function extractImageUrls(html: string, pageUrl: string): { url: string; alt?: string; pageUrl: string }[] {
@@ -106,7 +130,7 @@ ${scraped.markdown.slice(0, MAX_MARKDOWN)}`;
  */
 export async function captureExistingSite(
   url: string,
-  opts: { businessName: string; niche: string; discovered?: boolean },
+  opts: { businessName: string; niche: string; discovered?: boolean; deepen?: boolean },
 ): Promise<ExistingSite | null> {
   const scraped = await scrapeExistingSite(url);
   if (!scraped) return null;
@@ -118,7 +142,25 @@ export async function captureExistingSite(
     log.warn('Facet extraction failed; storing raw scrape only', { url, err: String(err) });
   }
 
-  const candidateImages = extractImageUrls(scraped.html, url);
+  const scrapedPages = [url];
+  let allImages = extractImageUrls(scraped.html, url);
+
+  if (opts.deepen) {
+    let key: string | undefined;
+    try { key = await getSecret('lb/scraping', 'firecrawl', 'FIRECRAWL_API_KEY'); } catch { key = undefined; }
+    if (key) {
+      const pages = await discoverHighValuePages(url, key);
+      for (const page of pages) {
+        const sub = await scrapeExistingSite(page);
+        if (!sub) continue;
+        scrapedPages.push(page);
+        for (const img of extractImageUrls(sub.html, page)) {
+          if (!allImages.some(e => e.url === img.url)) allImages.push(img);
+        }
+      }
+    }
+  }
+  allImages = allImages.slice(0, MAX_CANDIDATE_IMAGES);
 
   return {
     scrapedAt: new Date().toISOString(),
@@ -130,7 +172,7 @@ export async function captureExistingSite(
     rawMarkdown: scraped.markdown.slice(0, MAX_MARKDOWN),
     services: facets.services,
     about: facets.about,
-    candidateImages: candidateImages.length ? candidateImages : undefined,
-    scrapedPages: [url],
+    candidateImages: allImages.length ? allImages : undefined,
+    scrapedPages,
   };
 }
