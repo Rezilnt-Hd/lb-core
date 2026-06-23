@@ -203,6 +203,44 @@ describe('transitionLead', () => {
   });
 });
 
+describe('transitionLead — internal-only SITE_BUILT -> LIVE (B2)', () => {
+  it('SITE_BUILT -> LIVE is NOT in the static VALID_TRANSITIONS table', () => {
+    // The internal go-live edge must be a structural carve-out, never a loosened
+    // table entry (which would let ANY lead skip PAID and reach LIVE).
+    expect(VALID_TRANSITIONS[LeadStatus.SITE_BUILT]).not.toContain(LeadStatus.LIVE);
+  });
+
+  it('allows SITE_BUILT -> LIVE and gates it on #internal = true in the ConditionExpression', async () => {
+    // Internal lead: the conditional UpdateCommand succeeds.
+    mockSend.mockResolvedValueOnce({ Attributes: { pk: 'LEAD#rezilnt', sk: 'META', status: LeadStatus.LIVE, internal: true } });
+    const result = await transitionLead('rezilnt', LeadStatus.SITE_BUILT, LeadStatus.LIVE, 'dog-food go-live');
+    expect(result.status).toBe(LeadStatus.LIVE);
+    const cmd = mockSend.mock.calls[0][0] as { input: { ConditionExpression: string; ExpressionAttributeNames: Record<string, string>; ExpressionAttributeValues: Record<string, unknown> } };
+    expect(cmd.input.ConditionExpression).toContain('#internal');
+    expect(cmd.input.ExpressionAttributeNames['#internal']).toBe('internal');
+    expect(cmd.input.ExpressionAttributeValues[':internalTrue']).toBe(true);
+  });
+
+  it('blocks SITE_BUILT -> LIVE for a non-internal lead (ConditionalCheckFailedException propagates)', async () => {
+    // Non-internal lead: DynamoDB fails the #internal = :internalTrue condition.
+    const err = Object.assign(new Error('The conditional request failed'), { name: 'ConditionalCheckFailedException' });
+    mockSend.mockRejectedValueOnce(err);
+    await expect(
+      transitionLead('regular-biz', LeadStatus.SITE_BUILT, LeadStatus.LIVE)
+    ).rejects.toThrow('The conditional request failed');
+  });
+
+  it('does NOT add #internal to the ConditionExpression for a normal transition', async () => {
+    mockSend.mockResolvedValueOnce({ Attributes: { pk: 'LEAD#test', sk: 'META', status: LeadStatus.ENRICHED } });
+    await transitionLead('test', LeadStatus.PROSPECT, LeadStatus.ENRICHED);
+    const cmd = mockSend.mock.calls[0][0] as { input: { ConditionExpression: string; ExpressionAttributeNames: Record<string, string>; ExpressionAttributeValues: Record<string, unknown> } };
+    expect(cmd.input.ConditionExpression).toBe('#status = :fromStatus');
+    expect(cmd.input.ConditionExpression).not.toContain('#internal');
+    expect('#internal' in cmd.input.ExpressionAttributeNames).toBe(false);
+    expect(':internalTrue' in cmd.input.ExpressionAttributeValues).toBe(false);
+  });
+});
+
 describe('transitionLead extraUpdates null -> REMOVE', () => {
   it('emits a REMOVE clause when an extraUpdates value is null', async () => {
     mockSend.mockResolvedValueOnce({ Attributes: {} });
