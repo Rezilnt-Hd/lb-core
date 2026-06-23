@@ -45,6 +45,7 @@ export interface StatusTransition {
  */
 export type OutreachSkipReason =
   | 'franchise-filtered'         // terminal: lead is a franchise/corporate
+  | 'internal-owned'             // terminal: business we own/operate — never contact
   | 'niche-unmapped'             // RETRY: niche has no approved campaign yet
   | 'instantly-5xx'              // RETRY: Instantly API 5xx (transient)
   | 'instantly-429'              // RETRY: Instantly rate limit
@@ -57,7 +58,7 @@ export const RETRY_WORTHY_REASONS = [
 ] as const satisfies readonly OutreachSkipReason[];
 
 export const TERMINAL_REASONS = [
-  'franchise-filtered', 'instantly-4xx-perma', 'missing-required-fields',
+  'franchise-filtered', 'internal-owned', 'instantly-4xx-perma', 'missing-required-fields',
 ] as const satisfies readonly OutreachSkipReason[];
 
 export interface Lead {

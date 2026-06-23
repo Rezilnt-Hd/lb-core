@@ -16,7 +16,7 @@ describe('OutreachSkipReason constants', () => {
   it('union of the two sets exhausts the OutreachSkipReason type', () => {
     const union = new Set<OutreachSkipReason>([...RETRY_WORTHY_REASONS, ...TERMINAL_REASONS]);
     const expected: OutreachSkipReason[] = [
-      'franchise-filtered', 'niche-unmapped', 'instantly-5xx', 'instantly-429',
+      'franchise-filtered', 'internal-owned', 'niche-unmapped', 'instantly-5xx', 'instantly-429',
       'instantly-4xx-perma', 'missing-required-fields', 'dispatch-error',
     ];
     for (const r of expected) {

@@ -25,7 +25,7 @@ export const RETRY_WORTHY_REASONS = [
     'niche-unmapped', 'instantly-5xx', 'instantly-429', 'dispatch-error',
 ];
 export const TERMINAL_REASONS = [
-    'franchise-filtered', 'instantly-4xx-perma', 'missing-required-fields',
+    'franchise-filtered', 'internal-owned', 'instantly-4xx-perma', 'missing-required-fields',
 ];
 // Valid state transitions -- anything not listed here is rejected
 export const VALID_TRANSITIONS = {
