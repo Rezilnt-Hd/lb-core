@@ -37,9 +37,9 @@ export interface StatusTransition {
  * The split between RETRY_WORTHY_REASONS and TERMINAL_REASONS is the
  * sweeper's filter source-of-truth.
  */
-export type OutreachSkipReason = 'franchise-filtered' | 'niche-unmapped' | 'instantly-5xx' | 'instantly-429' | 'instantly-4xx-perma' | 'missing-required-fields' | 'dispatch-error';
+export type OutreachSkipReason = 'franchise-filtered' | 'internal-owned' | 'niche-unmapped' | 'instantly-5xx' | 'instantly-429' | 'instantly-4xx-perma' | 'missing-required-fields' | 'dispatch-error';
 export declare const RETRY_WORTHY_REASONS: readonly ["niche-unmapped", "instantly-5xx", "instantly-429", "dispatch-error"];
-export declare const TERMINAL_REASONS: readonly ["franchise-filtered", "instantly-4xx-perma", "missing-required-fields"];
+export declare const TERMINAL_REASONS: readonly ["franchise-filtered", "internal-owned", "instantly-4xx-perma", "missing-required-fields"];
 export interface Lead {
     pk: string;
     sk: string;
