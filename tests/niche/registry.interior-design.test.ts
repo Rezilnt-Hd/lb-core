@@ -10,7 +10,7 @@ describe('interior design — coarse niche', () => {
   it('resolves as a content-supported home-improvement niche', () => {
     const p = getNicheProfile('interior design');
     expect(p).not.toBeNull();
-    expect(p!.category).toBe('home-improvement');
+    expect(p!.category).toBe('professional-services');
     expect(p!.schemaType).toBe('HomeAndConstructionBusiness');
     expect(p!.context).toMatch(/full-service interior design/i);
     expect(p!.parent).toBeUndefined(); // coarse niche has no parent
@@ -38,7 +38,7 @@ describe('interior design — sub-niches', () => {
       const p = getNicheProfile(s);
       expect(p, `missing ${s}`).not.toBeNull();
       expect(p!.parent, `${s} parent`).toBe('interior design');
-      expect(p!.category, `${s} category`).toBe('home-improvement');
+      expect(p!.category, `${s} category`).toBe('professional-services');
       expect(p!.schemaType, `${s} schemaType`).toBe('HomeAndConstructionBusiness');
       expect(p!.context, `${s} needs content context`).toBeTruthy();
       expect(p!.aliases!.length, `${s} aliases`).toBeGreaterThan(0);
