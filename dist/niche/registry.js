@@ -158,12 +158,12 @@ const CATEGORY = {
     // routes the premium/gallery template family (Cultivators/Ambiance fix).
     'landscape design': 'home-improvement',
     // ── Interior design ──
-    'interior design': 'home-improvement',
-    'home staging': 'home-improvement',
-    'e-design': 'home-improvement',
-    'kitchen and bath design': 'home-improvement',
-    'color consultation': 'home-improvement',
-    'room redesign': 'home-improvement',
+    'interior design': 'professional-services',
+    'home staging': 'professional-services',
+    'e-design': 'professional-services',
+    'kitchen and bath design': 'professional-services',
+    'color consultation': 'professional-services',
+    'room redesign': 'professional-services',
     // ── Roofing sub-niches (PR-A) ──
     'residential roofing': 'home-improvement',
     'commercial roofing': 'home-improvement',
