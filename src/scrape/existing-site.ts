@@ -8,7 +8,56 @@ const FIRECRAWL_BASE = 'https://api.firecrawl.dev/v1';
 const FACET_MODEL_ID = process.env.BEDROCK_MODEL_FACET || 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
 const MAX_MARKDOWN = 8192;
 
-export interface ScrapedContent { markdown: string; title: string; description: string; }
+export interface ScrapedContent { markdown: string; html: string; title: string; description: string; }
+
+const MAX_CANDIDATE_IMAGES = 30;
+const DEEPEN_PATH_KEYWORDS = ['gallery', 'portfolio', 'work', 'project', 'about', 'team', 'service'];
+const MAX_DEEPEN_PAGES = 3;
+
+/** Firecrawl /map → URL list, filtered to high-value paths. Best-effort: [] on failure. */
+export async function discoverHighValuePages(url: string, key: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${FIRECRAWL_BASE}/map`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ url }),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { links?: string[] };
+    const links = json.links ?? [];
+    const origin = new URL(url).origin;
+    const picked = links
+      .filter(l => { try { return new URL(l).origin === origin; } catch { return false; } })
+      .filter(l => DEEPEN_PATH_KEYWORDS.some(k => l.toLowerCase().includes(k)))
+      .filter(l => l.replace(/\/$/, '') !== url.replace(/\/$/, '')); // not the homepage
+    return Array.from(new Set(picked)).slice(0, MAX_DEEPEN_PAGES);
+  } catch {
+    return [];
+  }
+}
+
+/** Extract absolute <img> src URLs (+ alt) from HTML, resolved against pageUrl. De-dupes. */
+export function extractImageUrls(html: string, pageUrl: string): { url: string; alt?: string; pageUrl: string }[] {
+  if (!html) return [];
+  const out: { url: string; alt?: string; pageUrl: string }[] = [];
+  const seen = new Set<string>();
+  const imgRe = /<img\b[^>]*>/gi;
+  const srcRe = /\bsrc=["']([^"']+)["']/i;
+  const altRe = /\balt=["']([^"']*)["']/i;
+  for (const tag of html.match(imgRe) ?? []) {
+    const srcM = tag.match(srcRe);
+    if (!srcM) continue;
+    let src = srcM[1].trim();
+    if (!src || src.startsWith('data:')) continue; // skip inline/data-URI sprites
+    try { src = new URL(src, pageUrl).href; } catch { continue; }
+    if (seen.has(src)) continue;
+    seen.add(src);
+    const altM = tag.match(altRe);
+    out.push({ url: src, alt: altM?.[1]?.trim() || undefined, pageUrl });
+    if (out.length >= MAX_CANDIDATE_IMAGES) break;
+  }
+  return out;
+}
 
 /** Firecrawl-scrape a URL to markdown. Best-effort: returns null on any failure. */
 export async function scrapeExistingSite(url: string): Promise<ScrapedContent | null> {
@@ -23,16 +72,21 @@ export async function scrapeExistingSite(url: string): Promise<ScrapedContent | 
     const res = await fetch(`${FIRECRAWL_BASE}/scrape`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ url, formats: ['markdown'] }),
+      body: JSON.stringify({ url, formats: ['markdown', 'html'] }),
     });
     if (!res.ok) {
       log.warn('Firecrawl scrape non-ok', { url, status: res.status });
       return null;
     }
-    const json = (await res.json()) as { data?: { markdown?: string; metadata?: { title?: string; description?: string } } };
+    const json = (await res.json()) as { data?: { markdown?: string; html?: string; metadata?: { title?: string; description?: string } } };
     const markdown = json.data?.markdown ?? '';
     if (!markdown.trim()) return null;
-    return { markdown, title: json.data?.metadata?.title ?? '', description: json.data?.metadata?.description ?? '' };
+    return {
+      markdown,
+      html: json.data?.html ?? '',
+      title: json.data?.metadata?.title ?? '',
+      description: json.data?.metadata?.description ?? '',
+    };
   } catch (err) {
     log.warn('Firecrawl scrape threw', { url, err: String(err) });
     return null;
@@ -76,7 +130,7 @@ ${scraped.markdown.slice(0, MAX_MARKDOWN)}`;
  */
 export async function captureExistingSite(
   url: string,
-  opts: { businessName: string; niche: string; discovered?: boolean },
+  opts: { businessName: string; niche: string; discovered?: boolean; deepen?: boolean },
 ): Promise<ExistingSite | null> {
   const scraped = await scrapeExistingSite(url);
   if (!scraped) return null;
@@ -88,6 +142,26 @@ export async function captureExistingSite(
     log.warn('Facet extraction failed; storing raw scrape only', { url, err: String(err) });
   }
 
+  const scrapedPages = [url];
+  let allImages = extractImageUrls(scraped.html, url);
+
+  if (opts.deepen) {
+    let key: string | undefined;
+    try { key = await getSecret('lb/scraping', 'firecrawl', 'FIRECRAWL_API_KEY'); } catch { key = undefined; }
+    if (key) {
+      const pages = await discoverHighValuePages(url, key);
+      for (const page of pages) {
+        const sub = await scrapeExistingSite(page);
+        if (!sub) continue;
+        scrapedPages.push(page);
+        for (const img of extractImageUrls(sub.html, page)) {
+          if (!allImages.some(e => e.url === img.url)) allImages.push(img);
+        }
+      }
+    }
+  }
+  allImages = allImages.slice(0, MAX_CANDIDATE_IMAGES);
+
   return {
     scrapedAt: new Date().toISOString(),
     url,
@@ -98,5 +172,7 @@ export async function captureExistingSite(
     rawMarkdown: scraped.markdown.slice(0, MAX_MARKDOWN),
     services: facets.services,
     about: facets.about,
+    candidateImages: allImages.length ? allImages : undefined,
+    scrapedPages,
   };
 }

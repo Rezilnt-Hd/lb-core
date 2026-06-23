@@ -27,4 +27,17 @@ export interface ExistingSite {
     metaDescription?: string;
     /** Firecrawl markdown, length-capped (≤ 8 KB). */
     rawMarkdown?: string;
+    /**
+     * Raw image URLs discovered on the prospect's existing site (homepage + a few
+     * high-value pages), captured pre-curation. The site-builder's image-curator
+     * scores/tags/selects from these at build time. Capped (≤ ~30). Absent ⇒ no
+     * usable imagery discovered (a normal state).
+     */
+    candidateImages?: {
+        url: string;
+        alt?: string;
+        pageUrl?: string;
+    }[];
+    /** Provenance: the page URLs actually scraped (homepage + deepened pages). */
+    scrapedPages?: string[];
 }
