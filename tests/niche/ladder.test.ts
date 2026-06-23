@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeKeyword, normalizeCity } from '../../src/niche/ladder.js';
 import { buildLadder, KEYWORD_MODIFIERS } from '../../src/niche/ladder.js';
+import { geoNeighbors } from '../../src/niche/geo-neighbors.js';
 import {
   KEYWORD_QUALIFIERS, KEYWORD_INTENT_PREFIX, KEYWORD_INTENT_SUFFIX,
 } from '../../src/niche/ladder.js';
@@ -99,11 +100,16 @@ describe('buildLadder', () => {
     expect(subSlice.rung).toBeGreaterThan(lastModifierRung);
   });
 
-  it('landscaping ladder is 36 distinct rungs after Lever 3 geo tier (31 + 5 geo)', () => {
+  it('landscaping ladder is 31 base rungs plus the Dallas geo tier, all distinct and contiguous', () => {
     const ladder = buildLadder('landscaping', 'Dallas', 'TX');
     const keywords = ladder.map(r => r.keyword);
-    expect(keywords).toHaveLength(36);
-    expect(new Set(keywords).size).toBe(36);
+    // 31 non-geo rungs (modifiers + sub-niche + qualifier + intent prefix/suffix)
+    // plus however many geo rungs the curated map yields for Dallas — derived
+    // from geoNeighbors so the bootstrap can grow the map without churning this
+    // test (cap is MAX_GEO_RUNGS, currently 25).
+    const expected = 31 + geoNeighbors(normalizeCity('Dallas', 'TX')).length;
+    expect(keywords).toHaveLength(expected);
+    expect(new Set(keywords).size).toBe(expected);
     expect(ladder.every((r, i) => r.rung === i)).toBe(true);
   });
 
