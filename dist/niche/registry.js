@@ -446,11 +446,11 @@ const ALIASES_BY_NICHE = {
     'ev charger installation': ['ev charger installation', 'level 2 charger install', 'ev charging station', 'electric vehicle charger', 'tesla charger install', 'ev charger install', 'ev charger'],
     'generator installation': ['whole-home generator install', 'standby generator installation', 'automatic standby generator', 'backup generator install', 'whole house generator', 'generator installation', 'generator install'],
     // Interior design
-    'home staging': ['home staging consultation', 'vacant home staging', 'occupied home staging', 'real estate staging', 'property staging', 'house staging', 'home staging', 'home stager'],
-    'e-design': ['virtual interior design', 'online interior design', 'remote interior design', 'e-design service', 'edesign', 'e-design', 'virtual design'],
-    'kitchen and bath design': ['kitchen and bathroom design', 'kitchen and bath design', 'kitchen and bath designer', 'kitchen design', 'bath design', 'bathroom design'],
+    'home staging': ['home staging consultation', 'occupied home staging', 'vacant home staging', 'real estate staging', 'property staging', 'house staging', 'home staging', 'home stager'],
+    'e-design': ['virtual interior design', 'online interior design', 'remote interior design', 'e-design service', 'e-design', 'edesign', 'virtual design'],
+    'kitchen and bath design': ['kitchen and bathroom design', 'kitchen and bath designer', 'kitchen and bath design', 'bathroom design', 'kitchen design', 'bath design'],
     'color consultation': ['color and material consultation', 'paint color consultation', 'material consultation', 'paint consultation', 'color consultation', 'color consultant', 'color consulting'],
-    'room redesign': ['one day room makeover', 'room makeover', 'room redesign', 'room refresh', 'interior redesign', 'interior styling', 'redecorating', 'furniture arrangement'],
+    'room redesign': ['one day room makeover', 'furniture arrangement', 'interior redesign', 'interior styling', 'room makeover', 'room redesign', 'room refresh', 'redecorating'],
 };
 // ── Public API ────────────────────────────────────────────────────────────────
 /**
