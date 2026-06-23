@@ -38,6 +38,45 @@ describe('createLead', () => {
   });
 });
 
+describe('createLead — review fields passthrough (B1)', () => {
+  it('writes placeId, rating, and reviewCount into the item when provided', async () => {
+    mockSend.mockResolvedValueOnce({});
+    const lead = await createLead({
+      businessName: 'Acme Lawn',
+      niche: 'landscaping',
+      city: 'Charlotte',
+      state: 'NC',
+      phone: '704-555-0000',
+      address: '1 Main St, Charlotte, NC',
+      placeId: 'ChIJ_test_place_id',
+      rating: 4.6,
+      reviewCount: 87,
+    });
+    expect(lead.placeId).toBe('ChIJ_test_place_id');
+    expect(lead.rating).toBe(4.6);
+    expect(lead.reviewCount).toBe(87);
+    const cmd = mockSend.mock.calls[0][0] as { input: { Item: Record<string, unknown> } };
+    expect(cmd.input.Item.placeId).toBe('ChIJ_test_place_id');
+    expect(cmd.input.Item.rating).toBe(4.6);
+    expect(cmd.input.Item.reviewCount).toBe(87);
+  });
+
+  it('omits review fields entirely when not provided (no undefined keys)', async () => {
+    mockSend.mockResolvedValueOnce({});
+    const lead = await createLead({
+      businessName: 'No Reviews Co',
+      niche: 'plumber',
+      city: 'Miami',
+      state: 'FL',
+      phone: '305-555-0000',
+      address: '2 Main St, Miami, FL',
+    });
+    expect(lead.placeId).toBeUndefined();
+    expect(lead.rating).toBeUndefined();
+    expect(lead.reviewCount).toBeUndefined();
+  });
+});
+
 describe('getLead', () => {
   it('returns lead by slug', async () => {
     const mockLead: Lead = {

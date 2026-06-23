@@ -70,6 +70,16 @@ export interface Lead {
     logoUrl?: string;
     existingSite?: ExistingSite;
     /**
+     * Google Places identifiers + REAL aggregate review data, captured at prospect
+     * time from the Places Text Search result (lb-prospector). placeId enables the
+     * build-time Place Details fetch (lb-site-builder) that pulls fresh review text
+     * within Google's 30-day cache window. rating/reviewCount are the true
+     * aggregate — they replace the previously-fabricated values.
+     */
+    placeId?: string;
+    rating?: number;
+    reviewCount?: number;
+    /**
      * businessType-derived specialization (sub-niche) resolved by resolveRefinedNiche.
      * The coarse `niche` stays the routing/campaign key; `refinedNiche` is a more
      * specific template/content signal. Consumers read `refinedNiche ?? niche`.
