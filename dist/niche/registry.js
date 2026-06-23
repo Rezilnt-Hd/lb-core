@@ -31,6 +31,9 @@ const ALIASES = {
     'tree trimming': 'tree service',
     'tree removal': 'tree service',
     'sprinkler system': 'irrigation',
+    'interior designer': 'interior design',
+    'interior decorator': 'interior design',
+    'interior decorating': 'interior design',
 };
 // ── Content context (pricing + services grounding prose) ─────────────────────
 // Presence of a key here means the niche is content-supported.
@@ -92,6 +95,14 @@ const CONTEXT = {
     'electrical rewiring': `Services: whole-house rewire ($10,000-$30,000 / $5-$17 sqft), partial rewire & new circuits ($2-$4/sqft), knob-and-tube replacement ($8,000-$20,000), aluminum wiring remediation ($4,000-$12,000), dedicated circuit install ($250-$900), code-correction rewiring ($1,000-$5,000), permit & inspection. Icons: ⚡🔌🧰🔧🏠🛡️📋`,
     'ev charger installation': `Services: Level 2 charger installation ($1,200-$3,000), 240V circuit & breaker ($300-$800), charger equipment supply ($400-$1,200), panel upgrade for charger load ($1,500-$3,000), detached-garage trenching/wiring ($300-$2,000), smart/Wi-Fi charger setup ($150-$400), load calculation & permit. Icons: 🔌🚗⚡🔋🧰🛠️📋🏠`,
     'generator installation': `Services: whole-house standby generator installed ($10,000-$15,000), generator unit supply ($3,000-$6,000), installation labor ($3,000-$5,000), automatic transfer switch install ($600-$1,200), gas/propane hookup & trenching ($500-$3,000), dedicated circuit & subpanel wiring ($500-$2,000), annual maintenance ($150-$400/visit). Icons: ⚡🔋🏠🔧🛠️🔌📋🚨`,
+    // ── Interior design (coarse) ──
+    'interior design': `Services: full-service interior design (concept → space planning → sourcing → install; $5,000-$50,000+/project), design consultation ($100-$250/hr), per-room design package ($1,500-$5,000/room), space planning ($500-$2,000), furniture & decor sourcing (flat fee or 15-30% markup), 3D renderings ($500-$2,000), custom window treatments & soft goods, project management ($100-$200/hr). Portfolio-driven; serves residential & light commercial. Icons: 🛋️📐🎨🪑🖼️🏡✨📋`,
+    // ── Interior design sub-niches ──
+    'home staging': `Services: occupied home staging ($500-$2,000/room), vacant home staging ($2,000-$6,000 + $500-$1,000/mo furniture rental), staging consultation ($150-$500), curb-appeal & listing-photo prep, decluttering & furniture rearrangement, accessory & art rental. Faster sale, stronger offers; serves realtors & sellers. Icons: 🏡📸🛋️✨🪑🌿💲🔑`,
+    'e-design': `Services: virtual room design (flat fee $300-$800/room), e-design consultation ($75-$150), digital mood boards & 2D/3D layouts, shoppable product lists with links, custom floor plans, follow-up revisions, DIY install guide. Remote, nationwide. Icons: 💻🎨🛒📐🛋️📦✨🌎`,
+    'kitchen and bath design': `Services: kitchen design ($2,000-$8,000), bath design ($1,500-$5,000), cabinetry & layout planning, finish & fixture selection, tile & countertop sourcing, 3D renderings ($500-$2,000), lighting plans, contractor coordination. Serves remodels & new builds. Icons: 🍳🛁📐🪞🚿🔨✨📋`,
+    'color consultation': `Services: paint color consultation ($100-$500), whole-home color palette ($300-$800), color & material consultation ($150-$600), exterior color selection, finish & sheen guidance, accent & trim strategy, custom sample boards. In-person or virtual. Icons: 🎨🖌️🏠🪣🌈🖼️✨📋`,
+    'room redesign': `Services: single-room redesign/refresh ($1,000-$5,000), one-day room makeover ($500-$1,500), furniture rearrangement & styling ($150-$500), shop-your-home redesign, accessory & art curation, seasonal refresh, declutter & restyle. Uses existing + new pieces. Icons: 🛋️✨🪑🖼️🌿🔄🎨🏡`,
 };
 // ── Niche → Category ──────────────────────────────────────────────────────────
 // Ported verbatim from lb-site-builder/src/services/niche-templates.ts → NICHE_CATEGORY_MAP
@@ -146,6 +157,13 @@ const CATEGORY = {
     // The ONE landscaping sub-niche whose category diverges from 'outdoor':
     // routes the premium/gallery template family (Cultivators/Ambiance fix).
     'landscape design': 'home-improvement',
+    // ── Interior design ──
+    'interior design': 'home-improvement',
+    'home staging': 'home-improvement',
+    'e-design': 'home-improvement',
+    'kitchen and bath design': 'home-improvement',
+    'color consultation': 'home-improvement',
+    'room redesign': 'home-improvement',
     // ── Roofing sub-niches (PR-A) ──
     'residential roofing': 'home-improvement',
     'commercial roofing': 'home-improvement',
@@ -295,6 +313,13 @@ const SCHEMA_TYPE = {
     // ── Landscaping sub-niches (high-intent service rungs) ──
     'retaining walls': 'HomeAndConstructionBusiness',
     'yard cleanup': 'HomeAndConstructionBusiness',
+    // ── Interior design ──
+    'interior design': 'HomeAndConstructionBusiness',
+    'home staging': 'HomeAndConstructionBusiness',
+    'e-design': 'HomeAndConstructionBusiness',
+    'kitchen and bath design': 'HomeAndConstructionBusiness',
+    'color consultation': 'HomeAndConstructionBusiness',
+    'room redesign': 'HomeAndConstructionBusiness',
 };
 // ── Sub-niche → coarse parent (PR-A) ──────────────────────────────────────────
 // Keyed by canonical sub-niche key. Coarse parents themselves have NO entry
@@ -351,6 +376,12 @@ const PARENT = {
     'electrical rewiring': 'electrical',
     'ev charger installation': 'electrical',
     'generator installation': 'electrical',
+    // Interior design
+    'home staging': 'interior design',
+    'e-design': 'interior design',
+    'kitchen and bath design': 'interior design',
+    'color consultation': 'interior design',
+    'room redesign': 'interior design',
 };
 // ── Sub-niche → businessType aliases, ordered longest/most-specific FIRST ──────
 // The classifier matches longest-fragment-first against businessType.toLowerCase().
@@ -414,6 +445,12 @@ const ALIASES_BY_NICHE = {
     'electrical rewiring': ['whole house rewiring', 'knob and tube replacement', 'aluminum wiring replacement', 'whole-home rewire', 'house rewiring', 'electrical rewiring', 'rewire'],
     'ev charger installation': ['ev charger installation', 'level 2 charger install', 'ev charging station', 'electric vehicle charger', 'tesla charger install', 'ev charger install', 'ev charger'],
     'generator installation': ['whole-home generator install', 'standby generator installation', 'automatic standby generator', 'backup generator install', 'whole house generator', 'generator installation', 'generator install'],
+    // Interior design
+    'home staging': ['home staging consultation', 'vacant home staging', 'occupied home staging', 'real estate staging', 'property staging', 'house staging', 'home staging', 'home stager'],
+    'e-design': ['virtual interior design', 'online interior design', 'remote interior design', 'e-design service', 'edesign', 'e-design', 'virtual design'],
+    'kitchen and bath design': ['kitchen and bathroom design', 'kitchen and bath design', 'kitchen and bath designer', 'kitchen design', 'bath design', 'bathroom design'],
+    'color consultation': ['color and material consultation', 'paint color consultation', 'material consultation', 'paint consultation', 'color consultation', 'color consultant', 'color consulting'],
+    'room redesign': ['one day room makeover', 'room makeover', 'room redesign', 'room refresh', 'interior redesign', 'interior styling', 'redecorating', 'furniture arrangement'],
 };
 // ── Public API ────────────────────────────────────────────────────────────────
 /**
