@@ -22,3 +22,18 @@ describe('ExistingSite type', () => {
     expect(fields.openingLine).toBe('Saw your new patio service.');
   });
 });
+
+describe('ExistingSite.candidateImages', () => {
+  it('accepts a list of candidate images with optional alt + pageUrl', () => {
+    const es: ExistingSite = {
+      scrapedAt: '2026-06-22T00:00:00.000Z',
+      url: 'https://example.com',
+      candidateImages: [
+        { url: 'https://example.com/work1.jpg', alt: 'New patio', pageUrl: 'https://example.com/gallery' },
+        { url: 'https://example.com/team.jpg' },
+      ],
+    };
+    expect(es.candidateImages).toHaveLength(2);
+    expect(es.candidateImages![0].alt).toBe('New patio');
+  });
+});
