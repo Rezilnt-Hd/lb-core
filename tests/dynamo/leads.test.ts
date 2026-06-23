@@ -74,6 +74,10 @@ describe('createLead — review fields passthrough (B1)', () => {
     expect(lead.placeId).toBeUndefined();
     expect(lead.rating).toBeUndefined();
     expect(lead.reviewCount).toBeUndefined();
+    const cmd = mockSend.mock.calls[0][0] as { input: { Item: Record<string, unknown> } };
+    expect('placeId' in cmd.input.Item).toBe(false);
+    expect('rating' in cmd.input.Item).toBe(false);
+    expect('reviewCount' in cmd.input.Item).toBe(false);
   });
 });
 
