@@ -13,7 +13,11 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockFetch.mockResolvedValue({
     ok: true,
-    json: async () => ({ success: true, data: { markdown: '# Acme Lawn\nWe mow lawns.', metadata: { title: 'Acme Lawn Care', description: 'Charlotte lawns' } } }),
+    json: async () => ({ success: true, data: {
+      markdown: '# Acme Lawn\nWe mow lawns.',
+      html: '<header><img src="/logo.png"></header><main><img src="https://cdn.acme.com/patio.jpg" alt="New patio"><img src="work2.jpg" alt="Paver walkway"></main>',
+      metadata: { title: 'Acme Lawn Care', description: 'Charlotte lawns' },
+    } }),
   });
   mockInvoke.mockResolvedValue({ text: JSON.stringify({ services: ['mowing'], about: 'Local lawn crew.' }) });
 });
@@ -25,7 +29,10 @@ describe('scrapeExistingSite', () => {
   });
   it('maps Firecrawl markdown/title/description', async () => {
     const r = await scrapeExistingSite('https://x.com');
-    expect(r).toEqual({ markdown: '# Acme Lawn\nWe mow lawns.', title: 'Acme Lawn Care', description: 'Charlotte lawns' });
+    expect(r!.markdown).toBe('# Acme Lawn\nWe mow lawns.');
+    expect(r!.title).toBe('Acme Lawn Care');
+    expect(r!.description).toBe('Charlotte lawns');
+    expect(typeof r!.html).toBe('string');
   });
 });
 
@@ -67,5 +74,29 @@ describe('captureExistingSite', () => {
     mockInvoke.mockResolvedValueOnce({ text: '```json\n{"services":["site planning"],"about":"Award-winning studio","businessType":"landscape design & architecture firm"}\n```' });
     const es = await captureExistingSite('https://x.com', { businessName: 'Acme', niche: 'landscaping' });
     expect(es!.businessType).toBe('landscape design & architecture firm');
+  });
+});
+
+describe('candidateImages extraction', () => {
+  it('parses <img> srcs from the scraped HTML, absolutized + de-duped', async () => {
+    const es = await captureExistingSite('https://acme.com', { businessName: 'Acme', niche: 'landscaping' });
+    const urls = es!.candidateImages!.map(c => c.url);
+    expect(urls).toContain('https://cdn.acme.com/patio.jpg');
+    expect(urls).toContain('https://acme.com/work2.jpg'); // relative → absolutized against page URL
+    expect(es!.candidateImages!.find(c => c.url === 'https://cdn.acme.com/patio.jpg')!.alt).toBe('New patio');
+  });
+
+  it('records the scraped page in scrapedPages', async () => {
+    const es = await captureExistingSite('https://acme.com', { businessName: 'Acme', niche: 'landscaping' });
+    expect(es!.scrapedPages).toContain('https://acme.com');
+  });
+
+  it('omits candidateImages when the HTML has no images', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: { markdown: '# Acme', html: '<p>no images here</p>', metadata: { title: 'Acme' } } }),
+    });
+    const es = await captureExistingSite('https://acme.com', { businessName: 'Acme', niche: 'landscaping' });
+    expect(es!.candidateImages).toBeUndefined();
   });
 });
