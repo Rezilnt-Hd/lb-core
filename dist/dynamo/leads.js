@@ -7,6 +7,11 @@ const log = createLogger('leads');
 export async function createLead(input) {
     const slug = generateSlug(input.businessName, input.city);
     const now = new Date().toISOString();
+    // Persist `internal` ONLY when truthy so the attribute is genuinely absent
+    // for normal leads — absence (not `false`) is the contract relied on by the
+    // SITE_BUILT -> LIVE carve-out and outreach exclusion. Exclude it from the
+    // wholesale `...input` spread so an explicit `internal: false` is dropped.
+    const { internal: _internal, ...inputRest } = input;
     const lead = {
         pk: `LEAD#${slug}`,
         sk: 'META',
@@ -16,7 +21,8 @@ export async function createLead(input) {
         createdAt: now,
         updatedAt: now,
         statusHistory: [{ from: LeadStatus.PROSPECT, to: LeadStatus.PROSPECT, timestamp: now, reason: 'created' }],
-        ...input,
+        ...inputRest,
+        ...(input.internal ? { internal: true } : {}),
     };
     await docClient.send(new PutCommand({
         TableName: TABLE_NAMES.leads,
@@ -34,8 +40,15 @@ export async function getLead(slug) {
     return result.Item || null;
 }
 export async function transitionLead(slug, fromStatus, toStatus, reason, extraUpdates) {
-    const validTargets = VALID_TRANSITIONS[fromStatus];
-    if (!validTargets.includes(toStatus)) {
+    // SITE_BUILT -> LIVE is allowed ONLY for internal (owned/operated) leads that
+    // skip the PAID checkout — Rezilnt dog-food go-live. It is deliberately NOT a
+    // VALID_TRANSITIONS table entry (that would let ANY lead bypass PAID). The
+    // structural check below lets the edge past, and the "internal" invariant is
+    // then enforced atomically by DynamoDB via `#internal = :internalTrue` in the
+    // ConditionExpression — a non-internal lead's update fails the condition.
+    const standardOk = VALID_TRANSITIONS[fromStatus]?.includes(toStatus) ?? false;
+    const isInternalGoLiveEdge = fromStatus === LeadStatus.SITE_BUILT && toStatus === LeadStatus.LIVE;
+    if (!standardOk && !isInternalGoLiveEdge) {
         throw new Error(`Invalid transition: ${fromStatus} -> ${toStatus}`);
     }
     const now = new Date().toISOString();
@@ -79,11 +92,19 @@ export async function transitionLead(slug, fromStatus, toStatus, reason, extraUp
     if (removes.length > 0) {
         updateExpr += ` REMOVE ${removes.join(', ')}`;
     }
+    // For the internal go-live edge, require `internal = true` on the existing item
+    // atomically. All other transitions keep the plain status guard unchanged.
+    let conditionExpr = '#status = :fromStatus';
+    if (isInternalGoLiveEdge) {
+        conditionExpr += ' AND #internal = :internalTrue';
+        exprNames['#internal'] = 'internal';
+        exprValues[':internalTrue'] = true;
+    }
     const result = await docClient.send(new UpdateCommand({
         TableName: TABLE_NAMES.leads,
         Key: { pk: `LEAD#${slug}`, sk: 'META' },
         UpdateExpression: updateExpr,
-        ConditionExpression: '#status = :fromStatus',
+        ConditionExpression: conditionExpr,
         ExpressionAttributeNames: exprNames,
         ExpressionAttributeValues: exprValues,
         ReturnValues: 'ALL_NEW',

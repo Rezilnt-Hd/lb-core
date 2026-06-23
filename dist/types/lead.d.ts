@@ -79,6 +79,8 @@ export interface Lead {
     placeId?: string;
     rating?: number;
     reviewCount?: number;
+    /** True for businesses we own/operate (e.g. Rezilnt). Never contacted by outreach. */
+    internal?: boolean;
     /**
      * businessType-derived specialization (sub-niche) resolved by resolveRefinedNiche.
      * The coarse `niche` stays the routing/campaign key; `refinedNiche` is a more

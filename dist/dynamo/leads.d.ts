@@ -14,6 +14,7 @@ interface CreateLeadInput {
     placeId?: string;
     rating?: number;
     reviewCount?: number;
+    internal?: boolean;
 }
 export declare function createLead(input: CreateLeadInput): Promise<Lead>;
 export declare function getLead(slug: string): Promise<Lead | null>;
