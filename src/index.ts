@@ -20,6 +20,11 @@ export {
   TierPricing,
   TIER_PRICING,
   TIER_CONFIG,
+  OFFER_NAME,
+  OFFER_NAME_TEMPLATE,
+  OFFER_SUBHEAD,
+  TierDisplay,
+  TIER_DISPLAY,
 } from "./types/entitlements.js";
 // Entitlement ACCESSORS (P-GATE spine) — P1 owns the data/getEntitlements above; do not duplicate those here.
 export {

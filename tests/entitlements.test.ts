@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Tier } from '../src/types/lead.js';
 import {
   TIER_ENTITLEMENTS, TIER_PRICING, TIER_CONFIG, getEntitlements,
+  OFFER_NAME, OFFER_NAME_TEMPLATE, OFFER_SUBHEAD, TIER_DISPLAY,
 } from '../src/types/entitlements.js';
 
 describe('TIER_PRICING', () => {
@@ -49,5 +50,31 @@ describe('TIER_CONFIG (derived, back-compat)', () => {
     expect(TIER_CONFIG[Tier.BASIC]).toEqual({ price: 49, blogsPerWeek: 1, label: 'Basic' });
     expect(TIER_CONFIG[Tier.PREMIUM]).toEqual({ price: 99, blogsPerWeek: 3, label: 'Premium' });
     expect(TIER_CONFIG[Tier.ULTRA]).toEqual({ price: 149, blogsPerWeek: 7, label: 'Ultra' });
+  });
+});
+
+describe('Local Lead Engine offer framing (display-only rename)', () => {
+  it('names the offer "The Local Lead Engine"', () => {
+    expect(OFFER_NAME).toBe('The Local Lead Engine');
+    expect(OFFER_NAME_TEMPLATE).toContain('{{trade}}');
+    expect(OFFER_SUBHEAD).toContain('{{city}}');
+  });
+
+  it('gives tiers horsepower display names while preserving legacy labels', () => {
+    expect(TIER_DISPLAY[Tier.BASIC]).toEqual({ displayName: 'Starter Engine', label: 'Basic', mostPopular: false });
+    expect(TIER_DISPLAY[Tier.PREMIUM]).toEqual({ displayName: 'Growth Engine', label: 'Premium', mostPopular: true });
+    expect(TIER_DISPLAY[Tier.ULTRA]).toEqual({ displayName: 'Market-Leader Engine', label: 'Ultra', mostPopular: false });
+  });
+
+  it('is a label-only change: tier IDs, prices, and entitlements are untouched', () => {
+    // IDs are the load-bearing P-GATE keys — must remain the raw enum strings.
+    expect(Object.keys(TIER_DISPLAY)).toEqual(['BASIC', 'PREMIUM', 'ULTRA']);
+    // Prices unchanged.
+    expect(TIER_PRICING[Tier.BASIC].monthlyTotal).toBe(49);
+    expect(TIER_PRICING[Tier.PREMIUM].monthlyTotal).toBe(99);
+    expect(TIER_PRICING[Tier.ULTRA].monthlyTotal).toBe(149);
+    // Entitlements unchanged.
+    expect(getEntitlements(Tier.BASIC).blogPostsPerWeek).toBe(1);
+    expect(getEntitlements(Tier.ULTRA).competitorAnalysis).toBe(true);
   });
 });
