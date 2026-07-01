@@ -2,7 +2,7 @@ export { Lead, LeadStatus, VALID_TRANSITIONS, StatusTransition, Tier, BillingInt
 export type { ScoreBand } from "./types/lead.js";
 export type { ExistingSite } from "./types/existing-site.js";
 export type { KeywordClaim, ClaimStatus } from "./types/claim.js";
-export { TierEntitlements, TIER_ENTITLEMENTS, getEntitlements, TierPricing, TIER_PRICING, TIER_CONFIG, } from "./types/entitlements.js";
+export { TierEntitlements, TIER_ENTITLEMENTS, getEntitlements, TierPricing, TIER_PRICING, TIER_CONFIG, OFFER_NAME, OFFER_NAME_TEMPLATE, OFFER_SUBHEAD, TierDisplay, TIER_DISPLAY, } from "./types/entitlements.js";
 export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, canUseKeywordResearch, canUseCompetitorAnalysis, } from "./entitlements/access.js";
 export { Site, BlogPost, KeywordData, RobotsTxtConfig } from "./types/site.js";
 export { Template } from "./types/template.js";

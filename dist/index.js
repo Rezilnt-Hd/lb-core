@@ -1,6 +1,6 @@
 // Types
 export { LeadStatus, VALID_TRANSITIONS, Tier, RETRY_WORTHY_REASONS, TERMINAL_REASONS, } from "./types/lead.js";
-export { TIER_ENTITLEMENTS, getEntitlements, TIER_PRICING, TIER_CONFIG, } from "./types/entitlements.js";
+export { TIER_ENTITLEMENTS, getEntitlements, TIER_PRICING, TIER_CONFIG, OFFER_NAME, OFFER_NAME_TEMPLATE, OFFER_SUBHEAD, TIER_DISPLAY, } from "./types/entitlements.js";
 // Entitlement ACCESSORS (P-GATE spine) — P1 owns the data/getEntitlements above; do not duplicate those here.
 export { isEntitled, blogPostsPerWeek, canUseSmartLinking, canUseAdvancedSchema, canUseCustomDomain, canUseWebp, canUseFullTextSearch, canUseInfoGain, canUseAnomalyAlerts, canUseMonthlyReport, canUseGoogleAdsPages, canUseKeywordResearch, canUseCompetitorAnalysis, } from "./entitlements/access.js";
 export { EVENT_SOURCE, EventType, } from "./types/events.js";

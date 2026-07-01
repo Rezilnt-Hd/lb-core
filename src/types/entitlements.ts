@@ -105,6 +105,43 @@ const TIER_LABELS: Record<Tier, string> = {
   [Tier.ULTRA]: 'Ultra',
 };
 
+/**
+ * Marketing / display framing ONLY. None of this is load-bearing — pricing,
+ * entitlements, and P-GATE all key off the Tier enum IDs (BASIC/PREMIUM/ULTRA)
+ * and the maps above, never these human-facing strings. Rename freely here to
+ * re-brand the offer without touching a single price or entitlement.
+ *
+ * The named offer (Hormozi "category-of-one"): sold as one done-for-you local
+ * lead machine at three horsepower levels, not three commodity "website tiers".
+ */
+export const OFFER_NAME = 'The Local Lead Engine';
+
+/** Templatized per-niche form; `{{trade}}` fills from lead.niche (e.g. "Roofers"). */
+export const OFFER_NAME_TEMPLATE = 'The Local Lead Engine for {{trade}}';
+
+/** Magnetic subhead — the per-city keyword-claim moat nothing else can copy. */
+export const OFFER_SUBHEAD = "Own {{city}} — your town's #1 keyword, locked to you";
+
+export interface TierDisplay {
+  /** Horsepower-metaphor name shown on pricing/marketing surfaces. */
+  displayName: string;
+  /** Legacy short label (Basic/Premium/Ultra), kept for back-compat. */
+  label: string;
+  /** "Most Popular" anchor badge, Premium only. */
+  mostPopular: boolean;
+}
+
+/**
+ * Human-facing tier presentation. IDs stay BASIC/PREMIUM/ULTRA; only these
+ * display strings change. Adjusting a displayName re-brands the pricing page
+ * with zero code, billing, or entitlement impact.
+ */
+export const TIER_DISPLAY: Record<Tier, TierDisplay> = {
+  [Tier.BASIC]:   { displayName: 'Starter Engine',        label: TIER_LABELS[Tier.BASIC],   mostPopular: false },
+  [Tier.PREMIUM]: { displayName: 'Growth Engine',         label: TIER_LABELS[Tier.PREMIUM], mostPopular: true  },
+  [Tier.ULTRA]:   { displayName: 'Market-Leader Engine',  label: TIER_LABELS[Tier.ULTRA],   mostPopular: false },
+};
+
 /** Legacy shape, now derived from the model above so there is one source of truth. */
 export const TIER_CONFIG: Record<Tier, { price: number; blogsPerWeek: number; label: string }> = {
   [Tier.BASIC]:   { price: TIER_PRICING[Tier.BASIC].monthlyTotal,   blogsPerWeek: TIER_ENTITLEMENTS[Tier.BASIC].blogPostsPerWeek,   label: TIER_LABELS[Tier.BASIC] },
