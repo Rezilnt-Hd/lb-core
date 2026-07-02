@@ -17,7 +17,7 @@ export { generateSlug } from "./utils/slug.js";
 export { createLogger } from "./utils/logger.js";
 export { getSecret, invalidateSecret } from "./utils/secrets.js";
 export * from "./types/campaign.js";
-export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from "./dynamo/campaigns.js";
+export { getCampaignForNiche, listKnownCampaignNiches, listApprovedCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from "./dynamo/campaigns.js";
 export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./services/approval-token.js";
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
 export type { NicheProfile, NicheCategory } from "./niche/registry.js";

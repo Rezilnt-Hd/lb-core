@@ -67,6 +67,30 @@ export async function listKnownCampaignNiches() {
     return known;
 }
 /**
+ * Return the set of niches whose campaign is `approved` (i.e. actually routes
+ * real outreach — same status `getCampaignForNiche` requires). The prospector
+ * uses this to scope its sweep: only niches with a live campaign are worth
+ * spending SerpAPI/Hunter on, since a lead in any other niche dies at the
+ * runOutreach `niche-unmapped` gate. Single GSI query on `approved` — contrast
+ * listKnownCampaignNiches which unions pending_review + approved for dedupe.
+ */
+export async function listApprovedCampaignNiches() {
+    const approved = new Set();
+    const result = await docClient.send(new QueryCommand({
+        TableName: TABLE_NAMES.campaigns,
+        IndexName: 'status-created-index',
+        KeyConditionExpression: '#s = :s',
+        ExpressionAttributeNames: { '#s': 'status' },
+        ExpressionAttributeValues: { ':s': 'approved' },
+        ProjectionExpression: 'niche',
+    }));
+    for (const item of (result.Items ?? [])) {
+        if (typeof item.niche === 'string')
+            approved.add(item.niche);
+    }
+    return approved;
+}
+/**
  * Write a pending_review row. Conditional on `attribute_not_exists(sk)` so a
  * re-running scanner can never overwrite a row in flight (belt + suspenders
  * over the dedupe-by-listKnownCampaignNiches check). Throws
