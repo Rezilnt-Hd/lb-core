@@ -86,6 +86,7 @@ export * from "./types/campaign.js";
 export {
   getCampaignForNiche,
   listKnownCampaignNiches,
+  listApprovedCampaignNiches,
   writePendingCampaign,
   updateCampaignApproved,
   updateCampaignStatus,

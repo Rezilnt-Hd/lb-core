@@ -86,6 +86,30 @@ export async function listKnownCampaignNiches(): Promise<Set<string>> {
   return known;
 }
 
+/**
+ * Return the set of niches whose campaign is `approved` (i.e. actually routes
+ * real outreach — same status `getCampaignForNiche` requires). The prospector
+ * uses this to scope its sweep: only niches with a live campaign are worth
+ * spending SerpAPI/Hunter on, since a lead in any other niche dies at the
+ * runOutreach `niche-unmapped` gate. Single GSI query on `approved` — contrast
+ * listKnownCampaignNiches which unions pending_review + approved for dedupe.
+ */
+export async function listApprovedCampaignNiches(): Promise<Set<string>> {
+  const approved = new Set<string>();
+  const result = await docClient.send(new QueryCommand({
+    TableName: TABLE_NAMES.campaigns,
+    IndexName: 'status-created-index',
+    KeyConditionExpression: '#s = :s',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'approved' as CampaignStatus },
+    ProjectionExpression: 'niche',
+  }));
+  for (const item of (result.Items ?? [])) {
+    if (typeof item.niche === 'string') approved.add(item.niche);
+  }
+  return approved;
+}
+
 interface WritePendingInput {
   niche: string;
   generatedCopy: InstantlySequence;

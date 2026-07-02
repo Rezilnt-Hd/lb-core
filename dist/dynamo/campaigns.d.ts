@@ -17,6 +17,15 @@ export declare function getCampaignForNiche(niche: string | undefined | null): P
  * on the next scan with fresh Bedrock variance.
  */
 export declare function listKnownCampaignNiches(): Promise<Set<string>>;
+/**
+ * Return the set of niches whose campaign is `approved` (i.e. actually routes
+ * real outreach — same status `getCampaignForNiche` requires). The prospector
+ * uses this to scope its sweep: only niches with a live campaign are worth
+ * spending SerpAPI/Hunter on, since a lead in any other niche dies at the
+ * runOutreach `niche-unmapped` gate. Single GSI query on `approved` — contrast
+ * listKnownCampaignNiches which unions pending_review + approved for dedupe.
+ */
+export declare function listApprovedCampaignNiches(): Promise<Set<string>>;
 interface WritePendingInput {
     niche: string;
     generatedCopy: InstantlySequence;

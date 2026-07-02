@@ -11,6 +11,7 @@ import {
   getCampaignForNiche,
   _resetCampaignCacheForTests,
   listKnownCampaignNiches,
+  listApprovedCampaignNiches,
   writePendingCampaign,
   updateCampaignApproved,
   updateCampaignStatus,
@@ -77,6 +78,29 @@ describe('listKnownCampaignNiches', () => {
       .mockResolvedValueOnce({ Items: [] });
     await listKnownCampaignNiches();
     expect(mockSend).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('listApprovedCampaignNiches', () => {
+  it('returns only approved niches via a single status=approved GSI query', async () => {
+    mockSend.mockResolvedValueOnce({ Items: [{ niche: 'landscaping' }, { niche: 'flood remediation' }] });
+    const approved = await listApprovedCampaignNiches();
+    expect(approved).toEqual(new Set(['landscaping', 'flood remediation']));
+    // Exactly one query — approved only, NOT pending (contrast listKnownCampaignNiches' 2 queries).
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    const call = mockSend.mock.calls[0][0].input;
+    expect(call.IndexName).toBe('status-created-index');
+    expect(call.ExpressionAttributeValues[':s']).toBe('approved');
+  });
+
+  it('returns an empty set when no approved rows exist', async () => {
+    mockSend.mockResolvedValueOnce({ Items: [] });
+    expect(await listApprovedCampaignNiches()).toEqual(new Set());
+  });
+
+  it('skips non-string niche attributes defensively', async () => {
+    mockSend.mockResolvedValueOnce({ Items: [{ niche: 'hvac' }, { notNiche: 1 }] });
+    expect(await listApprovedCampaignNiches()).toEqual(new Set(['hvac']));
   });
 });
 

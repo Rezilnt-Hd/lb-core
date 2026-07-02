@@ -17,7 +17,7 @@ export { createLogger } from "./utils/logger.js";
 export { getSecret, invalidateSecret } from "./utils/secrets.js";
 // Campaigns + approval token (Phase 2)
 export * from "./types/campaign.js";
-export { getCampaignForNiche, listKnownCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from "./dynamo/campaigns.js";
+export { getCampaignForNiche, listKnownCampaignNiches, listApprovedCampaignNiches, writePendingCampaign, updateCampaignApproved, updateCampaignStatus, getCampaignRow, } from "./dynamo/campaigns.js";
 export { signApprovalToken, verifyApprovalToken, getApprovalSecret, } from "./services/approval-token.js";
 // Niche registry — single source of truth for all niche metadata
 export { getNicheProfile, getNichesByParent, isContentSupported, listContentSupportedNiches, } from "./niche/registry.js";
